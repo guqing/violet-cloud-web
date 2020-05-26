@@ -155,7 +155,7 @@
           <a-icon
             class="item-icon"
             type="github"
-            @click="handleOauthLogin('github')"
+            @click="handleSocialLogin('github')"
           ></a-icon>
         </a>
         <a>
@@ -166,7 +166,7 @@
         </router-link>
       </div>
     </a-form>
-    <!-- 
+    <!--
     <two-step-captcha
       v-if="requiredTwoStepCaptcha"
       :visible="stepCaptchaVisible"
@@ -180,13 +180,13 @@
 import TwoStepCaptcha from '@/components/tools/TwoStepCaptcha'
 import { mapActions } from 'vuex'
 import { timeFix } from '@/utils/util'
-import { getSmsCaptcha, get2step, oauthLogin, getToken } from '@/api/login'
+import { getSmsCaptcha, socialLoginApi } from '@/api/login'
 
 export default {
   components: {
     TwoStepCaptcha
   },
-  data() {
+  data () {
     return {
       customActiveKey: 'tab1',
       loginBtn: false,
@@ -201,10 +201,14 @@ export default {
         // login type: 0 email, 1 username, 2 telephone
         loginType: 0,
         smsSendBtn: false
+      },
+      socialPage: {
+        width: window.screen.width * 0.5,
+        height: window.screen.height * 0.5
       }
     }
   },
-  created() {
+  created () {
     // get2step({})
     //   .then(res => {
     //     this.requiredTwoStepCaptcha = res.result.stepCode
@@ -214,10 +218,13 @@ export default {
     //   })
     // this.requiredTwoStepCaptcha = true
   },
+  destroyed () {
+    window.removeEventListener('message', this.resolveSocialLogin)
+  },
   methods: {
-    ...mapActions(['Login', 'Logout']),
+    ...mapActions(['Login', 'SocialLogin', 'Logout']),
     // handler
-    handleUsernameOrEmail(rule, value, callback) {
+    handleUsernameOrEmail (rule, value, callback) {
       const { state } = this
       const regex = /^([a-zA-Z0-9_-])+@([a-zA-Z0-9_-])+((\.[a-zA-Z0-9_-]{2,3}){1,2})$/
       if (regex.test(value)) {
@@ -227,11 +234,11 @@ export default {
       }
       callback()
     },
-    handleTabClick(key) {
+    handleTabClick (key) {
       this.customActiveKey = key
       // this.form.resetFields()
     },
-    handleSubmit(e) {
+    handleSubmit (e) {
       e.preventDefault()
       const {
         form: { validateFields },
@@ -268,7 +275,7 @@ export default {
         }
       })
     },
-    getCaptcha(e) {
+    getCaptcha (e) {
       e.preventDefault()
       const {
         form: { validateFields },
@@ -308,16 +315,16 @@ export default {
         }
       })
     },
-    stepCaptchaSuccess() {
+    stepCaptchaSuccess () {
       this.loginSuccess()
     },
-    stepCaptchaCancel() {
+    stepCaptchaCancel () {
       this.Logout().then(() => {
         this.loginBtn = false
         this.stepCaptchaVisible = false
       })
     },
-    loginSuccess(res) {
+    loginSuccess (res) {
       console.log(res)
       this.$router.push({ name: 'dashboard' })
       // 延迟 1 秒显示欢迎信息
@@ -328,7 +335,7 @@ export default {
         })
       }, 1000)
     },
-    requestFailed(err) {
+    requestFailed (err) {
       console.log('login error:', err)
       this.$notification['error']({
         message: '错误',
@@ -338,8 +345,23 @@ export default {
         duration: 4
       })
     },
-    handleOauthLogin(type) {
-      // oauthLoginApi + type
+    handleSocialLogin (oauthType) {
+      const url = socialLoginApi + oauthType
+      window.open(url, 'newWindow', `resizable=yes, height=${this.socialPage.height},
+      width=${this.socialPage.width}, top=10%, left=10%, toolbar=no, menubar=no, scrollbars=no, resizable=no,location=no, status=no`)
+      window.addEventListener('message', this.resolveSocialLogin, false)
+    },
+    resolveSocialLogin (e) {
+      var data = e.data
+      if (data.isBind) {
+        this.SocialLogin(data.accessToken).then(res => {
+          this.loginSuccess(res)
+        })
+      } else {
+        // resolve bind
+      }
+
+      console.log(e)
     }
   }
 }

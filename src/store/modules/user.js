@@ -1,22 +1,30 @@
 import Vue from 'vue'
 import { login, logout } from '@/api/login'
 import userAPI from '@/api/user'
-import { ACCESS_TOKEN } from '@/store/mutation-types'
+import { ACCESS_TOKEN, REFRESH_TOKEN } from '@/store/mutation-types'
 import { welcome } from '@/utils/util'
 
 const user = {
   state: {
     token: '',
+    refresh_token: '',
+    expireTime: '',
     name: '',
     welcome: '',
     avatar: '',
     roles: [],
-    info: {}
+    info: {},
   },
 
   mutations: {
     SET_TOKEN: (state, token) => {
       state.token = token
+    },
+    SET_REFRESH_TOKEN: (state, token) => {
+      state.refresh_token = token
+    },
+    SET_EXPIRETIME: (state, expireTime) => {
+      state.expireTime = expireTime
     },
     SET_NAME: (state, { name, welcome }) => {
       state.name = name
@@ -30,7 +38,7 @@ const user = {
     },
     SET_INFO: (state, info) => {
       state.info = info
-    }
+    },
   },
 
   actions: {
@@ -38,7 +46,7 @@ const user = {
     Login({ commit }, userInfo) {
       return new Promise((resolve, reject) => {
         login(userInfo)
-          .then(response => {
+          .then((response) => {
             if (response.code === 0) {
               Vue.ls.set(ACCESS_TOKEN, response.data, 7 * 24 * 60 * 60 * 1000)
               commit('SET_TOKEN', response.data)
@@ -47,35 +55,59 @@ const user = {
               reject(response)
             }
           })
-          .catch(error => {
+          .catch((error) => {
             reject(error)
           })
       })
     },
+    SocialLogin({ commit }, data) {
+      var tokenInfo = data || {}
+      return new Promise((resolve, reject) => {
+        console.log('social login:', tokenInfo)
+        Vue.ls.set(
+          ACCESS_TOKEN,
+          tokenInfo.access_token,
+          7 * 24 * 60 * 60 * 1000
+        )
+        Vue.ls.set(
+          REFRESH_TOKEN,
+          tokenInfo.refresh_token,
+          8 * 24 * 60 * 60 * 1000
+        )
 
+        const current = new Date()
+        const expireTime = current.setTime(
+          current.getTime() + 1000 * tokenInfo.expires_in
+        )
+        commit('SET_TOKEN', tokenInfo.access_token)
+        commit('SET_REFRESH_TOKEN', tokenInfo.refresh_token)
+        commit('SET_EXPIRETIME', expireTime)
+        resolve(tokenInfo)
+      })
+    },
     // 获取用户信息
     GetInfo({ commit }) {
       return new Promise((resolve, reject) => {
         userAPI
           .getInfo()
-          .then(response => {
+          .then((response) => {
             const result = response.data
             if (result.role && result.role.permissions.length > 0) {
               const role = result.role
               role.permissions = result.role.permissions
-              role.permissions.map(per => {
+              role.permissions.map((per) => {
                 if (
                   per.actionEntitySet != null &&
                   per.actionEntitySet.length > 0
                 ) {
-                  const action = per.actionEntitySet.map(action => {
+                  const action = per.actionEntitySet.map((action) => {
                     return action.action
                   })
                   per.actionList = action
                 }
               })
 
-              role.permissionList = role.permissions.map(permission => {
+              role.permissionList = role.permissions.map((permission) => {
                 return permission.identify
               })
               commit('SET_ROLES', result.role)
@@ -94,7 +126,7 @@ const user = {
             }
             resolve(result)
           })
-          .catch(error => {
+          .catch((error) => {
             reject(error)
           })
       })
@@ -102,7 +134,7 @@ const user = {
 
     // 登出
     Logout({ commit, state }) {
-      return new Promise(resolve => {
+      return new Promise((resolve) => {
         commit('SET_TOKEN', '')
         commit('SET_ROLES', [])
         Vue.ls.remove(ACCESS_TOKEN)
@@ -115,8 +147,8 @@ const user = {
             resolve()
           })
       })
-    }
-  }
+    },
+  },
 }
 
 export default user
