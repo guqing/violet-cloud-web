@@ -1,14 +1,12 @@
 import Vue from 'vue'
 import { login, logout } from '@/api/login'
 import userAPI from '@/api/user'
-import { ACCESS_TOKEN, REFRESH_TOKEN } from '@/store/mutation-types'
+import { ACCESS_TOKEN } from '@/store/mutation-types'
 import { welcome } from '@/utils/util'
 
 const user = {
   state: {
-    token: '',
-    refresh_token: '',
-    expireTime: '',
+    token: {},
     name: '',
     welcome: '',
     avatar: '',
@@ -19,12 +17,6 @@ const user = {
   mutations: {
     SET_TOKEN: (state, token) => {
       state.token = token
-    },
-    SET_REFRESH_TOKEN: (state, token) => {
-      state.refresh_token = token
-    },
-    SET_EXPIRETIME: (state, expireTime) => {
-      state.expireTime = expireTime
     },
     SET_NAME: (state, { name, welcome }) => {
       state.name = name
@@ -43,7 +35,7 @@ const user = {
 
   actions: {
     // 登录
-    Login({ commit }, userInfo) {
+    Login ({ commit }, userInfo) {
       return new Promise((resolve, reject) => {
         login(userInfo)
           .then((response) => {
@@ -60,33 +52,40 @@ const user = {
           })
       })
     },
-    SocialLogin({ commit }, data) {
-      var tokenInfo = data || {}
+    SocialLogin ({ commit }, data) {
       return new Promise((resolve, reject) => {
         console.log('social login:', tokenInfo)
-        Vue.ls.set(
-          ACCESS_TOKEN,
-          tokenInfo.access_token,
-          7 * 24 * 60 * 60 * 1000
-        )
-        Vue.ls.set(
-          REFRESH_TOKEN,
-          tokenInfo.refresh_token,
-          8 * 24 * 60 * 60 * 1000
-        )
+        var tokenInfo = data || ''
+        if (tokenInfo === '') {
+          reject(tokenInfo)
+        }
 
         const current = new Date()
         const expireTime = current.setTime(
           current.getTime() + 1000 * tokenInfo.expires_in
         )
-        commit('SET_TOKEN', tokenInfo.access_token)
-        commit('SET_REFRESH_TOKEN', tokenInfo.refresh_token)
-        commit('SET_EXPIRETIME', expireTime)
+
+        var token = {
+          access_token: tokenInfo.access_token,
+          refresh_token: tokenInfo.refresh_token,
+          expireTime: expireTime,
+          token_type: tokenInfo.token_type
+        }
+
+        // 设置到localStorage中
+        Vue.ls.set(
+          ACCESS_TOKEN,
+          token,
+          7 * 24 * 60 * 60 * 1000
+        )
+
+        // 设置到vuex中
+        commit('SET_TOKEN', token)
         resolve(tokenInfo)
       })
     },
     // 获取用户信息
-    GetInfo({ commit }) {
+    GetInfo ({ commit }) {
       return new Promise((resolve, reject) => {
         userAPI
           .getInfo()
@@ -133,7 +132,7 @@ const user = {
     },
 
     // 登出
-    Logout({ commit, state }) {
+    Logout ({ commit, state }) {
       return new Promise((resolve) => {
         commit('SET_TOKEN', '')
         commit('SET_ROLES', [])

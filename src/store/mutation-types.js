@@ -1,5 +1,4 @@
 export const ACCESS_TOKEN = 'Access-Token'
-export const REFRESH_TOKEN = 'Refresh-Token'
 export const SIDEBAR_TYPE = 'SIDEBAR_TYPE'
 export const DEFAULT_THEME = 'DEFAULT_THEME'
 export const DEFAULT_LAYOUT_MODE = 'DEFAULT_LAYOUT_MODE'
@@ -13,5 +12,5 @@ export const DEFAULT_MULTI_TAB = 'DEFAULT_MULTI_TAB'
 
 export const CONTENT_WIDTH_TYPE = {
   Fluid: 'Fluid',
-  Fixed: 'Fixed',
+  Fixed: 'Fixed'
 }

@@ -2,14 +2,14 @@ import { axios } from '@/utils/request'
 
 const dashboardApi = {}
 
-dashboardApi.countRam = function() {
+dashboardApi.countRam = function () {
   return axios({
     url: '/dashboard/count-ram',
     method: 'get'
   })
 }
 
-dashboardApi.listLogByPage = function(parameter) {
+dashboardApi.listLogByPage = function (parameter) {
   return axios({
     url: '/dashboard/log/list',
     method: 'get',

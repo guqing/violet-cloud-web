@@ -2,14 +2,14 @@ import { axios } from '@/utils/request'
 
 const permissionApi = {}
 
-permissionApi.listAll = function() {
+permissionApi.listAll = function () {
   return axios({
     url: '/permission/listAll',
     method: 'get'
   })
 }
 
-permissionApi.getByRoleId = function(parameter) {
+permissionApi.getByRoleId = function (parameter) {
   return axios({
     url: '/permission/getByRoleId',
     method: 'get',
