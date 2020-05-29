@@ -1,12 +1,6 @@
 <template>
   <div class="main">
-    <a-form
-      id="formLogin"
-      class="user-layout-login"
-      ref="formLogin"
-      :form="form"
-      @submit="handleSubmit"
-    >
+    <a-form id="formLogin" class="user-layout-login" ref="formLogin" :form="form" @submit="handleSubmit">
       <a-tabs
         :activeKey="customActiveKey"
         :tabBarStyle="{ textAlign: 'center', borderBottom: 'unset' }"
@@ -21,19 +15,12 @@
               v-decorator="[
                 'username',
                 {
-                  rules: [
-                    { required: true, message: '请输入帐户名或邮箱地址' },
-                    { validator: handleUsernameOrEmail }
-                  ],
+                  rules: [{ required: true, message: '请输入帐户名或邮箱地址' }, { validator: handleUsernameOrEmail }],
                   validateTrigger: 'change'
                 }
               ]"
             >
-              <a-icon
-                slot="prefix"
-                type="user"
-                :style="{ color: 'rgba(0,0,0,.25)' }"
-              />
+              <a-icon slot="prefix" type="user" :style="{ color: 'rgba(0,0,0,.25)' }" />
             </a-input>
           </a-form-item>
 
@@ -51,11 +38,7 @@
                 }
               ]"
             >
-              <a-icon
-                slot="prefix"
-                type="lock"
-                :style="{ color: 'rgba(0,0,0,.25)' }"
-              />
+              <a-icon slot="prefix" type="lock" :style="{ color: 'rgba(0,0,0,.25)' }" />
             </a-input>
           </a-form-item>
         </a-tab-pane>
@@ -79,11 +62,7 @@
                 }
               ]"
             >
-              <a-icon
-                slot="prefix"
-                type="mobile"
-                :style="{ color: 'rgba(0,0,0,.25)' }"
-              />
+              <a-icon slot="prefix" type="mobile" :style="{ color: 'rgba(0,0,0,.25)' }" />
             </a-input>
           </a-form-item>
 
@@ -102,11 +81,7 @@
                     }
                   ]"
                 >
-                  <a-icon
-                    slot="prefix"
-                    type="mail"
-                    :style="{ color: 'rgba(0,0,0,.25)' }"
-                  />
+                  <a-icon slot="prefix" type="mail" :style="{ color: 'rgba(0,0,0,.25)' }" />
                 </a-input>
               </a-form-item>
             </a-col>
@@ -116,9 +91,7 @@
                 tabindex="-1"
                 :disabled="state.smsSendBtn"
                 @click.stop.prevent="getCaptcha"
-                v-text="
-                  (!state.smsSendBtn && '获取验证码') || state.time + ' s'
-                "
+                v-text="(!state.smsSendBtn && '获取验证码') || state.time + ' s'"
               ></a-button>
             </a-col>
           </a-row>
@@ -127,11 +100,7 @@
 
       <a-form-item>
         <a-checkbox v-decorator="['rememberMe']">自动登录</a-checkbox>
-        <router-link
-          :to="{ name: 'recover', params: { user: 'aaa' } }"
-          class="forge-password"
-          style="float: right;"
-        >
+        <router-link :to="{ name: 'recover', params: { user: 'aaa' } }" class="forge-password" style="float: right;">
           忘记密码</router-link
         >
       </a-form-item>
@@ -152,11 +121,7 @@
       <div class="user-login-other">
         <span>其他登录方式</span>
         <a>
-          <a-icon
-            class="item-icon"
-            type="github"
-            @click="handleSocialLogin('github')"
-          ></a-icon>
+          <a-icon class="item-icon" type="github" @click="handleSocialLogin('github')"></a-icon>
         </a>
         <a>
           <a-icon class="item-icon" type="weibo-circle"></a-icon>
@@ -177,15 +142,11 @@
 </template>
 
 <script>
-import TwoStepCaptcha from '@/components/tools/TwoStepCaptcha'
 import { mapActions } from 'vuex'
 import { timeFix } from '@/utils/util'
-import { getSmsCaptcha, socialLoginApi } from '@/api/login'
+import { socialLoginApi } from '@/api/login'
 
 export default {
-  components: {
-    TwoStepCaptcha
-  },
   data () {
     return {
       customActiveKey: 'tab1',
@@ -294,24 +255,7 @@ export default {
             }
           }, 1000)
 
-          const hide = this.$message.loading('验证码发送中..', 0)
-          getSmsCaptcha({ mobile: values.mobile })
-            .then(res => {
-              setTimeout(hide, 2500)
-              this.$notification['success']({
-                message: '提示',
-                description:
-                  '验证码获取成功，您的验证码为：' + res.result.captcha,
-                duration: 8
-              })
-            })
-            .catch(err => {
-              setTimeout(hide, 1)
-              clearInterval(interval)
-              state.time = 60
-              state.smsSendBtn = false
-              this.requestFailed(err)
-            })
+          this.$message.loading('验证码发送中..', 0)
         }
       })
     },
@@ -325,7 +269,6 @@ export default {
       })
     },
     loginSuccess (res) {
-      console.log(res)
       this.$router.push({ name: 'dashboard' })
       // 延迟 1 秒显示欢迎信息
       setTimeout(() => {
@@ -354,14 +297,14 @@ export default {
     resolveSocialLogin (e) {
       var data = e.data
       if (data.isBind) {
+        console.log('resolveSocialLogin data is bind:', data.accessToken)
         this.SocialLogin(data.accessToken).then(res => {
           this.loginSuccess(res)
         })
       } else {
         // resolve bind
+        console.log('socail account not bind')
       }
-
-      console.log(e)
     }
   }
 }

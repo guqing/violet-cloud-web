@@ -1,17 +1,16 @@
-import Vue from 'vue'
-import { login, logout } from '@/api/login'
-import userAPI from '@/api/user'
+import storage from 'store'
+import { login, getInfo } from '@/api/login'
 import { ACCESS_TOKEN } from '@/store/mutation-types'
 import { welcome } from '@/utils/util'
 
 const user = {
   state: {
-    token: {},
+    token: '',
     name: '',
     welcome: '',
     avatar: '',
     roles: [],
-    info: {},
+    info: {}
   },
 
   mutations: {
@@ -30,7 +29,7 @@ const user = {
     },
     SET_INFO: (state, info) => {
       state.info = info
-    },
+    }
   },
 
   actions: {
@@ -38,94 +37,50 @@ const user = {
     Login ({ commit }, userInfo) {
       return new Promise((resolve, reject) => {
         login(userInfo)
-          .then((response) => {
-            if (response.code === 0) {
-              Vue.ls.set(ACCESS_TOKEN, response.data, 7 * 24 * 60 * 60 * 1000)
-              commit('SET_TOKEN', response.data)
-              resolve(response)
-            } else {
-              reject(response)
-            }
+          .then(response => {
+            var token = getToken(response)
+
+            storage.set(ACCESS_TOKEN, token, 7 * 24 * 60 * 60 * 1000)
+            commit('SET_TOKEN', token)
+
+            setUserInfo(response.userInfo, commit)
+            resolve()
           })
-          .catch((error) => {
+          .catch(error => {
             reject(error)
           })
       })
     },
     SocialLogin ({ commit }, data) {
       return new Promise((resolve, reject) => {
-        console.log('social login:', tokenInfo)
+        console.log('social login:', data)
         var tokenInfo = data || ''
         if (tokenInfo === '') {
+          console.log('socail login is null')
           reject(tokenInfo)
         }
 
-        const current = new Date()
-        const expireTime = current.setTime(
-          current.getTime() + 1000 * tokenInfo.expires_in
-        )
-
-        var token = {
-          access_token: tokenInfo.access_token,
-          refresh_token: tokenInfo.refresh_token,
-          expireTime: expireTime,
-          token_type: tokenInfo.token_type
-        }
+        var token = getToken(tokenInfo)
 
         // 设置到localStorage中
-        Vue.ls.set(
-          ACCESS_TOKEN,
-          token,
-          7 * 24 * 60 * 60 * 1000
-        )
-
+        storage.set(ACCESS_TOKEN, token, 7 * 24 * 60 * 60 * 1000)
+        console.log('vuex token:', token)
         // 设置到vuex中
         commit('SET_TOKEN', token)
+        console.log('vuex get after set：', storage.get(ACCESS_TOKEN))
         resolve(tokenInfo)
       })
     },
     // 获取用户信息
     GetInfo ({ commit }) {
       return new Promise((resolve, reject) => {
-        userAPI
-          .getInfo()
-          .then((response) => {
+        getInfo()
+          .then(response => {
             const result = response.data
-            if (result.role && result.role.permissions.length > 0) {
-              const role = result.role
-              role.permissions = result.role.permissions
-              role.permissions.map((per) => {
-                if (
-                  per.actionEntitySet != null &&
-                  per.actionEntitySet.length > 0
-                ) {
-                  const action = per.actionEntitySet.map((action) => {
-                    return action.action
-                  })
-                  per.actionList = action
-                }
-              })
-
-              role.permissionList = role.permissions.map((permission) => {
-                return permission.identify
-              })
-              commit('SET_ROLES', result.role)
-              commit('SET_INFO', result)
-            } else {
-              reject(new Error('getInfo: roles must be a non-null array !'))
-            }
-
-            commit('SET_NAME', { name: result.nickname, welcome: welcome() })
-            if (result.avatar === '') {
-              var avatar = '/avatar2.jpg'
-              commit('SET_AVATAR', avatar)
-              result.avatar = avatar
-            } else {
-              commit('SET_AVATAR', result.avatar)
-            }
+            setUserInfo(result, commit)
             resolve(result)
           })
-          .catch((error) => {
+          .catch(error => {
             reject(error)
           })
       })
@@ -133,21 +88,38 @@ const user = {
 
     // 登出
     Logout ({ commit, state }) {
-      return new Promise((resolve) => {
+      return new Promise(resolve => {
         commit('SET_TOKEN', '')
         commit('SET_ROLES', [])
-        Vue.ls.remove(ACCESS_TOKEN)
-
-        logout(state.token)
-          .then(() => {
-            resolve()
-          })
-          .catch(() => {
-            resolve()
-          })
+        storage.remove(ACCESS_TOKEN)
+        resolve()
       })
-    },
-  },
+    }
+  }
 }
 
+function getToken (tokenInfo) {
+  const current = new Date()
+  const expireTime = current.setTime(current.getTime() + 1000 * tokenInfo.expires_in)
+
+  return {
+    access_token: tokenInfo.access_token,
+    refresh_token: tokenInfo.refresh_token,
+    expireTime: expireTime,
+    token_type: tokenInfo.token_type
+  }
+}
+
+function setUserInfo (result, commit) {
+  // commit('SET_ROLES', [result.roleName])
+  commit('SET_INFO', result)
+  commit('SET_NAME', { name: result.nickname, welcome: welcome() })
+  if (result.avatar === '') {
+    var avatar = '/avatar2.jpg'
+    commit('SET_AVATAR', avatar)
+    result.avatar = avatar
+  } else {
+    commit('SET_AVATAR', result.avatar)
+  }
+}
 export default user

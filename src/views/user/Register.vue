@@ -10,9 +10,7 @@
           v-decorator="[
             'email',
             {
-              rules: [
-                { required: true, type: 'email', message: '请输入邮箱地址' }
-              ],
+              rules: [{ required: true, type: 'email', message: '请输入邮箱地址' }],
               validateTrigger: ['change', 'blur']
             }
           ]"
@@ -30,11 +28,7 @@
             <div :class="['user-register', passwordLevelClass]">
               强度：<span>{{ passwordLevelName }}</span>
             </div>
-            <a-progress
-              :percent="state.percent"
-              :showInfo="false"
-              :strokeColor="passwordLevelColor"
-            />
+            <a-progress :percent="state.percent" :showInfo="false" :strokeColor="passwordLevelColor" />
             <div style="margin-top: 10px;">
               <span>请至少输入 6 个字符。请不要使用容易被猜到的密码。</span>
             </div>
@@ -70,10 +64,7 @@
           v-decorator="[
             'password2',
             {
-              rules: [
-                { required: true, message: '至少6位密码，区分大小写' },
-                { validator: this.handlePasswordCheck }
-              ],
+              rules: [{ required: true, message: '至少6位密码，区分大小写' }, { validator: this.handlePasswordCheck }],
               validateTrigger: ['change', 'blur']
             }
           ]"
@@ -88,11 +79,7 @@
             'mobile',
             {
               rules: [
-                {
-                  required: true,
-                  message: '请输入正确的手机号',
-                  pattern: /^1[3456789]\d{9}$/
-                },
+                { required: true, message: '请输入正确的手机号', pattern: /^1[3456789]\d{9}$/ },
                 { validator: this.handlePhoneCheck }
               ],
               validateTrigger: ['change', 'blur']
@@ -122,17 +109,10 @@
               placeholder="验证码"
               v-decorator="[
                 'captcha',
-                {
-                  rules: [{ required: true, message: '请输入验证码' }],
-                  validateTrigger: 'blur'
-                }
+                { rules: [{ required: true, message: '请输入验证码' }], validateTrigger: 'blur' }
               ]"
             >
-              <a-icon
-                slot="prefix"
-                type="mail"
-                :style="{ color: 'rgba(0,0,0,.25)' }"
-              />
+              <a-icon slot="prefix" type="mail" :style="{ color: 'rgba(0,0,0,.25)' }" />
             </a-input>
           </a-form-item>
         </a-col>
@@ -156,20 +136,18 @@
           :loading="registerBtn"
           @click.stop.prevent="handleSubmit"
           :disabled="registerBtn"
-          >注册
-        </a-button>
-        <router-link class="login" :to="{ name: 'login' }"
-          >使用已有账户登录</router-link
         >
+          注册
+        </a-button>
+        <router-link class="login" :to="{ name: 'login' }">
+          使用已有账户登录
+        </router-link>
       </a-form-item>
     </a-form>
   </div>
 </template>
 
 <script>
-import { mixinDevice } from '@/utils/mixin.js'
-import { getSmsCaptcha } from '@/api/login'
-
 const levelNames = {
   0: '低',
   1: '低',
@@ -192,7 +170,7 @@ export default {
   name: 'Register',
   components: {
   },
-  mixins: [mixinDevice],
+  mixins: [],
   data () {
     return {
       form: this.$form.createForm(this),
@@ -290,7 +268,7 @@ export default {
 
     getCaptcha (e) {
       e.preventDefault()
-      const { form: { validateFields }, state, $message, $notification } = this
+      const { form: { validateFields }, state, $message } = this
 
       validateFields(['mobile'], { force: true },
         (err, values) => {
@@ -305,22 +283,7 @@ export default {
               }
             }, 1000)
 
-            const hide = $message.loading('验证码发送中..', 0)
-
-            getSmsCaptcha({ mobile: values.mobile }).then(res => {
-              setTimeout(hide, 2500)
-              $notification['success']({
-                message: '提示',
-                description: '验证码获取成功，您的验证码为：' + res.result.captcha,
-                duration: 8
-              })
-            }).catch(err => {
-              setTimeout(hide, 1)
-              clearInterval(interval)
-              state.time = 60
-              state.smsSendBtn = false
-              this.requestFailed(err)
-            })
+            $message.loading('验证码发送中..', 0)
           }
         }
       )
