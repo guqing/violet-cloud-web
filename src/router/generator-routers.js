@@ -1,6 +1,4 @@
 // eslint-disable-next-line
-import menuApi from '@/api/menu'
-// eslint-disable-next-line
 import { BasicLayout, BlankLayout, PageView, RouteView } from '@/layouts'
 
 // 前端路由表
@@ -60,11 +58,11 @@ const notFoundRouter = {
 const rootRouter = {
   key: '',
   name: 'index',
-  path: '',
+  path: '/',
   component: 'BasicLayout',
   redirect: '/dashboard',
   meta: {
-    title: '首页'
+    title: 'menu.home'
   },
   children: []
 }
@@ -74,26 +72,20 @@ const rootRouter = {
  * @param token
  * @returns {Promise<Router>}
  */
-export const generatorDynamicRouter = () => {
-  return new Promise((resolve, reject) => {
-    menuApi.getRouterMap().then(res => {
-      console.log('res', res)
-      const result = res.data
-      const menuNav = []
-      const childrenNav = []
-      //      后端数据, 根级树数组,  根级 PID
-      listToTree(result, childrenNav, 0)
-      console.log('childrenNav:', childrenNav)
-      rootRouter.children = childrenNav
-      menuNav.push(rootRouter)
-      console.log('menuNav', menuNav)
-      const routers = generator(menuNav)
-      routers.push(notFoundRouter)
-      console.log('routers', routers)
-      resolve(routers)
-    }).catch(err => {
-      reject(err)
-    })
+export const generatorDynamicRouter = (result) => {
+  return new Promise(resolve => {
+    const menuNav = []
+    const childrenNav = []
+    //      后端数据, 根级树数组,  根级 PID
+    listToTree(result, childrenNav, 0)
+    console.log('childrenNav:', childrenNav)
+    rootRouter.children = childrenNav
+    menuNav.push(rootRouter)
+    console.log('menuNav', menuNav)
+    const routers = generator(menuNav)
+    routers.push(notFoundRouter)
+    console.log('routers', routers)
+    resolve(routers)
   })
 }
 
@@ -106,7 +98,7 @@ export const generatorDynamicRouter = () => {
  */
 export const generator = (routerMap, parent) => {
   return routerMap.map(item => {
-    const { title, show, hideChildren, hiddenHeaderContent, target, icon } = item || {}
+    const { title, hidden, hideChildren, hiddenHeaderContent, target, icon } = item || {}
     const currentRouter = {
       // 如果路由设置了 path，则作为默认 path，否则 路由地址 动态拼接生成如 /dashboard/workplace
       path: item.path || `${parent && parent.path || ''}/${item.key}`,
@@ -121,15 +113,16 @@ export const generator = (routerMap, parent) => {
       meta: {
         title: title,
         icon: icon || undefined,
-        hiddenHeaderContent: hiddenHeaderContent,
+        hiddenHeaderContent: hiddenHeaderContent || false,
         target: target,
         permission: item.name
       }
     }
     // 是否设置了隐藏菜单
-    if (show === false) {
-      currentRouter.hidden = true
+    if (hidden) {
+      currentRouter.hidden = hidden
     }
+
     // 是否设置了隐藏子菜单
     if (hideChildren) {
       currentRouter.hideChildrenInMenu = true
@@ -169,7 +162,6 @@ const listToTree = (list, tree, parentId) => {
       listToTree(list, child.children, item.id)
       // 删掉不存在 children 值的属性
       if (child.children.length <= 0) {
-        console.log('child.children:', child)
         delete child.children
       }
       // 加入到树中

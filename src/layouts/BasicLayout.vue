@@ -1,6 +1,6 @@
 <template>
   <pro-layout
-    title="Ant Design Pro"
+    title="Violet Cloud"
     :menus="menus"
     :collapsed="collapsed"
     :mediaQuery="query"
@@ -139,5 +139,5 @@ export default {
 </script>
 
 <style lang="less">
-@import "./BasicLayout.less";
+@import './BasicLayout.less';
 </style>

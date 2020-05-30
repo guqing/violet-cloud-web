@@ -1,11 +1,7 @@
 <template>
   <a-dropdown v-if="currentUser && currentUser.name" placement="bottomRight">
     <span class="ant-pro-account-avatar">
-      <a-avatar
-        size="small"
-        src="https://gw.alipayobjects.com/zos/antfincdn/XAosXuNZyF/BiazfanxmamNRoxxVxka.png"
-        class="antd-pro-global-header-index-avatar"
-      />
+      <a-avatar size="small" :src="currentUser.avatar" class="antd-pro-global-header-index-avatar" />
       <span>{{ currentUser.name }}</span>
     </span>
     <template v-slot:overlay>
@@ -32,7 +28,7 @@
 </template>
 
 <script>
-import { Modal } from 'ant-design-vue'
+// import { Modal } from 'ant-design-vue'
 import { mapActions } from 'vuex'
 export default {
   name: 'AvatarDropdown',
@@ -55,15 +51,19 @@ export default {
       this.$router.push({ path: '/account/settings' })
     },
     handleLogout (e) {
-      Modal.confirm({
-        title: this.$t('layouts.usermenu.dialog.title'),
-        content: this.$t('layouts.usermenu.dialog.content'),
-        onOk: () => {
-          return new Promise((resolve, reject) => {
-            this.Logout().then(() => {
-
+      const that = this
+      this.$confirm({
+        title: '提示',
+        content: '真的要注销登录吗 ?',
+        onOk () {
+          return that.Logout({}).then(() => {
+            window.location.reload()
+          }).catch(err => {
+            that.$message.error({
+              title: '错误',
+              description: err.message
             })
-          }).catch(() => console.log('Oops errors!'))
+          })
         },
         onCancel () { }
       })

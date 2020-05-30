@@ -10,7 +10,8 @@ const user = {
     welcome: '',
     avatar: '',
     roles: [],
-    info: {}
+    info: {},
+    routerMap: []
   },
 
   mutations: {
@@ -29,6 +30,9 @@ const user = {
     },
     SET_INFO: (state, info) => {
       state.info = info
+    },
+    SET_ROUTERMAP: (state, routerMap) => {
+      state.routerMap = routerMap
     }
   },
 
@@ -113,7 +117,8 @@ function getToken (tokenInfo) {
 function setUserInfo (result, commit) {
   // commit('SET_ROLES', [result.roleName])
   commit('SET_INFO', result)
-  commit('SET_NAME', { name: result.nickname, welcome: welcome() })
+  commit('SET_ROLES', [result.roleName])
+  commit('SET_NAME', { name: result.nickname || result.username, welcome: welcome() })
   if (result.avatar === '') {
     var avatar = '/avatar2.jpg'
     commit('SET_AVATAR', avatar)
