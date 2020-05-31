@@ -29,7 +29,7 @@
 
     <div>
       <a-row :gutter="24">
-        <a-col :xl="16" :lg="24" :md="24" :sm="24" :xs="24">
+        <a-col :xl="24" :lg="24" :md="24" :sm="24" :xs="24">
           <a-card
             class="project-list"
             :loading="loading"
@@ -102,7 +102,7 @@ export default {
       user: {},
 
       projects: [],
-      loading: true,
+      loading: false,
       radarLoading: true,
       activities: [],
       teams: [],
