@@ -2,62 +2,35 @@
   <a-card :bordered="false">
     <div class="table-page-search-wrapper">
       <a-form layout="inline">
-        <a-row :gutter="48">
-          <a-col :md="8" :sm="24">
-            <a-form-item label="规则编号">
-              <a-input placeholder="" />
+        <a-row :gutter="15">
+          <a-col :md="4" :sm="24">
+            <a-form-item label="用户名">
+              <a-input placeholder="用户名" v-model="queryParam.username" />
             </a-form-item>
           </a-col>
-          <a-col :md="8" :sm="24">
-            <a-form-item label="使用状态">
-              <a-select placeholder="请选择" default-value="0">
-                <a-select-option value="0">全部</a-select-option>
-                <a-select-option value="1">关闭</a-select-option>
-                <a-select-option value="2">运行中</a-select-option>
+          <a-col :md="4" :sm="24">
+            <a-form-item label="用户组">
+              <a-input placeholder="用户组" v-model="queryParam.userGroup" />
+            </a-form-item>
+          </a-col>
+          <a-col :md="4" :sm="24">
+            <a-form-item label="用户状态">
+              <a-select placeholder="请选择" default-value="0" v-model="queryParam.status">
+                <a-select-option value="0">正常</a-select-option>
+                <a-select-option value="1">禁用</a-select-option>
               </a-select>
             </a-form-item>
           </a-col>
-          <template v-if="advanced">
-            <a-col :md="8" :sm="24">
-              <a-form-item label="调用次数">
-                <a-input-number style="width: 100%" />
-              </a-form-item>
-            </a-col>
-            <a-col :md="8" :sm="24">
-              <a-form-item label="更新日期">
-                <a-date-picker style="width: 100%" placeholder="请输入更新日期" />
-              </a-form-item>
-            </a-col>
-            <a-col :md="8" :sm="24">
-              <a-form-item label="使用状态">
-                <a-select placeholder="请选择" default-value="0">
-                  <a-select-option value="0">全部</a-select-option>
-                  <a-select-option value="1">关闭</a-select-option>
-                  <a-select-option value="2">运行中</a-select-option>
-                </a-select>
-              </a-form-item>
-            </a-col>
-            <a-col :md="8" :sm="24">
-              <a-form-item label="使用状态">
-                <a-select placeholder="请选择" default-value="0">
-                  <a-select-option value="0">全部</a-select-option>
-                  <a-select-option value="1">关闭</a-select-option>
-                  <a-select-option value="2">运行中</a-select-option>
-                </a-select>
-              </a-form-item>
-            </a-col>
-          </template>
-          <a-col :md="(!advanced && 8) || 24" :sm="24">
-            <span
-              class="table-page-search-submitButtons"
-              :style="(advanced && { float: 'right', overflow: 'hidden' }) || {}"
-            >
-              <a-button type="primary">查询</a-button>
-              <a-button style="margin-left: 8px">重置</a-button>
-              <a @click="toggleAdvanced" style="margin-left: 8px">
-                {{ advanced ? '收起' : '展开' }}
-                <a-icon :type="advanced ? 'up' : 'down'" />
-              </a>
+          <a-col :md="5" :sm="24">
+            <a-form-item label="创建时间">
+              <a-range-picker style="width: 100%" @change="onDatePickerChange" />
+            </a-form-item>
+          </a-col>
+
+          <a-col :md="4" :sm="24">
+            <span class="table-page-search-submitButtons">
+              <a-button type="primary" @click="handleSearch">查询</a-button>
+              <a-button style="margin-left: 8px" @click="handleSearchReset">重置</a-button>
             </span>
           </a-col>
         </a-row>
@@ -79,6 +52,7 @@
     <s-table
       ref="table"
       size="default"
+      rowKey="username"
       :columns="columns"
       :data="loadData"
       showPagination="auto"
@@ -123,7 +97,7 @@
 
 <script>
 import { STable } from '@/components'
-
+import userApi from '@/api/user'
 export default {
   name: 'TableList',
   components: {
@@ -131,8 +105,6 @@ export default {
   },
   data () {
     return {
-      // 高级搜索 展开/关闭
-      advanced: false,
       // 查询参数
       queryParam: {},
       pagination: {
@@ -151,7 +123,14 @@ export default {
           title: '性别',
           dataIndex: 'gender',
           customRender: function (text, value) {
-            return this.genderConvert(text)
+            switch (text) {
+              case '0':
+                return '男性'
+              case '1':
+                return '女性'
+              default:
+                return '保密'
+            }
           }
         },
         {
@@ -163,15 +142,24 @@ export default {
         },
         {
           title: '角色',
-          dataIndex: 'role',
+          dataIndex: 'roleName',
           needTotal: true,
-          scopedSlots: { customRender: 'role' }
+          scopedSlots: { customRender: 'roleName' }
         },
         {
           title: '状态',
           dataIndex: 'status',
           sorter: true,
-          scopedSlots: { customRender: 'status' }
+          customRender: function (text, value) {
+            switch (text) {
+              case 0:
+                return '正常'
+              case 1:
+                return '禁用'
+              default:
+                return '禁用'
+            }
+          }
         },
         {
           title: '创建时间',
@@ -188,16 +176,22 @@ export default {
       ],
       // 加载数据方法 必须为 Promise 对象
       loadData: parameter => {
-        const requestParameters = Object.assign({}, parameter, this.queryParam)
-        console.log('loadData request parameters:', requestParameters)
-        return new Promise(resolve => {
-          resolve({
-            pageSize: 10,
-            pageNo: 1,
-            totalCount: 0,
-            totalPage: 0,
-            data: []
-          })
+        const requestParameters = Object.assign({}, this.queryParam)
+        var queryRequest = {
+          current: parameter.pageNo,
+          pageSize: parameter.pageSize
+        }
+        requestParameters.queryRequest = queryRequest
+        requestParameters.queryRequest = queryRequest
+        console.log('loadData request parameters:', queryRequest)
+        return userApi.list(queryRequest).then(res => {
+          return {
+            pageSize: res.data.pageSize,
+            pageNo: res.data.current,
+            totalCount: res.data.total,
+            totalPage: res.data.pages,
+            data: res.data.list
+          }
         })
       },
 
@@ -214,19 +208,6 @@ export default {
     }
   },
   methods: {
-    genderConvert (gender) {
-      switch (gender) {
-        case '0':
-          return '男性'
-        case '1':
-          return '女性'
-        default:
-          return '保密'
-      }
-    },
-    handleUserList (parameter) {
-      return []
-    },
     handleChange (value, key, column, record) {
       console.log(value, key, column)
       record[column.dataIndex] = value
@@ -261,28 +242,20 @@ export default {
     cancel (row) {
       row.editable = false
     },
-
     onSelectChange (selectedRowKeys, selectedRows) {
       this.selectedRowKeys = selectedRowKeys
       this.selectedRows = selectedRows
     },
-    toggleAdvanced () {
-      this.advanced = !this.advanced
+    handleSearch () {
+      console.log('搜索：', this.queryParam)
+    },
+    handleSearchReset () {
+      this.queryParam = {}
+    },
+    onDatePickerChange (dates, dateStrings) {
+      this.queryParam.createFrom = dateStrings[0]
+      this.queryParam.createTo = dateStrings[1]
     }
-  },
-  watch: {
-    /*
-      'selectedRows': function (selectedRows) {
-        this.needTotalList = this.needTotalList.map(item => {
-          return {
-            ...item,
-            total: selectedRows.reduce( (sum, val) => {
-              return sum + val[item.dataIndex]
-            }, 0)
-          }
-        })
-      }
-      */
   }
 }
 </script>
