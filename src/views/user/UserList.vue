@@ -75,6 +75,13 @@
           <template v-else>{{ text }}</template>
         </div>
       </template>
+
+      <template slot="roleNames" slot-scope="text">
+        <a-tag :color="tagColor(index)" v-for="(roleName, index) in text" :key="index">
+          {{ roleName }}
+        </a-tag>
+      </template>
+
       <template slot="action" slot-scope="text, record">
         <div class="editable-row-operations">
           <span v-if="record.editable">
@@ -112,6 +119,7 @@ export default {
         pageSize: 10,
         total: 0
       },
+      tagColors: ['pink', 'orange', 'green', 'blue', 'purple'],
       // 表头
       columns: [
         {
@@ -125,11 +133,11 @@ export default {
           customRender: function (text, value) {
             switch (text) {
               case '0':
-                return '男性'
+                return <a-tag color="green">男性</a-tag>
               case '1':
-                return '女性'
+                return <a-tag color="pink">女性</a-tag>
               default:
-                return '保密'
+                return <a-tag>保密</a-tag>
             }
           }
         },
@@ -142,9 +150,9 @@ export default {
         },
         {
           title: '角色',
-          dataIndex: 'roleName',
+          dataIndex: 'roleNames',
           needTotal: true,
-          scopedSlots: { customRender: 'roleName' }
+          scopedSlots: { customRender: 'roleNames' }
         },
         {
           title: '状态',
@@ -204,6 +212,14 @@ export default {
       return {
         selectedRowKeys: this.selectedRowKeys,
         onChange: this.onSelectChange
+      }
+    },
+    tagColor () {
+      return function (index) {
+        if (index > this.tagColors.length) {
+          return this.tagColors[this.tagColors.length % index]
+        }
+        return this.tagColors[index]
       }
     }
   },

@@ -117,7 +117,7 @@ function getToken (tokenInfo) {
 function setUserInfo (result, commit) {
   // commit('SET_ROLES', [result.roleName])
   commit('SET_INFO', result)
-  commit('SET_ROLES', [result.roleName])
+  commit('SET_ROLES', result.roleIds)
   commit('SET_NAME', { name: result.nickname || result.username, welcome: welcome() })
   if (result.avatar === '') {
     var avatar = '/avatar2.jpg'
