@@ -23,7 +23,6 @@
               :auto-expand-parent="autoExpandParent"
               :selected-keys="selectedKeys"
               :tree-data="menuTreeData"
-              :replaceFields="treeFieldsMapping"
               @expand="onTreeMenuExpand"
               @select="onSelect"
               @check="onTreeMenuCheck"
@@ -42,6 +41,7 @@
           rowKey="id"
           :columns="columns"
           :data="loadData"
+          showPagination="auto"
           :alert="false"
           :rowSelection="{ selectedRowKeys: selectedRowKeys, onChange: onSelectChange }"
         >
@@ -99,7 +99,7 @@ export default {
         },
         {
           title: '角色描述',
-          dataIndex: 'remark',
+          dataIndex: 'remark'
         },
         {
           title: '创建时间',
@@ -127,11 +127,6 @@ export default {
             data: res.data.list
           }
         })
-      },
-      treeFieldsMapping: {
-        title: 'label',
-        key: 'id',
-        children: 'children'
       },
       expandedMenuKeys: [],
       autoExpandParent: false,
@@ -166,18 +161,18 @@ export default {
       })
     },
     onTreeMenuExpand (expandedKeys) {
-      console.log('onExpand', expandedKeys);
+      console.log('onExpand', expandedKeys)
       // if not set autoExpandParent to false, if children expanded, parent can not collapse.
       // or, you can remove all expanded children keys.
-      this.expandedMenuKeys = expandedKeys;
-      this.autoExpandParent = false;
+      this.expandedMenuKeys = expandedKeys
+      this.autoExpandParent = false
     },
     onTreeMenuCheck (checkedMenuKeys) {
-      console.log('onCheck', checkedMenuKeys);
+      console.log('onCheck', checkedMenuKeys)
     },
     onSelect (selectedKeys, info) {
-      console.log('onSelect', info);
-      this.selectedKeys = selectedKeys;
+      console.log('onSelect', info)
+      this.selectedKeys = selectedKeys
     },
     handleClick (e) {
       console.log('handleClick', e)
