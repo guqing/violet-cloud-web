@@ -24,7 +24,7 @@ const permission = {
           getDnamicRouter(routerMap, commit)
           resolve()
         } else {
-          menuApi.getRouterMap().then(res => {
+          menuApi.listRouterMap().then(res => {
             var result = res.data
             // 设置到localStorage中
             storage.set(ROUTER_MAP, result)

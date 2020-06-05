@@ -1,169 +1,241 @@
 <template>
-  <a-card :bordered="false" :style="{ height: '100%' }">
-    <a-row :gutter="24">
-      <a-col :md="4">
-        <a-list itemLayout="vertical" :dataSource="roles">
-          <a-list-item slot="renderItem" slot-scope="item, index" :key="index">
-            <a-list-item-meta :style="{ marginBottom: '0' }">
-              <span slot="description" style="text-align: center; display: block">{{ item.describe }}</span>
-              <a slot="title" style="text-align: center; display: block" @click="edit(item)">{{ item.name }}</a>
-            </a-list-item-meta>
-          </a-list-item>
-        </a-list>
+  <a-card :bordered="false">
+    <a-row :gutter="8" type="flex" justify="center">
+      <a-col :lg="8" :md="24" :order="isMobile ? 1 : 0">
+        <a-form-model :model="roleForm" :label-col="labelCol" :wrapper-col="wrapperCol">
+          <a-form-model-item label="角色名称">
+            <a-input v-model="roleForm.name" />
+          </a-form-model-item>
+          <a-form-model-item label="角色描述">
+            <a-textarea
+              v-model="roleForm.description"
+              placeholder="角色描述最大长度不能超过150字符"
+              :maxLength="150"
+              allowClear
+              :auto-size="{ minRows: 3, maxRows: 5 }"
+            />
+          </a-form-model-item>
+          <a-form-model-item label="角色权限">
+            <a-tree
+              v-model="checkedMenuKeys"
+              checkable
+              :expanded-keys="expandedMenuKeys"
+              :auto-expand-parent="autoExpandParent"
+              :selected-keys="selectedKeys"
+              :tree-data="menuTreeData"
+              :replaceFields="treeFieldsMapping"
+              @expand="onTreeMenuExpand"
+              @select="onSelect"
+              @check="onTreeMenuCheck"
+            />
+          </a-form-model-item>
+          <a-form-model-item :wrapper-col="roleFormButtonWrapperCol">
+            <a-button type="primary" @click="handleSaveOrUpdateRole">保存</a-button>
+            <a-button :style="{ marginLeft: '15px' }" @click="handleResetRoleForm">重置</a-button>
+          </a-form-model-item>
+        </a-form-model>
       </a-col>
-      <a-col :md="20">
-        <div style="max-width: 800px">
-          <a-divider v-if="isMobile()" />
-          <div v-if="mdl.id">
-            <h3>角色：{{ mdl.name }}</h3>
-          </div>
-          <a-form :form="form" :layout="isMobile() ? 'vertical' : 'horizontal'">
-            <a-form-item label="唯一键">
-              <a-input v-decorator="[ 'id', {rules: [{ required: true, message: 'Please input unique key!' }]} ]" placeholder="请填写唯一键" />
-            </a-form-item>
-
-            <a-form-item label="角色名称">
-              <a-input v-decorator="[ 'name', {rules: [{ required: true, message: 'Please input role name!' }]} ]" placeholder="请填写角色名称" />
-            </a-form-item>
-
-            <a-form-item label="状态">
-              <a-select v-decorator="[ 'status', {rules: []} ]">
-                <a-select-option :value="1">正常</a-select-option>
-                <a-select-option :value="2">禁用</a-select-option>
-              </a-select>
-            </a-form-item>
-
-            <a-form-item label="备注说明">
-              <a-textarea :row="3" v-decorator="[ 'describe', {rules: [{ required: true, message: 'Please input role name!' }]} ]" placeholder="请填写角色名称" />
-            </a-form-item>
-
-            <a-form-item label="拥有权限">
-              <a-row :gutter="16" v-for="(permission, index) in permissions" :key="index">
-                <a-col :xl="4" :lg="24">
-                  {{ permission.name }}：
-                </a-col>
-                <a-col :xl="20" :lg="24">
-                  <a-checkbox
-                    v-if="permission.actionsOptions.length > 0"
-                    :indeterminate="permission.indeterminate"
-                    :checked="permission.checkedAll"
-                    @change="onChangeCheckAll($event, permission)">
-                    全选
-                  </a-checkbox>
-                  <a-checkbox-group :options="permission.actionsOptions" v-model="permission.selected" @change="onChangeCheck(permission)" />
-                </a-col>
-              </a-row>
-            </a-form-item>
-
-          </a-form>
-        </div>
+      <a-col :lg="16" :md="24">
+        <s-table
+          ref="table"
+          size="default"
+          rowKey="id"
+          :columns="columns"
+          :data="loadData"
+          :alert="false"
+          :rowSelection="{ selectedRowKeys: selectedRowKeys, onChange: onSelectChange }"
+        >
+          <span slot="action" slot-scope="text, record">
+            <template>
+              <a @click="handleRoleEdit(record)">编辑</a>
+              <a-divider type="vertical" />
+            </template>
+            <a-dropdown>
+              <a class="ant-dropdown-link"> 更多 <a-icon type="down" /> </a>
+              <a-menu slot="overlay">
+                <a-menu-item>
+                  <a href="javascript:;">详情</a>
+                </a-menu-item>
+                <a-menu-item>
+                  <a href="javascript:;">禁用</a>
+                </a-menu-item>
+                <a-menu-item>
+                  <a href="javascript:;">删除</a>
+                </a-menu-item>
+              </a-menu>
+            </a-dropdown>
+          </span>
+        </s-table>
       </a-col>
     </a-row>
   </a-card>
 </template>
 
 <script>
-import pick from 'lodash.pick'
-import { getRoleList, getPermissions } from '@/api/manage'
-import { actionToObject } from '@/utils/permissions'
+import { STable } from '@/components'
+import menuApi from '@/api/menu'
+import roleApi from '@/api/role'
 import { baseMixin } from '@/store/app-mixin'
 
 export default {
-  name: 'RoleList',
+  name: 'TreeList',
   mixins: [baseMixin],
-  components: {},
+  components: {
+    STable
+  },
   data () {
     return {
-      form: this.$form.createForm(this),
-      mdl: {},
-
-      roles: [],
-      permissions: []
+      labelCol: { span: 4 },
+      wrapperCol: { span: 18 },
+      roleForm: {},
+      // 查询参数
+      queryParam: {},
+      // 表头
+      columns: [
+        {
+          title: '角色名称',
+          dataIndex: 'roleName',
+          needTotal: true
+        },
+        {
+          title: '角色描述',
+          dataIndex: 'remark',
+        },
+        {
+          title: '创建时间',
+          dataIndex: 'createTime',
+          sorter: true
+        },
+        {
+          title: '操作',
+          dataIndex: 'action',
+          width: '150px',
+          scopedSlots: { customRender: 'action' }
+        }
+      ],
+      // 加载数据方法 必须为 Promise 对象
+      loadData: parameter => {
+        const requestParameters = Object.assign({}, this.queryParam)
+        requestParameters.current = parameter.pageNo
+        requestParameters.pageSize = parameter.pageSize
+        return roleApi.listRole(requestParameters).then(res => {
+          return {
+            pageSize: res.data.pageSize,
+            pageNo: res.data.current,
+            totalCount: res.data.total,
+            totalPage: res.data.pages,
+            data: res.data.list
+          }
+        })
+      },
+      treeFieldsMapping: {
+        title: 'label',
+        key: 'id',
+        children: 'children'
+      },
+      expandedMenuKeys: [],
+      autoExpandParent: false,
+      checkedMenuKeys: [],
+      selectedKeys: [],
+      menuTreeData: [],
+      selectedRowKeys: [],
+      selectedRows: []
     }
   },
   created () {
-    getRoleList().then((res) => {
-      this.roles = res.result.data
-      this.roles.push({
-        id: '-1',
-        name: '新增角色',
-        describe: '新增一个角色'
-      })
-      console.log('this.roles', this.roles)
-    })
-    this.loadPermissions()
+    this.listTreeMenu()
+  },
+  computed: {
+    roleFormButtonWrapperCol () {
+      return {
+        span: this.wrapperCol.span,
+        offset: this.labelCol.span
+      }
+    }
   },
   methods: {
-    callback (val) {
-      console.log(val)
+    handleRoleEdit (role) {
+      var menuIdArray = role.menuIds
+      var menuIdStringArray = menuIdArray.map(String)
+      this.checkedMenuKeys = menuIdStringArray
+      this.expandedMenuKeys = menuIdStringArray
     },
-
-    add () {
-      this.edit({ id: 0 })
+    listTreeMenu () {
+      menuApi.listTreeMenu().then(res => {
+        this.menuTreeData = res.data
+      })
     },
-
-    edit (record) {
-      this.mdl = Object.assign({}, record)
-      // 有权限表，处理勾选
-      if (this.mdl.permissions && this.permissions) {
-        // 先处理要勾选的权限结构
-        const permissionsAction = {}
-        this.mdl.permissions.forEach(permission => {
-          permissionsAction[permission.permissionId] = permission.actionEntitySet.map(entity => entity.action)
-        })
-
-        console.log('permissionsAction', permissionsAction)
-        // 把权限表遍历一遍，设定要勾选的权限 action
-        this.permissions.forEach(permission => {
-          const selected = permissionsAction[permission.id]
-          permission.selected = selected || []
-          this.onChangeCheck(permission)
-        })
-
-        console.log('this.permissions', this.permissions)
+    onTreeMenuExpand (expandedKeys) {
+      console.log('onExpand', expandedKeys);
+      // if not set autoExpandParent to false, if children expanded, parent can not collapse.
+      // or, you can remove all expanded children keys.
+      this.expandedMenuKeys = expandedKeys;
+      this.autoExpandParent = false;
+    },
+    onTreeMenuCheck (checkedMenuKeys) {
+      console.log('onCheck', checkedMenuKeys);
+    },
+    onSelect (selectedKeys, info) {
+      console.log('onSelect', info);
+      this.selectedKeys = selectedKeys;
+    },
+    handleClick (e) {
+      console.log('handleClick', e)
+      this.queryParam = {
+        key: e.key
       }
-
-      this.$nextTick(() => {
-        this.form.setFieldsValue(pick(this.mdl, 'id', 'name', 'status', 'describe'))
-      })
-      console.log('this.mdl', this.mdl)
+      this.$refs.table.refresh(true)
     },
-
-    onChangeCheck (permission) {
-      permission.indeterminate = !!permission.selected.length && (permission.selected.length < permission.actionsOptions.length)
-      permission.checkedAll = permission.selected.length === permission.actionsOptions.length
+    onSelectChange (selectedRowKeys, selectedRows) {
+      this.selectedRowKeys = selectedRowKeys
+      this.selectedRows = selectedRows
     },
-    onChangeCheckAll (e, permission) {
-      console.log('permission:', permission)
-
-      Object.assign(permission, {
-        selected: e.target.checked ? permission.actionsOptions.map(obj => obj.value) : [],
-        indeterminate: false,
-        checkedAll: e.target.checked
-      })
+    handleSaveOrUpdateRole () {
+      console.log(this.roleForm)
+      console.log(this.checkedMenuKeys)
     },
-    loadPermissions () {
-      getPermissions().then(res => {
-        const result = res.result
-        this.permissions = result.map(permission => {
-          const options = actionToObject(permission.actionData)
-          permission.checkedAll = false
-          permission.selected = []
-          permission.indeterminate = false
-          permission.actionsOptions = options.map(option => {
-            return {
-              label: option.describe,
-              value: option.action
-            }
-          })
-          return permission
-        })
-      })
+    handleResetRoleForm () {
+      this.roleForm = {}
+      this.checkedMenuKeys = []
+      this.expandedMenuKeys = []
     }
   }
 }
 </script>
 
-<style scoped>
+<style lang="less">
+.custom-tree {
+  /deep/ .ant-menu-item-group-title {
+    position: relative;
+    &:hover {
+      .btn {
+        display: block;
+      }
+    }
+  }
 
+  /deep/ .ant-menu-item {
+    &:hover {
+      .btn {
+        display: block;
+      }
+    }
+  }
+
+  /deep/ .btn {
+    display: none;
+    position: absolute;
+    top: 0;
+    right: 10px;
+    width: 20px;
+    height: 40px;
+    line-height: 40px;
+    z-index: 1050;
+
+    &:hover {
+      transform: scale(1.2);
+      transition: 0.5s all;
+    }
+  }
+}
 </style>

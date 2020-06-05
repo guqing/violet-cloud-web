@@ -1,12 +1,20 @@
 import { axios } from '@/utils/request'
 
-const menuAPI = {}
+const menuApi = {}
 
-menuAPI.getRouterMap = function () {
+menuApi.listRouterMap = function () {
   return axios({
     url: '/admin/menu/router',
     method: 'get'
   })
 }
 
-export default menuAPI
+menuApi.listTreeMenu = function (parameter) {
+  return axios({
+    url: '/admin/menu',
+    method: 'get',
+    params: parameter
+  })
+}
+
+export default menuApi
