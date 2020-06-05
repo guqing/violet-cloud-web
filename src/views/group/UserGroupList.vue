@@ -5,7 +5,6 @@
         <a-tree
           v-model="checkedMenuKeys"
           checkable
-          blockNode
           :expanded-keys="expandedMenuKeys"
           :auto-expand-parent="autoExpandParent"
           :selected-keys="selectedKeys"
@@ -29,10 +28,10 @@
             </a-tree-select>
           </a-form-item>
           <a-form-item label="菜单标题">
-            <a-input placeholder="例如：用户管理" v-model="menuForm.title" />
+            <a-input placeholder="例如：用户管理" />
           </a-form-item>
           <a-form-item label="资源类型">
-            <a-radio-group default-value="0" button-style="solid" v-model="menuForm.type">
+            <a-radio-group default-value="0" button-style="solid">
               <a-radio-button value="0">
                 菜单
               </a-radio-button>
@@ -42,39 +41,39 @@
             </a-radio-group>
           </a-form-item>
           <a-form-item label="访问路径">
-            <a-input v-model="menuForm.path" placeholder="以 / 开头，例如：/user/list" />
+            <a-input placeholder="以 / 开头，例如：/user/list" />
           </a-form-item>
           <a-form-item label="组件名称">
-            <a-input v-model="menuForm.name" placeholder="只能是英文，例如：UserList" />
+            <a-input placeholder="只能是英文，例如：UserList" />
           </a-form-item>
           <a-form-item label="组件路径">
-            <a-input v-model="menuForm.component" placeholder="相对于views下的组件，例如:user/UserList" />
+            <a-input placeholder="相对于views下的组件，例如:user/UserList" />
           </a-form-item>
           <a-form-item label="权限标识">
-            <a-input v-model="menuForm.perms" placeholder="使用冒号分割层级，例如,user:list" />
+            <a-input placeholder="使用冒号分割层级，例如,user:list" />
           </a-form-item>
           <a-form-item label="图标">
-            <a-input v-model="menuForm.icon" placeholder="选择一个图标可以展示在菜单标题左侧" />
+            <a-input placeholder="选择一个图标可以展示在菜单标题左侧" />
           </a-form-item>
           <a-col :style="{ display: moreFormItem ? 'block' : 'none' }">
             <a-form-item label="重定向地址">
-              <a-input v-model="menuForm.redirect" placeholder="如果填写，点击时会重定向到该地址" />
+              <a-input placeholder="如果填写，点击时会重定向到该地址" />
             </a-form-item>
             <a-form-item label="是否缓存组件">
-              <a-switch v-model="menuForm.keepAlive" checked-children="是" un-checked-children="否" default-checked />
+              <a-switch checked-children="是" un-checked-children="否" default-checked />
             </a-form-item>
             <a-form-item label="是否隐藏菜单栏">
-              <a-switch v-model="menuForm.hidden" checked-children="显示" un-checked-children="隐藏" />
+              <a-switch checked-children="显示" un-checked-children="隐藏" />
             </a-form-item>
             <a-form-item label="排序">
-              <a-input v-model="menuForm.orderIndex" placeholder="菜单显示排序" />
+              <a-input placeholder="菜单显示排序" />
             </a-form-item>
           </a-col>
           <a-form-item :wrapper-col="menuFormButtonWrapperCol">
-            <a-button type="primary" @click="handleSaveOrUpdateMenu">
+            <a-button type="primary">
               保存
             </a-button>
-            <a-button :style="{ marginLeft: '8px' }" @click="handleResetMenuForm">
+            <a-button :style="{ marginLeft: '8px' }">
               重置
             </a-button>
             <a :style="{ marginLeft: '8px' }" @click="moreFormItem = !moreFormItem">
@@ -137,29 +136,19 @@ export default {
     onTreeMenuCheck (checkedMenuKeys) {
       console.log('onCheck', checkedMenuKeys)
     },
-    onSelect (selectedKeys, event) {
-      this.handleToggleTreeMenu(selectedKeys, event)
-
+    onSelect (selectedKeys) {
       this.selectedKeys = selectedKeys
       var id = selectedKeys[0]
       if (id) {
-        menuApi.getById(id).then(res => {
-          this.menuForm = res.data
-          this.menuForm.parentId = id
-        })
+        console.log(id)
       }
     },
-    handleToggleTreeMenu (selectedKeys, event) {
-      // 控制树形菜单的展开与折叠
-      if (event.node.dataRef.hasChildren) {
-        this.expandedMenuKeys = selectedKeys
-      }
+    handleSaveOrUpdateRole () {
+      console.log(this.roleForm)
+      console.log(this.checkedMenuKeys)
     },
-    handleSaveOrUpdateMenu () {
-      console.log(this.menuForm)
-    },
-    handleResetMenuForm () {
-      this.menuForm = {}
+    handleResetRoleForm () {
+      this.roleForm = {}
       this.checkedMenuKeys = []
       this.expandedMenuKeys = []
     }

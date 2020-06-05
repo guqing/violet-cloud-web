@@ -17,4 +17,11 @@ menuApi.listTreeMenu = function (parameter) {
   })
 }
 
+menuApi.getById = function (parameter) {
+  return axios({
+    url: `/admin/menu/${parameter}`,
+    method: 'get'
+  })
+}
+
 export default menuApi
