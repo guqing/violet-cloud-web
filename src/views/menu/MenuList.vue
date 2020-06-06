@@ -89,12 +89,10 @@
 <script>
 import menuApi from '@/api/menu'
 import { baseMixin } from '@/store/app-mixin'
-import storage from 'store'
-import { ROUTER_MAP } from '@/store/mutation-types'
 
 const validatePath = (rule, value, callback) => {
   if (value !== '') {
-    var result = /^[A-Za-z0-9\/]+([\w.,@?^=%&:/~+#-]*[\w@?^=%&/~+#-])?$/.test(value)
+    var result = /^[A-Za-z0-9/]+([\w.,@?^=%&:/~+#-]*[\w@?^=%&/~+#-])?$/.test(value)
     if (result) {
       callback()
     } else {
@@ -104,8 +102,7 @@ const validatePath = (rule, value, callback) => {
 }
 const validateComponentName = (rule, value, callback) => {
   if (value !== '') {
-    var result = /^[A-Za-z0-9]+$/.test(value)
-    if (result) {
+    if (/^[A-Za-z0-9]+$/.test(value)) {
       callback()
     } else {
       callback(new Error('只能输入字母或数字'))
@@ -114,7 +111,7 @@ const validateComponentName = (rule, value, callback) => {
 }
 const validateComponentPath = (rule, value, callback) => {
   if (value !== '') {
-    var result = /^[A-Za-z0-9\/]+([\w.,@?^=%&:/~+#-]*[\w@?^=%&/~+#-])?$/.test(value)
+    var result = /^[A-Za-z0-9/]+([\w.,@?^=%&:/~+#-]*[\w@?^=%&/~+#-])?$/.test(value)
     if (result) {
       callback()
     } else {
@@ -211,11 +208,9 @@ export default {
           menuApi.saveOrUpdate(this.menuForm).then(res => {
             this.$message.success('保存成功')
             this.listTreeMenu()
-            storage.remove(ROUTER_MAP)
           })
         }
       })
-
     },
     handleResetMenuForm () {
       console.log('清除表单执行')

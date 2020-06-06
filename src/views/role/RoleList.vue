@@ -4,11 +4,11 @@
       <a-col :lg="8" :md="24" :order="isMobile ? 1 : 0">
         <a-form-model :model="roleForm" :label-col="labelCol" :wrapper-col="wrapperCol">
           <a-form-model-item label="角色名称">
-            <a-input v-model="roleForm.name" />
+            <a-input v-model="roleForm.roleName" />
           </a-form-model-item>
           <a-form-model-item label="角色描述">
             <a-textarea
-              v-model="roleForm.description"
+              v-model="roleForm.remark"
               placeholder="角色描述最大长度不能超过150字符"
               :maxLength="150"
               allowClear
@@ -133,6 +133,8 @@ export default {
       checkedMenuKeys: [],
       selectedKeys: [],
       menuTreeData: [],
+      treeParentIds: [],
+      editExpandedMenuKeys: [],
       selectedRowKeys: [],
       selectedRows: []
     }
@@ -152,8 +154,12 @@ export default {
     handleRoleEdit (role) {
       var menuIdArray = role.menuIds
       var menuIdStringArray = menuIdArray.map(String)
-      this.checkedMenuKeys = menuIdStringArray
-      this.expandedMenuKeys = menuIdStringArray
+      var childrenMenuKeys = this.getTreeChildrenIds(menuIdStringArray)
+      this.checkedMenuKeys = childrenMenuKeys
+      this.expandedMenuKeys = this.editExpandedMenuKeys
+
+      // 回显示到表单
+      Object.assign(this.roleForm, role)
     },
     listTreeMenu () {
       menuApi.listTreeMenu().then(res => {
@@ -193,6 +199,26 @@ export default {
       this.roleForm = {}
       this.checkedMenuKeys = []
       this.expandedMenuKeys = []
+    },
+    getTreeChildrenIds (menuIdArray) {
+      this.getTreeParentIds(this.menuTreeData)
+      var that = this
+      return menuIdArray.filter(function (item) {
+        if (!that.treeParentIds.includes(item)) {
+          return item
+        } else {
+          that.editExpandedMenuKeys.push(item)
+        }
+      })
+    },
+    getTreeParentIds (treeList) {
+      for (var i in treeList) {
+        var data = treeList[i]
+        if (data.hasChildren) {
+          this.treeParentIds.push(data.id)
+          this.getTreeParentIds(data.children)
+        }
+      }
     }
   }
 }
