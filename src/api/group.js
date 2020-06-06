@@ -19,7 +19,7 @@ groupApi.getById = function (parameter) {
 
 groupApi.createOrUpdate = function (parameter) {
   return axios({
-    url: `/admin/group`,
+    url: `/admin/group/save`,
     method: 'post',
     data: parameter
   })

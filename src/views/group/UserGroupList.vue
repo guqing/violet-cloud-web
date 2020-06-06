@@ -38,13 +38,13 @@
               <a-input
                 v-model.number="userGroupForm.sortIndex"
                 type="number"
-                placeholder="Input a number"
+                placeholder="只能输入数字"
                 :max-length="25"
               />
             </a-tooltip>
           </a-form-item>
           <a-form-item :wrapper-col="groupFormButtonWrapperCol">
-            <a-button type="primary">
+            <a-button type="primary" @click="handleSaveOrUpdate" v-action:save>
               保存
             </a-button>
             <a-button :style="{ marginLeft: '8px' }" @click="handleResetGroupForm">
@@ -121,8 +121,13 @@ export default {
       }
     },
     handleSaveOrUpdate () {
-      console.log(this.roleForm)
-      console.log(this.checkedGroupKeys)
+      if (!this.userGroupForm) {
+        return
+      }
+      groupApi.createOrUpdate(this.userGroupForm).then(res => {
+        this.$message.success('保存成功')
+        this.listUserGroupTree()
+      })
     },
     handleResetGroupForm () {
       this.userGroupForm = {}

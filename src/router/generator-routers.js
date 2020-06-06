@@ -78,13 +78,10 @@ export const generatorDynamicRouter = (result) => {
     const childrenNav = []
     //      后端数据, 根级树数组,  根级 PID
     listToTree(result, childrenNav, 0)
-    console.log('childrenNav:', childrenNav)
     rootRouter.children = childrenNav
     menuNav.push(rootRouter)
-    console.log('menuNav', menuNav)
     const routers = generator(menuNav)
     routers.push(notFoundRouter)
-    console.log('routers', routers)
     resolve(routers)
   })
 }
@@ -99,6 +96,12 @@ export const generatorDynamicRouter = (result) => {
 export const generator = (routerMap, parent) => {
   return routerMap.map(item => {
     const { title, hidden, hideChildren, hiddenHeaderContent, target, icon } = item || {}
+
+    var permission = item.name
+    if (item.perms) {
+      permission = item.perms.split(':')[0]
+    }
+
     const currentRouter = {
       // 如果路由设置了 path，则作为默认 path，否则 路由地址 动态拼接生成如 /dashboard/workplace
       path: item.path || `${parent && parent.path || ''}/${item.key}`,
@@ -114,7 +117,7 @@ export const generator = (routerMap, parent) => {
         icon: icon || undefined,
         hiddenHeaderContent: hiddenHeaderContent || false,
         target: target,
-        permission: item.name
+        permission: permission
       }
     }
     // 是否设置了隐藏菜单

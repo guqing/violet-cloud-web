@@ -23,5 +23,12 @@ menuApi.getById = function (parameter) {
     method: 'get'
   })
 }
+menuApi.saveOrUpdate = function (parameter) {
+  return axios({
+    url: `/admin/menu/save`,
+    method: 'post',
+    data: parameter
+  })
+}
 
 export default menuApi
