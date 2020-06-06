@@ -23,7 +23,6 @@
               style="width: 100%"
               :dropdown-style="{ maxHeight: '400px', overflow: 'auto' }"
               :tree-data="menuTreeData"
-              placeholder="请选择上级菜单"
               tree-default-expand-all
             >
             </a-tree-select>
@@ -145,7 +144,9 @@ export default {
       if (id) {
         menuApi.getById(id).then(res => {
           this.menuForm = res.data
-          this.menuForm.parentId = id
+          if (res.data.parentId === 0) {
+            this.menuForm.parentId = null
+          }
         })
       }
     },
