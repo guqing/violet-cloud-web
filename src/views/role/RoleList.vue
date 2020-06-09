@@ -152,12 +152,13 @@ export default {
   },
   methods: {
     handleRoleEdit (role) {
+      // 先清除要展开的keys
+      this.editExpandedMenuKeys = []
       var menuIdArray = role.menuIds
       var menuIdStringArray = menuIdArray.map(String)
-      var childrenMenuKeys = this.getTreeChildrenIds(menuIdStringArray)
+      var childrenMenuKeys = this.handleTreeChildrenIdsSelector(menuIdStringArray)
       this.checkedMenuKeys = childrenMenuKeys
       this.expandedMenuKeys = this.editExpandedMenuKeys
-
       // 回显示到表单
       Object.assign(this.roleForm, role)
     },
@@ -177,7 +178,10 @@ export default {
       console.log('onCheck', checkedMenuKeys)
     },
     onSelect (selectedKeys, info) {
-      console.log('onSelect', info)
+      console.log('onSelect', info.node.dataRef.key)
+      var parentIds = this.findParentIdsById(this.menuTreeData, info.node.dataRef.key)
+      console.log('on select find all parent ids:', parentIds)
+
       this.selectedKeys = selectedKeys
     },
     handleClick (e) {
@@ -192,16 +196,30 @@ export default {
       this.selectedRows = selectedRows
     },
     handleSaveOrUpdateRole () {
-      console.log(this.roleForm)
-      console.log(this.checkedMenuKeys)
+      var menuIds = this.handleRelatedParentRoleMenuKeys()
+      this.roleForm.menuIds = menuIds
+      this.roleApi.createOrUpdate(this.roleForm).then(res => {
+        this.$message.success('保存成功')
+      })
+    },
+    handleRelatedParentRoleMenuKeys () {
+      var menuIds = []
+      // 遍历每一个元素寻找其父元素添加到集合中，否则编辑后父元素的id不会自动关联导致父元元素无法显示
+      for (var item of this.checkedMenuKeys) {
+        var parentIds = this.findParentIdsById(this.menuTreeData, item)
+        menuIds.push(...parentIds)
+      }
+      // 使用set集合去除重复元素在转为数组传递给后端保存
+      var menuIdSet = new Set(menuIds)
+      return Array.from(menuIdSet)
     },
     handleResetRoleForm () {
       this.roleForm = {}
       this.checkedMenuKeys = []
       this.expandedMenuKeys = []
     },
-    getTreeChildrenIds (menuIdArray) {
-      this.getTreeParentIds(this.menuTreeData)
+    handleTreeChildrenIdsSelector (menuIdArray) {
+      this.handleTreeParentIdsSelector(this.menuTreeData)
       var that = this
       return menuIdArray.filter(function (item) {
         if (!that.treeParentIds.includes(item)) {
@@ -211,14 +229,31 @@ export default {
         }
       })
     },
-    getTreeParentIds (treeList) {
+    handleTreeParentIdsSelector (treeList) {
       for (var i in treeList) {
         var data = treeList[i]
         if (data.hasChildren) {
           this.treeParentIds.push(data.id)
-          this.getTreeParentIds(data.children)
+          this.handleTreeParentIdsSelector(data.children)
         }
       }
+    },
+    findParentIdsById (tree, id) {
+      var temp = []
+      var forFn = function (arr, id) {
+        for (var i = 0; i < arr.length; i++) {
+          var item = arr[i]
+          if (item.id === id) {
+            temp.push(item.id)
+            forFn(tree, item.parentId)
+            break
+          } else if (item.children) {
+            forFn(item.children, id)
+          }
+        }
+      }
+      forFn(tree, id)
+      return temp
     }
   }
 }

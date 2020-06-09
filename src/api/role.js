@@ -9,5 +9,11 @@ roleApi.listRole = function (parameter) {
     params: parameter
   })
 }
-
+roleApi.createOrUpdate = (parameter) => {
+  return axios({
+    url: '/admin/role/save',
+    method: 'post',
+    data: parameter
+  })
+}
 export default roleApi
