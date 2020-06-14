@@ -76,6 +76,8 @@ import { STable } from '@/components'
 import menuApi from '@/api/menu'
 import roleApi from '@/api/role'
 import { baseMixin } from '@/store/app-mixin'
+import { ROUTER_MAP } from '@/store/mutation-types'
+import storage from 'store'
 
 export default {
   name: 'TreeList',
@@ -154,13 +156,17 @@ export default {
     handleRoleEdit (role) {
       // 先清除要展开的keys
       this.editExpandedMenuKeys = []
-      var menuIdArray = role.menuIds
-      var menuIdStringArray = menuIdArray.map(String)
-      var childrenMenuKeys = this.handleTreeChildrenIdsSelector(menuIdStringArray)
-      this.checkedMenuKeys = childrenMenuKeys
-      this.expandedMenuKeys = this.editExpandedMenuKeys
-      // 回显示到表单
-      Object.assign(this.roleForm, role)
+
+      var roleId = role.id
+      roleApi.getById(roleId).then(res => {
+        var menuIdArray = res.data.menuIds || []
+        var menuIdStringArray = menuIdArray.map(String)
+        var childrenMenuKeys = this.handleTreeChildrenIdsSelector(menuIdStringArray)
+        this.checkedMenuKeys = childrenMenuKeys
+        this.expandedMenuKeys = this.editExpandedMenuKeys
+        // 回显示到表单
+        Object.assign(this.roleForm, role)
+      })
     },
     listTreeMenu () {
       menuApi.listTreeMenu().then(res => {
@@ -198,8 +204,10 @@ export default {
     handleSaveOrUpdateRole () {
       var menuIds = this.handleRelatedParentRoleMenuKeys()
       this.roleForm.menuIds = menuIds
-      this.roleApi.createOrUpdate(this.roleForm).then(res => {
+      roleApi.createOrUpdate(this.roleForm).then(res => {
         this.$message.success('保存成功')
+        this.handleResetRoleForm()
+        storage.remove(ROUTER_MAP)
       })
     },
     handleRelatedParentRoleMenuKeys () {

@@ -13,4 +13,52 @@ userApi.list = function (parameter) {
   })
 }
 
+userApi.create = function (parameter) {
+  return axios({
+    url: '/admin/user',
+    method: 'post',
+    data: parameter
+  })
+}
+
+userApi.update = function (parameter) {
+  return axios({
+    url: '/admin/user',
+    method: 'put',
+    data: parameter
+  })
+}
+
+userApi.updateProfile = function (parameter) {
+  return axios({
+    url: '/admin/user/profile',
+    method: 'put',
+    data: parameter
+  })
+}
+
+userApi.updateAvatar = function (parameter) {
+  return axios({
+    url: '/admin/user/avatar',
+    method: 'put',
+    data: parameter
+  })
+}
+
+userApi.updateAvatar = function (parameter) {
+  return axios({
+    url: '/admin/user/avatar',
+    method: 'put',
+    data: parameter
+  })
+}
+
+userApi.updateAvatar = function (parameter) {
+  return axios({
+    url: '/admin/user',
+    method: 'delete',
+    data: parameter
+  })
+}
+
 export default userApi

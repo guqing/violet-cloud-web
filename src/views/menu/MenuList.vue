@@ -208,6 +208,7 @@ export default {
           menuApi.saveOrUpdate(this.menuForm).then(res => {
             this.$message.success('保存成功')
             this.listTreeMenu()
+            this.handleResetMenuForm()
           })
         }
       })

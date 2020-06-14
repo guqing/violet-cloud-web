@@ -9,6 +9,14 @@ roleApi.listRole = function (parameter) {
     params: parameter
   })
 }
+
+roleApi.getById = (parameter) => {
+  return axios({
+    url: `/admin/role/${parameter}`,
+    method: 'get'
+  })
+}
+
 roleApi.createOrUpdate = (parameter) => {
   return axios({
     url: '/admin/role/save',
