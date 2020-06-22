@@ -31,4 +31,12 @@ menuApi.saveOrUpdate = function (parameter) {
   })
 }
 
+menuApi.deleteByIds = function (parameter) {
+  return axios({
+    url: `/admin/menu`,
+    method: 'delete',
+    data: parameter
+  })
+}
+
 export default menuApi
