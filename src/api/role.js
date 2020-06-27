@@ -24,4 +24,19 @@ roleApi.createOrUpdate = (parameter) => {
     data: parameter
   })
 }
+
+roleApi.getById = (parameter) => {
+  return axios({
+    url: `/admin/role/${parameter}`,
+    method: 'get'
+  })
+}
+
+roleApi.deleteByIds = (parameter) => {
+  return axios({
+    url: `/admin/role`,
+    method: 'delete',
+    data: parameter
+  })
+}
 export default roleApi
