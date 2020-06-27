@@ -35,6 +35,18 @@
         </a-form-model>
       </a-col>
       <a-col :lg="16" :md="24">
+        <div class="table-operator">
+          <a-button type="primary" icon="plus">新建</a-button>
+          <a-dropdown v-action:edit v-if="selectedRowKeys.length > 0">
+            <a-menu slot="overlay">
+              <a-menu-item key="1"><a-icon type="delete" />删除</a-menu-item>
+              <!-- lock | unlock -->
+              <a-menu-item key="2"><a-icon type="lock" />锁定</a-menu-item>
+            </a-menu>
+            <a-button style="margin-left: 8px"> 批量操作 <a-icon type="down" /> </a-button>
+          </a-dropdown>
+        </div>
+
         <s-table
           ref="table"
           size="default"
@@ -174,7 +186,6 @@ export default {
       })
     },
     onTreeMenuExpand (expandedKeys) {
-      console.log('onExpand', expandedKeys)
       // if not set autoExpandParent to false, if children expanded, parent can not collapse.
       // or, you can remove all expanded children keys.
       this.expandedMenuKeys = expandedKeys
@@ -191,7 +202,6 @@ export default {
       this.selectedKeys = selectedKeys
     },
     handleClick (e) {
-      console.log('handleClick', e)
       this.queryParam = {
         key: e.key
       }
