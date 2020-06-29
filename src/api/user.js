@@ -61,4 +61,11 @@ userApi.updateAvatar = function (parameter) {
   })
 }
 
+userApi.resetPassword = function (parameter) {
+  return axios({
+    url: `/admin/user/reset/${parameter}`,
+    method: 'put'
+  })
+}
+
 export default userApi

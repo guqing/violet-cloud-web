@@ -95,6 +95,24 @@
             <a class="edit" @click="() => edit(record)">修改</a>
             <a-divider type="vertical" />
             <a class="delete" @click="() => del(record)">删除</a>
+            <a-divider type="vertical" />
+            <a-dropdown>
+              <a class="ant-dropdown-link"> 更多 <a-icon type="down" /> </a>
+              <a-menu slot="overlay">
+                <a-menu-item>
+                  <a href="javascript:;">详情</a>
+                </a-menu-item>
+                <a-menu-item>
+                  <a href="javascript:;">禁用</a>
+                </a-menu-item>
+                <a-menu-item>
+                  <a href="javascript:;">删除</a>
+                </a-menu-item>
+                <a-menu-item>
+                  <a href="javascript:;" @click="handleResetPassword(record)">重置密码</a>
+                </a-menu-item>
+              </a-menu>
+            </a-dropdown>
           </span>
         </div>
       </template>
@@ -131,6 +149,11 @@ export default {
           title: '用户名',
           dataIndex: 'username',
           scopedSlots: { customRender: 'username' }
+        },
+        {
+          title: '昵称',
+          dataIndex: 'nickname',
+          scopedSlots: { customRender: 'nickname' }
         },
         {
           title: '性别',
@@ -278,6 +301,25 @@ export default {
     },
     handleModalOk () {
       this.$log.debug('user modal ok')
+    },
+    handleResetPassword (row) {
+      let that = this
+      this.$confirm({
+        title: '警告',
+        content: `确定要重置 ${row.nickname} 的密码吗?`,
+        okText: '重置',
+        okType: 'danger',
+        cancelText: '取消',
+        onOk () {
+          that.$log.debug('重置用户密码', row.username)
+          userApi.resetPassword(row.username).then(res => {
+            that.$message.success('重置密码成功')
+          })
+        },
+        onCancel () {
+          that.$log.info('Cancel')
+        }
+      })
     }
   }
 }
