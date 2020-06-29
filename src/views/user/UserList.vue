@@ -184,9 +184,10 @@ export default {
       ],
       // 加载数据方法 必须为 Promise 对象
       loadData: parameter => {
-        const queryRequest = Object.assign({}, this.queryParam)
+        const queryRequest = {}
         queryRequest.current = parameter.pageNo
         queryRequest.pageSize = parameter.pageSize
+        Object.assign(queryRequest, this.queryParam)
 
         this.$log.debug('loadData request parameters:', queryRequest)
         return userApi.list(queryRequest).then(res => {
@@ -264,6 +265,7 @@ export default {
     },
     handleSearchReset () {
       this.queryParam = {}
+      this.$refs.table.refresh()
     },
     onDatePickerChange (dates, dateStrings) {
       this.queryParam.createFrom = dateStrings[0]
