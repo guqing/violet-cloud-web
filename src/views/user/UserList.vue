@@ -38,7 +38,7 @@
     </div>
 
     <div class="table-operator">
-      <a-button type="primary" icon="plus">新建</a-button>
+      <a-button type="primary" icon="plus" v-action:add @click="$refs.modal.add()">新建</a-button>
       <a-dropdown v-if="selectedRowKeys.length > 0">
         <a-menu slot="overlay">
           <a-menu-item key="1"><a-icon type="delete" />删除</a-menu-item>
@@ -99,16 +99,21 @@
         </div>
       </template>
     </s-table>
+
+    <user-modal ref="modal" @ok="handleModalOk"></user-modal>
   </a-card>
 </template>
 
 <script>
 import { STable } from '@/components'
+import UserModal from './modules/UserModal'
+
 import userApi from '@/api/user'
 export default {
   name: 'TableList',
   components: {
-    STable
+    STable,
+    UserModal
   },
   data () {
     return {
@@ -270,6 +275,9 @@ export default {
     onDatePickerChange (dates, dateStrings) {
       this.queryParam.createFrom = dateStrings[0]
       this.queryParam.createTo = dateStrings[1]
+    },
+    handleModalOk () {
+      this.$log.debug('user modal ok')
     }
   }
 }
