@@ -184,13 +184,9 @@ export default {
       ],
       // 加载数据方法 必须为 Promise 对象
       loadData: parameter => {
-        const requestParameters = Object.assign({}, this.queryParam)
-        var queryRequest = {
-          current: parameter.pageNo,
-          pageSize: parameter.pageSize
-        }
-        requestParameters.queryRequest = queryRequest
-        requestParameters.queryRequest = queryRequest
+        const queryRequest = Object.assign({}, this.queryParam)
+        queryRequest.current = parameter.pageNo
+        queryRequest.pageSize = parameter.pageSize
 
         this.$log.debug('loadData request parameters:', queryRequest)
         return userApi.list(queryRequest).then(res => {
@@ -245,10 +241,10 @@ export default {
           // 在这里调用删除接口
           return new Promise((resolve, reject) => {
             setTimeout(Math.random() > 0.5 ? resolve : reject, 1000)
-          }).catch(() => console.log('Oops errors!'))
+          }).catch(() => this.$log.error('Oops errors!'))
         },
         onCancel () {
-          console.log('Cancel')
+          this.$log.info('Cancel')
         }
       })
     },
@@ -263,7 +259,8 @@ export default {
       this.selectedRows = selectedRows
     },
     handleSearch () {
-      console.log('搜索：', this.queryParam)
+      this.$log.debug('搜索条件:', this.queryParam)
+      this.$refs.table.refresh()
     },
     handleSearchReset () {
       this.queryParam = {}
