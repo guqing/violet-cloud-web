@@ -22,6 +22,8 @@ import './utils/filter' // global filter
 import './global.less'
 import './core/directives/limitclick'
 
+import './logger'
+
 Vue.config.productionTip = false
 
 // mount axios to `Vue.$http` and `this.$http`

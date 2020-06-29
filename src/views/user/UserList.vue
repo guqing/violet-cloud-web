@@ -191,7 +191,8 @@ export default {
         }
         requestParameters.queryRequest = queryRequest
         requestParameters.queryRequest = queryRequest
-        console.log('loadData request parameters:', queryRequest)
+
+        this.$log.debug('loadData request parameters:', queryRequest)
         return userApi.list(queryRequest).then(res => {
           return {
             pageSize: res.data.pageSize,
@@ -225,7 +226,6 @@ export default {
   },
   methods: {
     handleChange (value, key, column, record) {
-      console.log(value, key, column)
       record[column.dataIndex] = value
     },
     edit (row) {
