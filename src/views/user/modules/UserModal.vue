@@ -101,13 +101,24 @@ const validateUsername = (rule, value, callback) => {
   }
 }
 
+const validateEmail = (rule, value, callback) => {
+  userApi.checkEmail(value).then(res => {
+    if (res.data) {
+      callback(new Error('邮箱地址已经被使用'))
+    } else {
+      callback()
+    }
+  })
+}
+
 export default {
   name: 'UserModal',
   data () {
     return {
       rules: {
         roles: validateRoles,
-        username: validateUsername
+        username: validateUsername,
+        email: validateEmail
       },
       roles: [],
       labelCol: {
