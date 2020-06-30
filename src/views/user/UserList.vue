@@ -92,24 +92,25 @@
             </a-popconfirm>
           </span>
           <span v-else>
-            <a class="edit" @click="() => edit(record)">修改</a>
-            <a-divider type="vertical" />
-            <a class="delete" @click="() => del(record)">删除</a>
-            <a-divider type="vertical" />
+            <a class="edit" v-action:update @click="() => edit(record)">修改</a>
+            <a-divider type="vertical" v-action:update />
             <a-dropdown>
               <a class="ant-dropdown-link"> 更多 <a-icon type="down" /> </a>
               <a-menu slot="overlay">
                 <a-menu-item>
                   <a href="javascript:;">详情</a>
                 </a-menu-item>
-                <a-menu-item>
+                <a-menu-item v-if="record.status === 0" v-action:update>
                   <a href="javascript:;">禁用</a>
                 </a-menu-item>
-                <a-menu-item>
-                  <a href="javascript:;">删除</a>
+                <a-menu-item v-if="record.status === 1" v-action:update>
+                  <a href="javascript:;">解锁</a>
                 </a-menu-item>
                 <a-menu-item>
-                  <a href="javascript:;" @click="handleResetPassword(record)">重置密码</a>
+                  <a href="javascript:;" v-action:delete @click="del(record)">删除</a>
+                </a-menu-item>
+                <a-menu-item>
+                  <a href="javascript:;" @click="handleResetPassword(record)" v-action:reset>重置密码</a>
                 </a-menu-item>
               </a-menu>
             </a-dropdown>

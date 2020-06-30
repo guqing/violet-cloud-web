@@ -75,4 +75,19 @@ userApi.checkUsername = (parameter) => {
     params: { username: parameter }
   })
 }
+
+userApi.lockUser = (parameter) => {
+  return axios({
+    url: `/admin/user/lock/${parameter}`,
+    method: 'put'
+  })
+}
+
+userApi.unlockUser = (parameter) => {
+  return axios({
+    url: `/admin/user/unlock/${parameter}`,
+    method: 'put'
+  })
+}
+
 export default userApi
