@@ -39,11 +39,11 @@
 
     <div class="table-operator">
       <a-button type="primary" icon="plus" v-action:add @click="$refs.modal.add()">新建</a-button>
-      <a-dropdown v-if="selectedRowKeys.length > 0">
+      <a-dropdown v-show="tableOpsVisible" ref="tableOpsMenu" :disabled="batchOpsMenuDisable">
         <a-menu slot="overlay">
-          <a-menu-item key="1"><a-icon type="delete" />删除</a-menu-item>
+          <a-menu-item key="1" v-action:delete><a-icon type="delete" />删除</a-menu-item>
           <!-- lock | unlock -->
-          <a-menu-item key="2"><a-icon type="lock" />锁定</a-menu-item>
+          <a-menu-item key="2" v-action:update><a-icon type="lock" />锁定</a-menu-item>
         </a-menu>
         <a-button style="margin-left: 8px"> 批量操作 <a-icon type="down" /> </a-button>
       </a-dropdown>
@@ -101,7 +101,7 @@
                   <a href="javascript:;">详情</a>
                 </a-menu-item>
                 <a-menu-item v-if="record.status === 0" v-action:update>
-                  <a href="javascript:;">禁用</a>
+                  <a href="javascript:;">锁定</a>
                 </a-menu-item>
                 <a-menu-item v-if="record.status === 1" v-action:update>
                   <a href="javascript:;">解锁</a>
@@ -136,6 +136,7 @@ export default {
   },
   data () {
     return {
+      batchOpsMenuDisable: false,
       // 查询参数
       queryParam: {},
       pagination: {
@@ -248,6 +249,16 @@ export default {
         }
         return this.tagColors[index]
       }
+    },
+    tableOpsVisible () {
+      let tableOpsRef = this.$refs.tableOpsMenu
+      // 子元素数量大于1，因为按钮会一直显示
+      if (tableOpsRef && tableOpsRef.$children.length > 1) {
+        this.batchOpsMenuDisable = false
+      } else {
+        this.batchOpsMenuDisable = true
+      }
+      return this.selectedRowKeys.length > 0
     }
   },
   methods: {
