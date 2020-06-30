@@ -13,7 +13,10 @@
                     message: '请输入用户名',
                     trigger: 'blur'
                   },
-                  { required: true, pattern: /^[A-Za-z0-9]+$/, message: '只能输入字母或数字', trigger: 'blur' }
+                  {
+                    validator: rules.username,
+                    trigger: 'blur'
+                  }
                 ]
               }
             ]"
@@ -32,7 +35,7 @@
             ]"
           />
         </a-form-item>
-        <a-form-item label="邮箱">
+        <a-form-item label="邮箱" has-feedback>
           <a-input
             v-decorator="[
               'email',
@@ -41,6 +44,10 @@
                   {
                     type: 'email',
                     message: '邮箱地址格式不正确'
+                  },
+                  {
+                    validator: rules.email,
+                    trigger: 'blur'
                   },
                   {
                     required: true,
@@ -71,6 +78,7 @@
 
 <script>
 import roleApi from '@/api/role'
+import userApi from '@/api/user'
 
 const validateRoles = (rule, value, callback) => {
   if (value.length < 1) {
@@ -79,13 +87,27 @@ const validateRoles = (rule, value, callback) => {
     callback()
   }
 }
+const validateUsername = (rule, value, callback) => {
+  if (!/^[A-Za-z0-9]+$/.test(value)) {
+    callback(new Error('只能输入字母或数字'))
+  } else {
+    userApi.checkUsername(value).then(res => {
+      if (res.data) {
+        callback(new Error('用户名已经存在'))
+      } else {
+        callback()
+      }
+    })
+  }
+}
 
 export default {
   name: 'UserModal',
   data () {
     return {
       rules: {
-        roles: validateRoles
+        roles: validateRoles,
+        username: validateUsername
       },
       roles: [],
       labelCol: {
@@ -97,32 +119,23 @@ export default {
         sm: { span: 16 }
       },
       visible: false,
-      confirmLoading: false,
-      pagination: {
-        current: 1,
-        pageSize: 10,
-        total: 0
-      }
+      confirmLoading: false
     }
   },
   beforeCreate () {
     this.form = this.$form.createForm(this)
-    console.log('form::', this.form)
+    this.$log.debug('form::', this.form)
   },
   created () {
     this.handleRoleList()
   },
   methods: {
     handleRoleList () {
-      roleApi.listRole(this.pagination).then(res => {
-        this.roles = res.data.list
-        this.pagination.current = res.data.current
-        this.pagination.pageSize = res.data.pageSize
-        this.pagination.total = res.data.total
+      roleApi.options().then(res => {
+        this.roles = res.data
       })
     },
     add () {
-      this.$log.debug('新增用户', this.form)
       this.visible = true
     },
     edit (record) {
@@ -137,28 +150,22 @@ export default {
       this.visible = false
     },
     handleOk () {
-      const _this = this
+      const that = this
       // 触发表单验证
       this.form.validateFields((err, values) => {
         if (err) {
           return
         }
         // 验证表单没错误
-        console.log('form values', values)
+        that.$log.debug('form values', values)
 
-        _this.confirmLoading = true
-        // 模拟后端请求 2000 毫秒延迟
-        new Promise((resolve) => {
-          setTimeout(() => resolve(), 2000)
-        }).then(() => {
-          // Do something
-          _this.$message.success('保存成功')
-          _this.$emit('ok')
-        }).catch(() => {
-          // Do something
+        that.confirmLoading = true
+        userApi.create(values).then(res => {
+          that.$message.success('保存成功')
+          that.$emit('ok')
         }).finally(() => {
-          _this.confirmLoading = false
-          _this.close()
+          that.confirmLoading = false
+          that.close()
         })
       })
     },

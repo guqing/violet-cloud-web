@@ -39,4 +39,11 @@ roleApi.deleteByIds = (parameter) => {
     data: parameter
   })
 }
+
+roleApi.options = () => {
+  return axios({
+    url: `/admin/role/options`,
+    method: 'get'
+  })
+}
 export default roleApi

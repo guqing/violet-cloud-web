@@ -68,4 +68,11 @@ userApi.resetPassword = function (parameter) {
   })
 }
 
+userApi.checkUsername = (parameter) => {
+  return axios({
+    url: `/admin/user/check/username`,
+    method: 'get',
+    params: { username: parameter }
+  })
+}
 export default userApi

@@ -300,10 +300,11 @@ export default {
       this.queryParam.createTo = dateStrings[1]
     },
     handleModalOk () {
-      this.$log.debug('user modal ok')
+      this.$log.debug('user create success')
+      this.$refs.table.refresh()
     },
     handleResetPassword (row) {
-      let that = this
+      const that = this
       this.$confirm({
         title: '警告',
         content: `确定要重置 ${row.nickname} 的密码吗?`,
