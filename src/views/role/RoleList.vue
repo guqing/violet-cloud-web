@@ -34,14 +34,32 @@
           </a-form-model-item>
         </a-form-model>
       </a-col>
+
       <a-col :lg="16" :md="24">
         <div class="table-operator">
-          <a-button type="primary" icon="plus">新建</a-button>
+          <a-form layout="inline">
+            <a-row :gutter="15">
+              <a-col :md="8" :sm="24">
+                <a-form-item label="角色名称">
+                  <a-input placeholder="角色名称" v-model="queryParam.roleName" />
+                </a-form-item>
+              </a-col>
+              <a-col :md="8" :sm="24">
+                <a-form-item label="角色描述">
+                  <a-input placeholder="角色描述" v-model="queryParam.remark" />
+                </a-form-item>
+              </a-col>
+              <a-col :md="8" :sm="24">
+                <span class="table-page-search-submitButtons">
+                  <a-button type="primary" @click="handleSearch">查询</a-button>
+                  <a-button style="margin-left: 8px" @click="handleResetSearchForm">重置</a-button>
+                </span>
+              </a-col>
+            </a-row>
+          </a-form>
           <a-dropdown v-action:edit v-if="selectedRowKeys.length > 0">
             <a-menu slot="overlay">
               <a-menu-item key="1"><a-icon type="delete" />删除</a-menu-item>
-              <!-- lock | unlock -->
-              <a-menu-item key="2"><a-icon type="lock" />锁定</a-menu-item>
             </a-menu>
             <a-button style="margin-left: 8px"> 批量操作 <a-icon type="down" /> </a-button>
           </a-dropdown>
@@ -67,9 +85,6 @@
               <a-menu slot="overlay">
                 <a-menu-item>
                   <a href="javascript:;">详情</a>
-                </a-menu-item>
-                <a-menu-item>
-                  <a href="javascript:;">禁用</a>
                 </a-menu-item>
                 <a-menu-item>
                   <a href="javascript:;">删除</a>
@@ -272,44 +287,13 @@ export default {
       }
       forFn(tree, id)
       return temp
+    },
+    handleSearch () {
+      this.$refs.table.refresh()
+    },
+    handleResetSearchForm () {
+      this.queryParam = {}
     }
   }
 }
 </script>
-
-<style lang="less">
-.custom-tree {
-  /deep/ .ant-menu-item-group-title {
-    position: relative;
-    &:hover {
-      .btn {
-        display: block;
-      }
-    }
-  }
-
-  /deep/ .ant-menu-item {
-    &:hover {
-      .btn {
-        display: block;
-      }
-    }
-  }
-
-  /deep/ .btn {
-    display: none;
-    position: absolute;
-    top: 0;
-    right: 10px;
-    width: 20px;
-    height: 40px;
-    line-height: 40px;
-    z-index: 1050;
-
-    &:hover {
-      transform: scale(1.2);
-      transition: 0.5s all;
-    }
-  }
-}
-</style>
