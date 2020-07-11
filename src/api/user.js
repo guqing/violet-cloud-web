@@ -76,6 +76,14 @@ userApi.checkUsername = (parameter) => {
   })
 }
 
+userApi.checkEmail = (parameter) => {
+  return axios({
+    url: `/admin/user/check/email`,
+    method: 'get',
+    params: { email: parameter }
+  })
+}
+
 userApi.lockUser = (parameter) => {
   return axios({
     url: `/admin/user/lock/${parameter}`,

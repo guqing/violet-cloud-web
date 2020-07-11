@@ -39,7 +39,7 @@
 
     <div class="table-operator">
       <a-button type="primary" icon="plus" v-action:add @click="$refs.modal.add()">新建</a-button>
-      <a-dropdown v-show="tableOpsVisible" ref="tableOpsMenu" :disabled="batchOpsMenuDisable">
+      <a-dropdown v-show="tableOpsVisible">
         <a-menu slot="overlay">
           <a-menu-item key="1" v-action:delete><a-icon type="delete" />删除</a-menu-item>
           <!-- lock | unlock -->
@@ -136,7 +136,6 @@ export default {
   },
   data () {
     return {
-      batchOpsMenuDisable: false,
       // 查询参数
       queryParam: {},
       pagination: {
@@ -251,13 +250,6 @@ export default {
       }
     },
     tableOpsVisible () {
-      let tableOpsRef = this.$refs.tableOpsMenu
-      // 子元素数量大于1，因为按钮会一直显示
-      if (tableOpsRef && tableOpsRef.$children.length > 1) {
-        this.batchOpsMenuDisable = false
-      } else {
-        this.batchOpsMenuDisable = true
-      }
       return this.selectedRowKeys.length > 0
     }
   },

@@ -42,16 +42,16 @@
               {
                 rules: [
                   {
+                    required: true,
+                    message: '请输入邮箱地址'
+                  },
+                  {
                     type: 'email',
                     message: '邮箱地址格式不正确'
                   },
                   {
                     validator: rules.email,
                     trigger: 'blur'
-                  },
-                  {
-                    required: true,
-                    message: '请输入邮箱地址'
                   }
                 ]
               }
@@ -93,14 +93,13 @@ const validateUsername = (rule, value, callback) => {
   } else {
     userApi.checkUsername(value).then(res => {
       if (res.data) {
-        callback(new Error('用户名已经存在'))
+        callback(new Error('用户名已经被使用'))
       } else {
         callback()
       }
     })
   }
 }
-
 const validateEmail = (rule, value, callback) => {
   userApi.checkEmail(value).then(res => {
     if (res.data) {
