@@ -103,7 +103,7 @@ export const generator = (routerMap, parent) => {
     }
 
     let routerTarget = target
-    let path = item.path || `${parent && parent.path || ''}/${item.key}`
+    const path = item.path || `${parent && parent.path || ''}/${item.key}`
     if (path.startsWith('http://') || path.startsWith('https://')) {
       routerTarget = '_blank'
     }

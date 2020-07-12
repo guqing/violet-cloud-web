@@ -88,6 +88,7 @@ import { timeFix } from '@/utils/util'
 import { mapState } from 'vuex'
 import { PageHeaderWrapper } from '@ant-design-vue/pro-layout'
 import { Radar } from '@/components'
+import logApi from '@/api/log'
 
 export default {
   name: 'Workplace',
@@ -166,15 +167,15 @@ export default {
     this.avatar = this.userInfo.avatar
   },
   mounted () {
-    this.getProjects()
-    this.getActivity()
-    this.getTeams()
-    this.initRadar()
+    // this.getActivity()
   },
   methods: {
     getProjects () {
     },
     getActivity () {
+      logApi.list().then(res => {
+        this.activities = res.data.list
+      })
     },
     getTeams () {
     },
