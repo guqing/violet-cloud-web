@@ -89,6 +89,8 @@
 <script>
 import menuApi from '@/api/menu'
 import { baseMixin } from '@/store/app-mixin'
+import { ROUTER_MAP } from '@/store/mutation-types'
+import storage from 'store'
 
 const validatePath = (rule, value, callback) => {
   if (value !== '') {
@@ -208,6 +210,7 @@ export default {
           menuApi.saveOrUpdate(this.menuForm).then(res => {
             this.$message.success('保存成功')
             this.listTreeMenu()
+            storage.remove(ROUTER_MAP)
             this.handleResetMenuForm()
           })
         }

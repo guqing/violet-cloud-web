@@ -103,8 +103,6 @@ import { STable } from '@/components'
 import menuApi from '@/api/menu'
 import roleApi from '@/api/role'
 import { baseMixin } from '@/store/app-mixin'
-import { ROUTER_MAP } from '@/store/mutation-types'
-import storage from 'store'
 
 export default {
   name: 'TreeList',
@@ -232,7 +230,6 @@ export default {
       roleApi.createOrUpdate(this.roleForm).then(res => {
         this.$message.success('保存成功')
         this.handleResetRoleForm()
-        storage.remove(ROUTER_MAP)
         this.$refs.table.refresh()
       })
     },
