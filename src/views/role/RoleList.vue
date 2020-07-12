@@ -21,10 +21,10 @@
               checkable
               :expanded-keys="expandedMenuKeys"
               :auto-expand-parent="autoExpandParent"
-              :selected-keys="selectedKeys"
+              :selected-keys="selectedMenuKeys"
               :tree-data="menuTreeData"
               @expand="onTreeMenuExpand"
-              @select="onSelect"
+              @select="onMenuSelect"
               @check="onTreeMenuCheck"
             />
           </a-form-model-item>
@@ -57,9 +57,9 @@
               </a-col>
             </a-row>
           </a-form>
-          <a-dropdown v-action:edit v-if="selectedRowKeys.length > 0">
+          <a-dropdown v-if="selectedRoleKeys.length > 0" style="margin-top: 15px;">
             <a-menu slot="overlay">
-              <a-menu-item key="1"><a-icon type="delete" />删除</a-menu-item>
+              <a-menu-item key="1" @click="handleBatchDeleteRole"><a-icon type="delete" />删除</a-menu-item>
             </a-menu>
             <a-button style="margin-left: 8px"> 批量操作 <a-icon type="down" /> </a-button>
           </a-dropdown>
@@ -73,7 +73,7 @@
           :data="loadData"
           showPagination="auto"
           :alert="false"
-          :rowSelection="{ selectedRowKeys: selectedRowKeys, onChange: onSelectChange }"
+          :rowSelection="{ selectedRoleKeys: selectedRoleKeys, onChange: onRoleSelectChange }"
         >
           <span slot="action" slot-scope="text, record">
             <template>
@@ -160,12 +160,12 @@ export default {
       expandedMenuKeys: [],
       autoExpandParent: false,
       checkedMenuKeys: [],
-      selectedKeys: [],
+      selectedMenuKeys: [],
       menuTreeData: [],
       treeParentIds: [],
       editExpandedMenuKeys: [],
-      selectedRowKeys: [],
-      selectedRows: []
+      selectedRoleKeys: [],
+      selectedRoles: []
     }
   },
   created () {
@@ -209,12 +209,12 @@ export default {
     onTreeMenuCheck (checkedMenuKeys) {
       console.log('onCheck', checkedMenuKeys)
     },
-    onSelect (selectedKeys, info) {
+    onMenuSelect (selectedMenuKeys, info) {
       console.log('onSelect', info.node.dataRef.key)
       var parentIds = this.findParentIdsById(this.menuTreeData, info.node.dataRef.key)
       console.log('on select find all parent ids:', parentIds)
 
-      this.selectedKeys = selectedKeys
+      this.selectedMenuKeys = selectedMenuKeys
     },
     handleClick (e) {
       this.queryParam = {
@@ -222,9 +222,9 @@ export default {
       }
       this.$refs.table.refresh(true)
     },
-    onSelectChange (selectedRowKeys, selectedRows) {
-      this.selectedRowKeys = selectedRowKeys
-      this.selectedRows = selectedRows
+    onRoleSelectChange (selectedRoleKeys, selectedRoles) {
+      this.selectedRoleKeys = selectedRoleKeys
+      this.selectedRoles = selectedRoles
     },
     handleSaveOrUpdateRole () {
       var menuIds = this.handleRelatedParentRoleMenuKeys()
@@ -293,6 +293,10 @@ export default {
     },
     handleResetSearchForm () {
       this.queryParam = {}
+      this.$refs.table.refresh()
+    },
+    handleBatchDeleteRole () {
+      this.$log.debug('批量删除角色：', this.selectedRoleKeys)
     }
   }
 }
