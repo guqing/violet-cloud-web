@@ -210,9 +210,9 @@ export default {
       console.log('onCheck', checkedMenuKeys)
     },
     onMenuSelect (selectedMenuKeys, info) {
-      console.log('onSelect', info.node.dataRef.key)
+      this.$log.debug('onMenuSelect', info.node.dataRef.key)
       var parentIds = this.findParentIdsById(this.menuTreeData, info.node.dataRef.key)
-      console.log('on select find all parent ids:', parentIds)
+      this.$log.debug('on menu select find all parent ids:', parentIds)
 
       this.selectedMenuKeys = selectedMenuKeys
     },
@@ -233,6 +233,7 @@ export default {
         this.$message.success('保存成功')
         this.handleResetRoleForm()
         storage.remove(ROUTER_MAP)
+        this.$refs.table.refresh()
       })
     },
     handleRelatedParentRoleMenuKeys () {
@@ -296,7 +297,23 @@ export default {
       this.$refs.table.refresh()
     },
     handleBatchDeleteRole () {
-      this.$log.debug('批量删除角色：', this.selectedRoleKeys)
+      const that = this
+      this.$confirm({
+        title: '警告',
+        content: `确定要删除所选中的角色吗?`,
+        okText: '删除',
+        okType: 'danger',
+        cancelText: '取消',
+        onOk () {
+          that.$log.debug('批量删除角色', that.selectedRoleKeys)
+          roleApi.deleteByIds(that.selectedRoleKeys).then(res => {
+            this.$message.success('删除成功')
+          })
+        },
+        onCancel () {
+          that.$log.info('Cancel')
+        }
+      })
     }
   }
 }
