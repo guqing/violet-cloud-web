@@ -60,22 +60,22 @@
             </div>
           </a-card>
 
-          <a-card :loading="loading" title="动态" :bordered="false">
+          <a-card :loading="loading" title="操作记录" :bordered="false">
             <a-list>
               <a-list-item :key="index" v-for="(item, index) in activities">
-                <a-list-item-meta>
-                  <a-avatar slot="avatar" :src="item.user.avatar" />
-                  <div slot="title">
-                    <span>{{ item.user.nickname }}</span
-                    >&nbsp; 在&nbsp;<a href="#">{{ item.project.name }}</a
-                    >&nbsp; <span>{{ item.project.action }}</span
-                    >&nbsp;
-                    <a href="#">{{ item.project.event }}</a>
-                  </div>
-                  <div slot="description">{{ item.time }}</div>
+                <a-list-item-meta :description="item.createTime">
+                  <span slot="title">{{ item.operation }}</span>
                 </a-list-item-meta>
+                <ellipsis :length="35" tooltip>{{ item.username }}</ellipsis>
               </a-list-item>
             </a-list>
+            <a-pagination
+              v-model="pagination.current"
+              :pageSize="pagination.pageSize"
+              :total="pagination.total"
+              @change="handleLogPageChange"
+              style="text-align: right;"
+            />
           </a-card>
         </a-col>
       </a-row>
@@ -86,15 +86,15 @@
 <script>
 import { timeFix } from '@/utils/util'
 import { mapState } from 'vuex'
+import Ellipsis from '@/components/Ellipsis'
 import { PageHeaderWrapper } from '@ant-design-vue/pro-layout'
-import { Radar } from '@/components'
 import logApi from '@/api/log'
 
 export default {
   name: 'Workplace',
   components: {
     PageHeaderWrapper,
-    Radar
+    Ellipsis
   },
   data () {
     return {
@@ -104,47 +104,13 @@ export default {
 
       projects: [],
       loading: false,
-      radarLoading: true,
       activities: [],
       teams: [],
-
-      // data
-      axis1Opts: {
-        dataKey: 'item',
-        line: null,
-        tickLine: null,
-        grid: {
-          lineStyle: {
-            lineDash: null
-          },
-          hideFirstLine: false
-        }
-      },
-      axis2Opts: {
-        dataKey: 'score',
-        line: null,
-        tickLine: null,
-        grid: {
-          type: 'polygon',
-          lineStyle: {
-            lineDash: null
-          }
-        }
-      },
-      scale: [{
-        dataKey: 'score',
-        min: 0,
-        max: 80
-      }],
-      axisData: [
-        { item: '引用', a: 70, b: 30, c: 40 },
-        { item: '口碑', a: 60, b: 70, c: 40 },
-        { item: '产量', a: 50, b: 60, c: 40 },
-        { item: '贡献', a: 40, b: 50, c: 40 },
-        { item: '热度', a: 60, b: 70, c: 40 },
-        { item: '引用', a: 70, b: 50, c: 40 }
-      ],
-      radarData: []
+      pagination: {
+        current: 1,
+        pageSize: 5,
+        total: 0
+      }
     }
   },
   computed: {
@@ -167,19 +133,26 @@ export default {
     this.avatar = this.userInfo.avatar
   },
   mounted () {
-    // this.getActivity()
+    this.handleListActivity()
   },
   methods: {
+    handleLogPageChange (current) {
+      this.pagination.current = current
+      this.handleListActivity()
+    },
     getProjects () {
     },
-    getActivity () {
-      logApi.list().then(res => {
+    handleListActivity () {
+      const param = {
+        current: this.pagination.current,
+        pageSize: this.pagination.pageSize
+      }
+      logApi.list(param).then(res => {
         this.activities = res.data.list
+        this.pagination.total = res.data.total
       })
     },
     getTeams () {
-    },
-    initRadar () {
     }
   }
 }
