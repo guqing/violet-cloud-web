@@ -43,7 +43,7 @@
         <a-menu slot="overlay">
           <a-menu-item key="1" v-action:delete @click="handleDeleteInBatch"><a-icon type="delete" />删除</a-menu-item>
           <!-- lock | unlock -->
-          <a-menu-item key="2" v-action:update><a-icon type="lock" />锁定</a-menu-item>
+          <a-menu-item key="2" v-action:update @click="handleLockUser"><a-icon type="lock" />锁定</a-menu-item>
         </a-menu>
         <a-button style="margin-left: 8px"> 批量操作 <a-icon type="down" /> </a-button>
       </a-dropdown>
@@ -52,7 +52,7 @@
     <s-table
       ref="table"
       size="default"
-      rowKey="id"
+      rowKey="username"
       :columns="columns"
       :data="loadData"
       showPagination="auto"
@@ -264,13 +264,13 @@ export default {
     // eslint-disable-next-line
     del (row) {
       this.$log.debug('删除用户:', row.username)
-      this.handleDeleteUser(`真的要删除用户 ${row.username} 吗?`, [row.id])
+      this.handleDeleteUser(`真的要删除用户 ${row.username} 吗?`, [row.username])
     },
     handleDeleteInBatch () {
       this.$log.debug('批量删除用户:', this.selectedRowKeys)
       this.handleDeleteUser('真的要批量删除所选中的用户吗?', this.selectedRowKeys)
     },
-    handleDeleteUser (message, userIds) {
+    handleDeleteUser (message, userNames) {
       const that = this
       this.$confirm({
         title: '警告',
@@ -279,7 +279,7 @@ export default {
         okType: 'danger',
         cancelText: '取消',
         onOk () {
-          userApi.deleteUser(userIds).then(res => {
+          userApi.deleteUser(userNames).then(res => {
             that.$message.success('删除用户成功')
             that.$refs.table.refresh()
           })
@@ -333,6 +333,11 @@ export default {
         onCancel () {
           that.$log.info('Cancel')
         }
+      })
+    },
+    handleLockUser (row) {
+      userApi.lockUser(row.username).then(res => {
+        this.$message.success('锁定用户成功')
       })
     }
   }
