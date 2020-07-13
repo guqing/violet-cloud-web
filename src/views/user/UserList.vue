@@ -41,7 +41,7 @@
       <a-button type="primary" icon="plus" v-action:add @click="$refs.modal.add()">新建</a-button>
       <a-dropdown v-show="tableOpsVisible">
         <a-menu slot="overlay">
-          <a-menu-item key="1" v-action:delete><a-icon type="delete" />删除</a-menu-item>
+          <a-menu-item key="1" v-action:delete @click="handleDeleteInBatch"><a-icon type="delete" />删除</a-menu-item>
           <!-- lock | unlock -->
           <a-menu-item key="2" v-action:update><a-icon type="lock" />锁定</a-menu-item>
         </a-menu>
@@ -52,7 +52,7 @@
     <s-table
       ref="table"
       size="default"
-      rowKey="username"
+      rowKey="id"
       :columns="columns"
       :data="loadData"
       showPagination="auto"
@@ -263,23 +263,32 @@ export default {
     },
     // eslint-disable-next-line
     del (row) {
+      this.$log.debug('删除用户:', row.username)
+      this.handleDeleteUser(`真的要删除用户 ${row.username} 吗?`, [row.id])
+    },
+    handleDeleteInBatch () {
+      this.$log.debug('批量删除用户:', this.selectedRowKeys)
+      this.handleDeleteUser('真的要批量删除所选中的用户吗?', this.selectedRowKeys)
+    },
+    handleDeleteUser (message, userIds) {
+      const that = this
       this.$confirm({
         title: '警告',
-        content: `真的要删除 ${row.no} 吗?`,
+        content: message,
         okText: '删除',
         okType: 'danger',
         cancelText: '取消',
         onOk () {
-          console.log('OK')
-          // 在这里调用删除接口
-          return new Promise((resolve, reject) => {
-            setTimeout(Math.random() > 0.5 ? resolve : reject, 1000)
-          }).catch(() => this.$log.error('Oops errors!'))
+          userApi.deleteUser(userIds).then(res => {
+            that.$message.success('删除用户成功')
+            that.$refs.table.refresh()
+          })
         },
         onCancel () {
-          this.$log.info('Cancel')
+          that.$log.info('Cancel')
         }
       })
+
     },
     save (row) {
       row.editable = false

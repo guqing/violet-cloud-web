@@ -98,4 +98,11 @@ userApi.unlockUser = (parameter) => {
   })
 }
 
+userApi.deleteUser = (parameter) => {
+  return axios({
+    url: `/admin/user`,
+    method: 'delete',
+    data: parameter
+  })
+}
 export default userApi
