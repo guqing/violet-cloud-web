@@ -43,7 +43,7 @@
         <a-menu slot="overlay">
           <a-menu-item key="1" v-action:delete @click="handleDeleteInBatch"><a-icon type="delete" />删除</a-menu-item>
           <!-- lock | unlock -->
-          <a-menu-item key="2" v-action:update @click="handleLockUser"><a-icon type="lock" />锁定</a-menu-item>
+          <a-menu-item key="2" v-action:update @click="handleLockUserInBatch()"><a-icon type="lock" />锁定</a-menu-item>
         </a-menu>
         <a-button style="margin-left: 8px"> 批量操作 <a-icon type="down" /> </a-button>
       </a-dropdown>
@@ -100,11 +100,11 @@
                 <a-menu-item>
                   <a href="javascript:;">详情</a>
                 </a-menu-item>
-                <a-menu-item v-if="record.status === 0" v-action:update>
+                <a-menu-item v-if="record.status === 0" v-action:update @click="handleLockUser([record.username])">
                   <a href="javascript:;">锁定</a>
                 </a-menu-item>
                 <a-menu-item v-if="record.status === 1" v-action:update>
-                  <a href="javascript:;">解锁</a>
+                  <a href="javascript:;" @click="handleLockUserInBatch">解锁</a>
                 </a-menu-item>
                 <a-menu-item>
                   <a href="javascript:;" v-action:delete @click="del(record)">删除</a>
@@ -335,9 +335,27 @@ export default {
         }
       })
     },
-    handleLockUser (row) {
-      userApi.lockUser(row.username).then(res => {
-        this.$message.success('锁定用户成功')
+    handleLockUserInBatch () {
+      this.handleLockUser(this.selectedRowKeys)
+    },
+    handleLockUser (userNames) {
+      const that = this
+      this.$confirm({
+        title: '警告',
+        content: `确定要锁定选中的用户吗?`,
+        okText: '锁定',
+        okType: 'danger',
+        cancelText: '取消',
+        onOk () {
+          that.$log.debug('所用用户', userNames)
+          userApi.lockUser(userNames).then(res => {
+            that.$message.success('锁定用户成功')
+            that.$refs.table.refresh()
+          })
+        },
+        onCancel () {
+          that.$log.info('Cancel')
+        }
       })
     }
   }
