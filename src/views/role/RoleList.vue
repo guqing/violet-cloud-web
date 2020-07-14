@@ -304,7 +304,7 @@ export default {
         onOk () {
           that.$log.debug('批量删除角色', that.selectedRoleKeys)
           roleApi.deleteByIds(that.selectedRoleKeys).then(res => {
-            this.$message.success('删除成功')
+            that.$message.success('删除成功')
           })
         },
         onCancel () {

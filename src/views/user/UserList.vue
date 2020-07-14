@@ -59,23 +59,6 @@
       :alert="{ show: true, clear: true }"
       :rowSelection="rowSelection"
     >
-      <template
-        v-for="(col, index) in columns"
-        v-show="col.scopedSlots"
-        :slot="col.dataIndex"
-        slot-scope="text, record"
-      >
-        <div :key="index">
-          <a-input
-            v-if="record.editable"
-            style="margin: -5px 0"
-            :value="text"
-            @change="e => handleChange(e.target.value, record.key, col, record)"
-          />
-          <template v-else>{{ text }}</template>
-        </div>
-      </template>
-
       <template slot="roleNames" slot-scope="text">
         <a-tag :color="tagColor(index)" v-for="(roleName, index) in text" :key="index">
           {{ roleName }}
@@ -84,15 +67,8 @@
 
       <template slot="action" slot-scope="text, record">
         <div class="editable-row-operations">
-          <span v-if="record.editable">
-            <a @click="() => save(record)">保存</a>
-            <a-divider type="vertical" />
-            <a-popconfirm title="真的放弃编辑吗?" @confirm="() => cancel(record)">
-              <a>取消</a>
-            </a-popconfirm>
-          </span>
-          <span v-else>
-            <a class="edit" v-action:update @click="() => edit(record)">修改</a>
+          <span>
+            <a class="edit" v-action:update @click="$refs.modal.edit(record)">修改</a>
             <a-divider type="vertical" v-action:update />
             <a-dropdown>
               <a class="ant-dropdown-link"> 更多 <a-icon type="down" /> </a>
@@ -257,10 +233,6 @@ export default {
     handleChange (value, key, column, record) {
       record[column.dataIndex] = value
     },
-    edit (row) {
-      row.editable = true
-      // row = Object.assign({}, row)
-    },
     // eslint-disable-next-line
     del (row) {
       this.$log.debug('删除用户:', row.username)
@@ -288,13 +260,6 @@ export default {
           that.$log.info('Cancel')
         }
       })
-
-    },
-    save (row) {
-      row.editable = false
-    },
-    cancel (row) {
-      row.editable = false
     },
     onSelectChange (selectedRowKeys, selectedRows) {
       this.selectedRowKeys = selectedRowKeys

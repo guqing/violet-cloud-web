@@ -297,13 +297,14 @@ export default {
     resolveSocialLogin (e) {
       var data = e.data
       if (data.isBind) {
-        console.log('resolveSocialLogin data is bind:', data.accessToken)
+        this.$log.debug('resolveSocialLogin data is bind:', data.accessToken)
         this.SocialLogin(data.accessToken).then(res => {
           this.loginSuccess(res)
         })
       } else {
         // resolve bind
-        console.log('socail account not bind')
+        this.$log.debug('socail account not bind')
+        this.$router.push({ name: 'register', params: data.authUser })
       }
     }
   }

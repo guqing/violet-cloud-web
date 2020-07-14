@@ -2,6 +2,9 @@
   <a-modal title="操作" :visible="visible" :confirmLoading="confirmLoading" @ok="handleOk" @cancel="handleCancel">
     <a-spin :spinning="confirmLoading">
       <a-form :form="form" :label-col="labelCol" :wrapper-col="wrapperCol">
+        <a-form-item label="ID" v-show="false">
+          <a-input v-decorator="['id']" />
+        </a-form-item>
         <a-form-item label="用户名" has-feedback>
           <a-input
             v-decorator="[
@@ -28,8 +31,8 @@
               'password',
               {
                 rules: [
-                  { required: true, message: '请输入密码', whitespace: true },
-                  { required: true, min: 3, message: '字符长度必须大于3' }
+                  { required: rules.passwordRequired, message: '请输入密码', whitespace: true },
+                  { min: 3, message: '字符长度必须大于3' }
                 ]
               }
             ]"
@@ -79,6 +82,7 @@
 <script>
 import roleApi from '@/api/role'
 import userApi from '@/api/user'
+import pick from 'lodash.pick'
 
 const validateRoles = (rule, value, callback) => {
   if (value.length < 1) {
@@ -100,6 +104,7 @@ const validateUsername = (rule, value, callback) => {
     })
   }
 }
+
 const validateEmail = (rule, value, callback) => {
   userApi.checkEmail(value).then(res => {
     if (res.data) {
@@ -115,6 +120,7 @@ export default {
   data () {
     return {
       rules: {
+        passwordRequired: true,
         roles: validateRoles,
         username: validateUsername,
         email: validateEmail
@@ -129,6 +135,7 @@ export default {
         sm: { span: 16 }
       },
       visible: false,
+      editParam: {},
       confirmLoading: false
     }
   },
@@ -149,10 +156,13 @@ export default {
       this.visible = true
     },
     edit (record) {
-      this.mdl = Object.assign({}, record)
       this.visible = true
+      // 编辑时不校验密码
+      this.rules.passwordRequired = false
+      this.editParam = Object.assign({}, record)
       this.$nextTick(() => {
-        this.form.setFieldsValue({ ...record })
+        this.form.setFieldsValue(pick(this.editParam, 'id', 'username', 'password', 'email'))
+        this.form.setFieldsValue({ 'roleIds': this.editParam.roleIds.map(Number) || [] })
       })
     },
     close () {
@@ -170,13 +180,29 @@ export default {
         that.$log.debug('form values', values)
 
         that.confirmLoading = true
-        userApi.create(values).then(res => {
-          that.$message.success('保存成功')
-          that.$emit('ok')
-        }).finally(() => {
-          that.confirmLoading = false
-          that.close()
-        })
+        if (values.id) {
+          that.handleUpdateUser(values)
+        } else {
+          that.handleCreateUser(values)
+        }
+      })
+    },
+    handleUpdateUser (values) {
+      userApi.update(values).then(res => {
+        this.$message.success('更新成功')
+        this.$emit('ok')
+      }).finally(() => {
+        this.confirmLoading = false
+        this.close()
+      })
+    },
+    handleCreateUser (values) {
+      userApi.create(values).then(res => {
+        this.$message.success('保存成功')
+        this.$emit('ok')
+      }).finally(() => {
+        this.confirmLoading = false
+        this.close()
       })
     },
     handleCancel () {

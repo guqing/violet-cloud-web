@@ -1,8 +1,10 @@
 <template>
   <div class="main user-layout-register">
-    <h3><span>注册</span></h3>
+    <h3>
+      <span>{{ pageTitle }}</span>
+    </h3>
     <a-form ref="formRegister" :form="form" id="formRegister">
-      <a-form-item>
+      <a-form-item has-feedback>
         <a-input
           size="large"
           type="text"
@@ -10,8 +12,13 @@
           v-decorator="[
             'email',
             {
-              rules: [{ required: true, type: 'email', message: '请输入邮箱地址' }],
-              validateTrigger: ['change', 'blur']
+              rules: [
+                { required: true, type: 'email', message: '请输入邮箱地址' },
+                {
+                  validator: validateEmail
+                }
+              ],
+              validateTrigger: ['blur']
             }
           ]"
         ></a-input>
@@ -71,35 +78,6 @@
         ></a-input>
       </a-form-item>
 
-      <a-form-item>
-        <a-input
-          size="large"
-          placeholder="11 位手机号"
-          v-decorator="[
-            'mobile',
-            {
-              rules: [
-                { required: true, message: '请输入正确的手机号', pattern: /^1[3456789]\d{9}$/ },
-                { validator: this.handlePhoneCheck }
-              ],
-              validateTrigger: ['change', 'blur']
-            }
-          ]"
-        >
-          <a-select slot="addonBefore" size="large" defaultValue="+86">
-            <a-select-option value="+86">+86</a-select-option>
-            <a-select-option value="+87">+87</a-select-option>
-          </a-select>
-        </a-input>
-      </a-form-item>
-      <!--<a-input-group size="large" compact>
-            <a-select style="width: 20%" size="large" defaultValue="+86">
-              <a-select-option value="+86">+86</a-select-option>
-              <a-select-option value="+87">+87</a-select-option>
-            </a-select>
-            <a-input style="width: 80%" size="large" placeholder="11 位手机号"></a-input>
-          </a-input-group>-->
-
       <a-row :gutter="16">
         <a-col class="gutter-row" :span="16">
           <a-form-item>
@@ -137,7 +115,7 @@
           @click.stop.prevent="handleSubmit"
           :disabled="registerBtn"
         >
-          注册
+          {{ createBtnTitle }}
         </a-button>
         <router-link class="login" :to="{ name: 'login' }">
           使用已有账户登录
@@ -148,6 +126,25 @@
 </template>
 
 <script>
+import { baseMixin } from '@/store/app-mixin'
+import userApi from '@/api/user'
+import supportApi from '@/api/support'
+
+const validateEmail = (rule, value, callback) => {
+  if (!value) {
+    callback()
+    return
+  }
+
+  userApi.checkEmail(value).then(res => {
+    if (res.data) {
+      callback(new Error('邮箱地址已经被使用'))
+    } else {
+      callback()
+    }
+  })
+}
+
 const levelNames = {
   0: '低',
   1: '低',
@@ -170,7 +167,7 @@ export default {
   name: 'Register',
   components: {
   },
-  mixins: [],
+  mixins: [baseMixin],
   data () {
     return {
       form: this.$form.createForm(this),
@@ -183,7 +180,9 @@ export default {
         percent: 10,
         progressColor: '#FF0000'
       },
-      registerBtn: false
+      validateEmail: validateEmail,
+      registerBtn: false,
+      socialLoginAuthUser: {}
     }
   },
   computed: {
@@ -195,7 +194,23 @@ export default {
     },
     passwordLevelColor () {
       return levelColor[this.state.passwordLevel]
+    },
+    pageTitle () {
+      if (this.socialLoginAuthUser) {
+        return '第三方帐号未绑定，立即创建帐号完成绑定'
+      }
+      return '创建帐号'
+    },
+    createBtnTitle () {
+      if (this.socialLoginAuthUser) {
+        return '创建帐号'
+      }
+      return '注册'
     }
+  },
+  created () {
+    this.socialLoginAuthUser = this.$route.params
+    this.$log.debug(this.socialLoginAuthUser)
   },
   methods: {
     handlePasswordLevel (rule, value, callback) {
@@ -239,17 +254,8 @@ export default {
       }
       callback()
     },
-
-    handlePhoneCheck (rule, value, callback) {
-      console.log('handlePhoneCheck, rule:', rule)
-      console.log('handlePhoneCheck, value', value)
-      console.log('handlePhoneCheck, callback', callback)
-
-      callback()
-    },
-
     handlePasswordInputClick () {
-      if (!this.isMobile()) {
+      if (!this.isMobile) {
         this.state.passwordLevelChecked = true
         return
       }
@@ -270,7 +276,7 @@ export default {
       e.preventDefault()
       const { form: { validateFields }, state, $message } = this
 
-      validateFields(['mobile'], { force: true },
+      validateFields(['email'], { force: true },
         (err, values) => {
           if (!err) {
             state.smsSendBtn = true
@@ -283,7 +289,11 @@ export default {
               }
             }, 1000)
 
-            $message.loading('验证码发送中..', 0)
+            $message.loading('验证码发送中..')
+
+            supportApi.sendEmailCaptcha(values).then(res => {
+              $message.success('验证码发送成功')
+            })
           }
         }
       )

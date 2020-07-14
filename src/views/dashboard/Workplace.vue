@@ -7,7 +7,7 @@
         </div>
         <div class="content">
           <div class="content-title">
-            {{ timeFix }}，{{ userInfo.username }}<span class="welcome-text">，{{ welcome }}</span>
+            {{ timeFix }}，{{ userInfo.nickname }}<span class="welcome-text">，{{ welcome }}</span>
           </div>
           <div>前端工程师 | 蚂蚁金服 - 某某某事业群 - VUE平台</div>
         </div>
