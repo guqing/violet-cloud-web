@@ -21,6 +21,7 @@ import './permission' // permission control
 import './utils/filter' // global filter
 import './global.less'
 import './core/directives/limitclick'
+import './core/directives/permission'
 
 import './logger'
 

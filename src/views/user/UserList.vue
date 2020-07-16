@@ -66,10 +66,10 @@
       </template>
 
       <template slot="action" slot-scope="text, record">
-        <div class="editable-row-operations">
+        <div class="editable-row-operations" v-hasAnyPermission="['update', 'delete', 'reset']">
           <span>
             <a class="edit" v-action:update @click="$refs.modal.edit(record)">修改</a>
-            <a-divider type="vertical" v-action:update />
+            <a-divider type="vertical" v-hasAnyPermission="['update', 'delete', 'reset']" />
             <a-dropdown>
               <a class="ant-dropdown-link"> 更多 <a-icon type="down" /> </a>
               <a-menu slot="overlay">
@@ -92,6 +92,7 @@
             </a-dropdown>
           </span>
         </div>
+        <div v-hasNoPermission="['update', 'delete', 'reset']">无操作权限</div>
       </template>
     </s-table>
 
