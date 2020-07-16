@@ -23,7 +23,7 @@
           </a-col>
           <a-col :md="5" :sm="24">
             <a-form-item label="创建时间">
-              <a-range-picker style="width: 100%" @change="onDatePickerChange" format="YYYY-MM-DD hh:mm:ss" />
+              <a-range-picker style="width: 100%" @change="onDatePickerChange" />
             </a-form-item>
           </a-col>
 

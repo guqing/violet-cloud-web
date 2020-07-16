@@ -160,6 +160,15 @@ export default {
             totalPage: res.data.pages,
             data: res.data.list
           }
+        }).catch(err => {
+          this.$message.error(`查询出错:${err}`)
+          return {
+            pageSize: 0,
+            pageNo: 1,
+            totalCount: 0,
+            totalPage: 0,
+            data: []
+          }
         })
       },
       selectedRowKeys: [],
