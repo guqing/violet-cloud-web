@@ -2,18 +2,21 @@
   <a-card :bordered="false">
     <a-row :gutter="8" type="flex" justify="center">
       <a-col :lg="12" :md="24" :order="isMobile ? 1 : 0">
-        <a-tree
-          v-model="checkedMenuKeys"
-          checkable
-          blockNode
-          :expanded-keys="expandedMenuKeys"
-          :auto-expand-parent="autoExpandParent"
-          :selected-keys="selectedKeys"
-          :tree-data="menuTreeData"
-          @expand="onTreeMenuExpand"
-          @select="onSelect"
-          @check="onTreeMenuCheck"
-        />
+        <a-spin tip="Loading..." :spinning="treeDataLoading">
+          <a-tree
+            v-model="checkedMenuKeys"
+            checkable
+            blockNode
+            :expanded-keys="expandedMenuKeys"
+            :auto-expand-parent="autoExpandParent"
+            :selected-keys="selectedKeys"
+            :tree-data="menuTreeData"
+            @expand="onTreeMenuExpand"
+            @select="onSelect"
+            @check="onTreeMenuCheck"
+          />
+          <a-empty v-if="menuTreeData.length == 0" />
+        </a-spin>
       </a-col>
       <a-col :lg="12" :md="24">
         <a-form-model ref="menuForm" :model="menuForm" :rules="rules" :label-col="labelCol" :wrapper-col="wrapperCol">
@@ -127,6 +130,7 @@ export default {
   data () {
     return {
       menuForm: {},
+      treeDataLoading: false,
       rules: {
         title: [
           { required: true, message: '请输入菜单或按钮的名称', trigger: 'blur' },
@@ -169,9 +173,13 @@ export default {
       this.expandedMenuKeys = menuIdStringArray
     },
     listTreeMenu () {
+      this.treeDataLoading = true
       menuApi.listTreeMenu().then(res => {
         this.menuTreeData = res.data
-      })
+      }).catch(err => {
+        this.menuTreeData = []
+        this.$message.error(`查询出错:${err}`)
+      }).finally(() => { this.treeDataLoading = false })
     },
     onTreeMenuExpand (expandedKeys) {
       console.log('onExpand', expandedKeys)

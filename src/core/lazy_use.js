@@ -48,7 +48,8 @@ import {
   Tree,
   TreeSelect,
   FormModel,
-  Pagination
+  Pagination,
+  Empty
 } from 'ant-design-vue'
 import Viser from 'viser-vue'
 
@@ -105,6 +106,7 @@ Vue.use(Tree)
 Vue.use(TreeSelect)
 Vue.use(FormModel)
 Vue.use(Pagination)
+Vue.use(Empty)
 
 Vue.prototype.$confirm = Modal.confirm
 Vue.prototype.$message = message

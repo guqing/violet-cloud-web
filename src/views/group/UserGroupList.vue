@@ -2,18 +2,21 @@
   <a-card :bordered="false">
     <a-row :gutter="8" type="flex" justify="center">
       <a-col :lg="12" :md="24" :order="isMobile ? 1 : 0">
-        <a-tree
-          v-model="checkedGroupKeys"
-          checkable
-          blockNode
-          :expanded-keys="expandedGroupKeys"
-          :auto-expand-parent="autoExpandParent"
-          :selected-keys="selectedKeys"
-          :tree-data="userGroupTreeData"
-          @expand="onTreeGroupExpand"
-          @select="onSelect"
-          @check="onTreeGroupCheck"
-        />
+        <a-spin tip="Loading..." :spinning="treeDataLoading">
+          <a-tree
+            v-model="checkedGroupKeys"
+            checkable
+            blockNode
+            :expanded-keys="expandedGroupKeys"
+            :auto-expand-parent="autoExpandParent"
+            :selected-keys="selectedKeys"
+            :tree-data="userGroupTreeData"
+            @expand="onTreeGroupExpand"
+            @select="onSelect"
+            @check="onTreeGroupCheck"
+          />
+          <a-empty v-if="userGroupTreeData.length == 0" />
+        </a-spin>
       </a-col>
       <a-col :lg="12" :md="24">
         <a-form :label-col="labelCol" :wrapper-col="wrapperCol">
@@ -66,6 +69,7 @@ export default {
   mixins: [baseMixin],
   data () {
     return {
+      treeDataLoading: false,
       userGroupForm: {},
       groupFormButtonWrapperCol: { span: 14, offset: 4 },
       labelCol: { span: 4 },
@@ -86,9 +90,13 @@ export default {
   },
   methods: {
     listUserGroupTree () {
+      this.treeDataLoading = true
       groupApi.list().then(res => {
         this.userGroupTreeData = res.data
-      })
+      }).catch(err => {
+        this.userGroupTreeData = []
+        this.$message.error(`查询出错:${err}`)
+      }).finally(() => { this.treeDataLoading = false })
     },
     onTreeGroupExpand (expandedKeys) {
       console.log('onExpand', expandedKeys)
