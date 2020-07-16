@@ -127,8 +127,11 @@
 
 <script>
 import { baseMixin } from '@/store/app-mixin'
+import { timeFix } from '@/utils/util'
 import userApi from '@/api/user'
 import supportApi from '@/api/support'
+import { mapActions } from 'vuex'
+import { isEmpty } from 'lodash'
 
 const validateEmail = (rule, value, callback) => {
   if (!value) {
@@ -180,6 +183,7 @@ export default {
         percent: 10,
         progressColor: '#FF0000'
       },
+
       validateEmail: validateEmail,
       registerBtn: false,
       socialLoginAuthUser: {}
@@ -196,13 +200,13 @@ export default {
       return levelColor[this.state.passwordLevel]
     },
     pageTitle () {
-      if (this.socialLoginAuthUser) {
+      if (!isEmpty(this.socialLoginAuthUser)) {
         return '第三方帐号未绑定，立即创建帐号完成绑定'
       }
       return '创建帐号'
     },
     createBtnTitle () {
-      if (this.socialLoginAuthUser) {
+      if (!isEmpty(this.socialLoginAuthUser)) {
         return '创建帐号'
       }
       return '注册'
@@ -212,7 +216,12 @@ export default {
     this.socialLoginAuthUser = this.$route.params
     this.$log.debug(this.socialLoginAuthUser)
   },
+  destroyed () {
+    // this.socialLoginAuthUser = {}
+    this.$log.debug('清空socialLoginAuthUser')
+  },
   methods: {
+    ...mapActions(['SocialSignLogin']),
     handlePasswordLevel (rule, value, callback) {
       let level = 0
 
@@ -265,13 +274,38 @@ export default {
     handleSubmit () {
       const { form: { validateFields }, state, $router } = this
       validateFields({ force: true }, (err, values) => {
-        if (!err) {
-          state.passwordLevelChecked = false
+        if (err) {
+          return
+        }
+        state.passwordLevelChecked = false
+        this.registerBtn = true
+        if (this.socialLoginAuthUser) {
+          const userParam = Object.assign({}, values)
+          // 将authUser中的token置为null，否则其中后端authUser中的token没有空惨构造函数回导致绑定失败
+          this.socialLoginAuthUser.token = null
+          userParam.authUser = this.socialLoginAuthUser
+          this.SocialSignLogin(userParam).then(res => {
+            this.registerBtn = false
+            this.loginSuccess(res)
+          }).finally(() => {
+            this.registerBtn = false
+          })
+        } else {
           $router.push({ name: 'registerResult', params: { ...values } })
+          this.registerBtn = false
         }
       })
     },
-
+    loginSuccess (res) {
+      this.$router.push({ name: 'dashboard' })
+      // 延迟 1 秒显示欢迎信息
+      setTimeout(() => {
+        this.$notification.success({
+          message: '欢迎',
+          description: `${timeFix()}，欢迎加入`
+        })
+      }, 1000)
+    },
     getCaptcha (e) {
       e.preventDefault()
       const { form: { validateFields }, state, $message } = this

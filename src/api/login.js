@@ -22,6 +22,14 @@ export function login (parameter) {
   })
 }
 
+export function socailSignLogin (parameter) {
+  return axios({
+    url: '/auth/social/sign/login',
+    method: 'post',
+    data: parameter
+  })
+}
+
 export var socialLoginApi = axios.defaults.baseURL + `/auth/social/login/`
 
 export function getInfo () {

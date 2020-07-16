@@ -88,7 +88,7 @@ import { timeFix } from '@/utils/util'
 import { mapState } from 'vuex'
 import Ellipsis from '@/components/Ellipsis'
 import { PageHeaderWrapper } from '@ant-design-vue/pro-layout'
-import logApi from '@/api/log'
+import logApi from '@/api/action-log'
 
 export default {
   name: 'Workplace',

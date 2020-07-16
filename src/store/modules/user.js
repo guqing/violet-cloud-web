@@ -1,5 +1,5 @@
 import storage from 'store'
-import { login, getInfo } from '@/api/login'
+import { login, socailSignLogin, getInfo } from '@/api/login'
 import { ACCESS_TOKEN } from '@/store/mutation-types'
 import { welcome } from '@/utils/util'
 
@@ -73,6 +73,23 @@ const user = {
         commit('SET_TOKEN', token)
         console.log('vuex get after set：', storage.get(ACCESS_TOKEN))
         resolve(tokenInfo)
+      })
+    },
+    SocialSignLogin ({ commit }, data) {
+      return new Promise(resolve => {
+        socailSignLogin(data).then(res => {
+          console.log('social sign login:', res)
+          var token = getToken(res.data)
+
+          // 设置到localStorage中
+          storage.set(ACCESS_TOKEN, token, 7 * 24 * 60 * 60 * 1000)
+          console.log('社交注册绑定的登录成功:', res.data)
+          // 设置到vuex中
+          commit('SET_TOKEN', token)
+          // 设置用户信息
+          setUserInfo(res.data.userInfo, commit)
+          resolve(token)
+        })
       })
     },
     // 获取用户信息
