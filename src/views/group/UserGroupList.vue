@@ -47,7 +47,7 @@
             </a-tooltip>
           </a-form-item>
           <a-form-item :wrapper-col="groupFormButtonWrapperCol">
-            <a-button type="primary" @click="handleSaveOrUpdate" v-action:save>
+            <a-button type="primary" v-limitclick="handleSaveOrUpdate" v-action:save>
               保存
             </a-button>
             <a-button :style="{ marginLeft: '8px' }" @click="handleResetGroupForm">
@@ -129,7 +129,8 @@ export default {
       }
     },
     handleSaveOrUpdate () {
-      if (!this.userGroupForm) {
+      if (this.userGroupForm) {
+        this.$message.warning('必填参数为空')
         return
       }
       groupApi.createOrUpdate(this.userGroupForm).then(res => {

@@ -73,10 +73,10 @@
             </a-form-model-item>
           </a-col>
           <a-form-model-item :wrapper-col="menuFormButtonWrapperCol">
-            <a-button type="primary" v-limitclick="handleSaveOrUpdateMenu">
+            <a-button type="primary" @click="handleSaveOrUpdateMenu" :loading="loadingState.save">
               保存
             </a-button>
-            <a-button :style="{ marginLeft: '8px' }" @click="handleResetMenuForm">
+            <a-button :style="{ marginLeft: '8px' }" @click="handleResetMenuForm" :loading="loadingState.reset">
               重置
             </a-button>
             <a :style="{ marginLeft: '8px' }" @click="moreFormItem = !moreFormItem">
@@ -129,6 +129,10 @@ export default {
   mixins: [baseMixin],
   data () {
     return {
+      loadingState: {
+        save: false,
+        reset: false
+      },
       menuForm: {},
       treeDataLoading: false,
       rules: {
@@ -212,6 +216,7 @@ export default {
       }
     },
     handleSaveOrUpdateMenu () {
+      this.loadingState.save = true
       this.$refs['menuForm'].validate(valid => {
         if (valid) {
           this.menuForm.type = '0'
@@ -220,15 +225,27 @@ export default {
             this.listTreeMenu()
             storage.remove(ROUTER_MAP)
             this.handleResetMenuForm()
+          }).finally(() => {
+            setTimeout(() => {
+              this.loadingState.save = false
+            }, 1500)
           })
+        } else {
+          setTimeout(() => {
+            this.loadingState.save = false
+          }, 1500)
         }
       })
     },
     handleResetMenuForm () {
+      this.loadingState.reset = true
       console.log('清除表单执行')
       this.menuForm = {}
       this.checkedMenuKeys = []
       this.expandedMenuKeys = []
+      setTimeout(() => {
+        this.loadingState.reset = false
+      }, 1500)
     }
   }
 }

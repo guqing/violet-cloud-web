@@ -29,8 +29,10 @@
 
           <a-col :md="4" :sm="24">
             <span class="table-page-search-submitButtons">
-              <a-button type="primary" @click="handleSearch">查询</a-button>
-              <a-button style="margin-left: 8px" @click="handleSearchReset">重置</a-button>
+              <a-button type="primary" @click="handleSearch" :loading="loadingState.query">查询</a-button>
+              <a-button style="margin-left: 8px" @click="handleSearchReset" :loading="loadingState.reset">
+                重置
+              </a-button>
             </span>
           </a-col>
         </a-row>
@@ -113,6 +115,10 @@ export default {
   },
   data () {
     return {
+      loadingState: {
+        query: false,
+        reset: false
+      },
       rangePicker: null,
       // 查询参数
       queryParam: {},
@@ -277,12 +283,20 @@ export default {
       this.selectedRows = selectedRows
     },
     handleSearch () {
+      this.loadingState.query = true
       this.$log.debug('搜索条件:', this.queryParam)
       this.$refs.table.refresh()
+      setTimeout(() => {
+        this.loadingState.query = false
+      }, 1500)
     },
     handleSearchReset () {
+      this.loadingState.reset = true
       this.queryParam = {}
       this.$refs.table.refresh()
+      setTimeout(() => {
+        this.loadingState.reset = false
+      }, 1500)
     },
     onDatePickerChange (dates, dateStrings) {
       this.queryParam.createTimeFrom = dateStrings[0]

@@ -29,7 +29,7 @@
             />
           </a-form-model-item>
           <a-form-model-item :wrapper-col="roleFormButtonWrapperCol">
-            <a-button type="primary" @click="handleSaveOrUpdateRole">保存</a-button>
+            <a-button type="primary" @click="handleSaveOrUpdateRole" :loading="loadingState.save">保存</a-button>
             <a-button :style="{ marginLeft: '15px' }" @click="handleResetRoleForm">重置</a-button>
           </a-form-model-item>
         </a-form-model>
@@ -51,8 +51,10 @@
               </a-col>
               <a-col :md="8" :sm="24">
                 <span class="table-page-search-submitButtons">
-                  <a-button type="primary" @click="handleSearch">查询</a-button>
-                  <a-button style="margin-left: 8px" @click="handleResetSearchForm">重置</a-button>
+                  <a-button type="primary" @click="handleSearch" :loading="loadingState.query">查询</a-button>
+                  <a-button style="margin-left: 8px" @click="handleResetSearchForm" :loading="loadingState.reset">
+                    重置
+                  </a-button>
                 </span>
               </a-col>
             </a-row>
@@ -112,6 +114,11 @@ export default {
   },
   data () {
     return {
+      loadingState: {
+        save: false,
+        query: false,
+        reset: false
+      },
       labelCol: { span: 4 },
       wrapperCol: { span: 18 },
       roleForm: {},
@@ -234,13 +241,14 @@ export default {
       this.selectedRoles = selectedRoles
     },
     handleSaveOrUpdateRole () {
+      this.loadingState.save = true
       var menuIds = this.handleRelatedParentRoleMenuKeys()
       this.roleForm.menuIds = menuIds
       roleApi.createOrUpdate(this.roleForm).then(res => {
         this.$message.success('保存成功')
         this.handleResetRoleForm()
         this.$refs.table.refresh()
-      })
+      }).finally(() => { this.loadingState.save = false })
     },
     handleRelatedParentRoleMenuKeys () {
       var menuIds = []
@@ -296,11 +304,19 @@ export default {
       return temp
     },
     handleSearch () {
+      this.loadingState.query = true
       this.$refs.table.refresh()
+      setTimeout(() => {
+        this.loadingState.query = false
+      }, 1500)
     },
     handleResetSearchForm () {
+      this.loadingState.reset = true
       this.queryParam = {}
       this.$refs.table.refresh()
+      setTimeout(() => {
+        this.loadingState.reset = false
+      }, 1500)
     },
     handleBatchDeleteRole () {
       const that = this
