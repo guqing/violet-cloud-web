@@ -23,7 +23,7 @@
           </a-col>
           <a-col :md="5" :sm="24">
             <a-form-item label="创建时间">
-              <a-range-picker style="width: 100%" @change="onDatePickerChange" />
+              <a-range-picker style="width: 100%" @change="onDatePickerChange" format="YYYY-MM-DD hh:mm:ss" />
             </a-form-item>
           </a-col>
 
@@ -112,6 +112,7 @@ export default {
   },
   data () {
     return {
+      rangePicker: null,
       // 查询参数
       queryParam: {},
       pagination: {
@@ -203,6 +204,15 @@ export default {
             totalPage: res.data.pages,
             data: res.data.list
           }
+        }).catch(err => {
+          this.$message.error(`查询出错:${err}`)
+          return {
+            pageSize: 0,
+            pageNo: 1,
+            totalCount: 0,
+            totalPage: 0,
+            data: []
+          }
         })
       },
 
@@ -274,8 +284,8 @@ export default {
       this.$refs.table.refresh()
     },
     onDatePickerChange (dates, dateStrings) {
-      this.queryParam.createFrom = dateStrings[0]
-      this.queryParam.createTo = dateStrings[1]
+      this.queryParam.createTimeFrom = dateStrings[0]
+      this.queryParam.createTimeTo = dateStrings[1]
     },
     handleModalOk () {
       this.$log.debug('user create success')

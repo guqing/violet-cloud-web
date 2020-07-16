@@ -3,61 +3,30 @@
     <div class="table-page-search-wrapper">
       <a-form layout="inline">
         <a-row :gutter="48">
-          <a-col :md="8" :sm="24">
-            <a-form-item label="规则编号">
-              <a-input v-model="queryParam.id" placeholder="" />
+          <a-col :md="4" :sm="24">
+            <a-form-item label="操作人">
+              <a-input v-model="queryParam.username" placeholder="" />
             </a-form-item>
           </a-col>
-          <a-col :md="8" :sm="24">
-            <a-form-item label="使用状态">
-              <a-select v-model="queryParam.status" placeholder="请选择" default-value="0">
-                <a-select-option value="0">全部</a-select-option>
-                <a-select-option value="1">关闭</a-select-option>
-                <a-select-option value="2">运行中</a-select-option>
-              </a-select>
+          <a-col :md="4" :sm="24">
+            <a-form-item label="操作内容">
+              <a-input-number v-model="queryParam.callNo" style="width: 100%" />
             </a-form-item>
           </a-col>
-          <template v-if="advanced">
-            <a-col :md="8" :sm="24">
-              <a-form-item label="调用次数">
-                <a-input-number v-model="queryParam.callNo" style="width: 100%" />
-              </a-form-item>
-            </a-col>
-            <a-col :md="8" :sm="24">
-              <a-form-item label="更新日期">
-                <a-date-picker v-model="queryParam.date" style="width: 100%" placeholder="请输入更新日期" />
-              </a-form-item>
-            </a-col>
-            <a-col :md="8" :sm="24">
-              <a-form-item label="使用状态">
-                <a-select v-model="queryParam.useStatus" placeholder="请选择" default-value="0">
-                  <a-select-option value="0">全部</a-select-option>
-                  <a-select-option value="1">关闭</a-select-option>
-                  <a-select-option value="2">运行中</a-select-option>
-                </a-select>
-              </a-form-item>
-            </a-col>
-            <a-col :md="8" :sm="24">
-              <a-form-item label="使用状态">
-                <a-select placeholder="请选择" default-value="0">
-                  <a-select-option value="0">全部</a-select-option>
-                  <a-select-option value="1">关闭</a-select-option>
-                  <a-select-option value="2">运行中</a-select-option>
-                </a-select>
-              </a-form-item>
-            </a-col>
-          </template>
-          <a-col :md="(!advanced && 8) || 24" :sm="24">
-            <span
-              class="table-page-search-submitButtons"
-              :style="(advanced && { float: 'right', overflow: 'hidden' }) || {}"
-            >
+          <a-col :md="5" :sm="24">
+            <a-form-item label="操作时间">
+              <a-range-picker style="width: 100%" @change="onDatePickerChange" />
+            </a-form-item>
+          </a-col>
+          <a-col :md="4" :sm="24">
+            <a-form-item label="操作地点">
+              <a-input v-model="queryParam.location" placeholder="" />
+            </a-form-item>
+          </a-col>
+          <a-col :md="4" :sm="24">
+            <span class="table-page-search-submitButtons">
               <a-button type="primary" @click="$refs.table.refresh(true)">查询</a-button>
               <a-button style="margin-left: 8px" @click="() => (queryParam = {})">重置</a-button>
-              <a @click="toggleAdvanced" style="margin-left: 8px">
-                {{ advanced ? '收起' : '展开' }}
-                <a-icon :type="advanced ? 'up' : 'down'" />
-              </a>
             </span>
           </a-col>
         </a-row>
@@ -82,12 +51,20 @@
       rowKey="id"
       :columns="columns"
       :data="loadData"
-      :alert="options.alert"
-      :rowSelection="options.rowSelection"
+      :alert="{
+        show: true,
+        clear: () => {
+          this.selectedRowKeys = []
+        }
+      }"
+      :rowSelection="{
+        selectedRowKeys: this.selectedRowKeys,
+        onChange: this.onSelectChange
+      }"
     >
       <span slot="action" slot-scope="text, record">
         <template>
-          <a @click="handleEdit(record)">编辑</a>
+          <a @click="handleEdit(record)">删除</a>
           <a-divider type="vertical" />
         </template>
         <a-dropdown>
@@ -95,12 +72,6 @@
           <a-menu slot="overlay">
             <a-menu-item>
               <a href="javascript:;">详情</a>
-            </a-menu-item>
-            <a-menu-item v-if="$auth('table.disable')">
-              <a href="javascript:;">禁用</a>
-            </a-menu-item>
-            <a-menu-item v-if="$auth('table.delete')">
-              <a href="javascript:;">删除</a>
             </a-menu-item>
           </a-menu>
         </a-dropdown>
@@ -130,8 +101,7 @@ export default {
       columns: [
         {
           title: '操作人',
-          dataIndex: 'username',
-          needTotal: true
+          dataIndex: 'username'
         },
         {
           title: '内容',
@@ -177,8 +147,12 @@ export default {
       ],
       // 加载数据方法 必须为 Promise 对象
       loadData: parameter => {
-        console.log('loadData.parameter', parameter)
-        return logApi.list(parameter).then(res => {
+        const queryRequest = {}
+        queryRequest.current = parameter.pageNo
+        queryRequest.pageSize = parameter.pageSize
+        Object.assign(queryRequest, this.queryParam)
+        this.$log.debug('loadData.parameter', queryRequest)
+        return logApi.list(queryRequest).then(res => {
           return {
             pageSize: res.data.pageSize,
             pageNo: res.data.current,
@@ -189,21 +163,16 @@ export default {
         })
       },
       selectedRowKeys: [],
-      selectedRows: [],
-
-      // custom table alert & rowSelection
-      options: {
-        alert: { show: true, clear: () => { this.selectedRowKeys = [] } },
-        rowSelection: {
-          selectedRowKeys: this.selectedRowKeys,
-          onChange: this.onSelectChange
-        }
-      }
+      selectedRows: []
     }
   },
   created () {
   },
   methods: {
+    onDatePickerChange (dates, dateStrings) {
+      this.queryParam.createFrom = dateStrings[0]
+      this.queryParam.createTo = dateStrings[1]
+    },
     handleEdit (record) {
       this.$emit('onEdit', record)
     },

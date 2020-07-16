@@ -4,7 +4,7 @@ const logApi = {}
 
 logApi.list = function (parameter) {
   return axios({
-    url: '/admin/log',
+    url: '/admin/log/action',
     method: 'get',
     params: parameter
   })
