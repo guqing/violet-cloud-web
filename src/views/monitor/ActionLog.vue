@@ -34,12 +34,9 @@
     </div>
 
     <div class="table-operator">
-      <a-button type="primary" icon="plus" @click="handleEdit()">新建</a-button>
       <a-dropdown v-action:edit v-if="selectedRowKeys.length > 0">
         <a-menu slot="overlay">
           <a-menu-item key="1"><a-icon type="delete" />删除</a-menu-item>
-          <!-- lock | unlock -->
-          <a-menu-item key="2"><a-icon type="lock" />锁定</a-menu-item>
         </a-menu>
         <a-button style="margin-left: 8px"> 批量操作 <a-icon type="down" /> </a-button>
       </a-dropdown>
@@ -64,30 +61,27 @@
     >
       <span slot="action" slot-scope="text, record">
         <template>
-          <a @click="handleEdit(record)">删除</a>
+          <a href="javascript:;" @click="$refs.modal.detail(record)">详情</a>
           <a-divider type="vertical" />
+          <a @click="handleDelete(record)">删除</a>
         </template>
-        <a-dropdown>
-          <a class="ant-dropdown-link"> 更多 <a-icon type="down" /> </a>
-          <a-menu slot="overlay">
-            <a-menu-item>
-              <a href="javascript:;">详情</a>
-            </a-menu-item>
-          </a-menu>
-        </a-dropdown>
       </span>
     </s-table>
+
+    <action-modal ref="modal" @ok="handleModalOk"></action-modal>
   </a-card>
 </template>
 
 <script>
 import { STable } from '@/components'
 import logApi from '@/api/action-log'
+import ActionModal from './modules/ActionModal'
 
 export default {
   name: 'ActionLog',
   components: {
-    STable
+    STable,
+    ActionModal
   },
   data () {
     return {
@@ -181,8 +175,8 @@ export default {
       this.queryParam.createFrom = dateStrings[0]
       this.queryParam.createTo = dateStrings[1]
     },
-    handleEdit (record) {
-      this.$emit('onEdit', record)
+    handleDelete (record) {
+      this.$log.debug('删除记录:', record)
     },
     handleOk () {
 
