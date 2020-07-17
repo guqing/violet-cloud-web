@@ -143,7 +143,8 @@ export default {
       loadData: parameter => {
         const queryRequest = {}
         queryRequest.current = parameter.pageNo
-        queryRequest.pageSize = parameter.pageSize
+        // parameter.pageSize
+        queryRequest.pageSize = 5
         Object.assign(queryRequest, this.queryParam)
         this.$log.debug('loadData.parameter', queryRequest)
         return actionLogApi.list(queryRequest).then(res => {

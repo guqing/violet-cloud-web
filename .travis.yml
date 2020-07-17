@@ -1,7 +1,7 @@
 language: node_js
 node_js:
   - 10.15.0
-cache: yarn
+cache: npm
 script:
-  - yarn
-  - yarn run lint --no-fix && yarn run build
+  - npm
+  - npm run lint --no-fix && npm run build
