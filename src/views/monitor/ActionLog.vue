@@ -68,7 +68,7 @@
       </span>
     </s-table>
 
-    <action-modal ref="modal" @ok="handleModalOk"></action-modal>
+    <action-modal ref="modal"></action-modal>
   </a-card>
 </template>
 

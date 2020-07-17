@@ -678,7 +678,7 @@ const userNav = (options) => {
         'icon': 'user',
         'show': true
       },
-      'redirect': '/account/center',
+      'redirect': '/account/center/Index',
       'component': 'RouteView'
     },
     {
