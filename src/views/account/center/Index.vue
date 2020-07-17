@@ -4,35 +4,57 @@
       <a-col :md="24" :lg="8">
         <a-card :bordered="false">
           <div class="account-center-avatarHolder">
-            <div class="avatar">
-              <img :src="avatar()" />
+            <div class="avatar" title="点击可以修改头像">
+              <a-upload name="file" :showUploadList="false" :beforeUpload="handleBeforeUpload">
+                <div class="ant-upload-preview" type="upload">
+                  <img :src="avatar()" />
+                </div>
+              </a-upload>
             </div>
             <div class="username">{{ nickname() }}</div>
             <div class="bio">{{ userInfo().description }}</div>
           </div>
           <div class="account-center-detail">
-            <p v-if="userInfo().email" title="邮箱地址"><a-icon type="mail" />{{ userInfo().email }}</p>
-            <p v-if="userInfo().telephone" title="手机号"><a-icon type="phone" />{{ userInfo().telephone }}</p>
-            <p v-if="userInfo().createTime" title="账号年龄">
-              <a-icon type="calendar" />{{ userInfo().createTime | dateToNow }}
+            <p>
+              <a-icon type="crown" />
+              <a-tag v-for="(item, index) in user.roleNames" :key="index">{{ item }}</a-tag>
             </p>
-            <p v-if="userInfo().createTime" title="上次登录时间">
-              <a-icon type="safety" />{{ userInfo().lastLoginTime | formatDate }}
+            <p v-if="user.email" title="邮箱地址"><a-icon type="mail" />{{ user.email }}</p>
+            <p v-if="user.mobile" title="手机号"><a-icon type="phone" />{{ user.mobile }}</p>
+            <p v-if="user.createTime" title="账号年龄"><a-icon type="calendar" />{{ user.createTime | dateToNow }}</p>
+            <p v-if="user.lastLoginTime" title="上次登录时间">
+              <a-icon type="safety" />{{ user.lastLoginTime | formatDate }}
             </p>
           </div>
           <a-divider />
           <div class="account-center-tags">
-            <a-list :loading="countsLoading" itemLayout="horizontal">
-              <a-list-item>
-                累计创建了
-                {{ counts.presetCount || 0 }} 条预选卡口方案。
-              </a-list-item>
-              <a-list-item> 累计创建了 {{ counts.actualCount || 0 }} 条布设卡口方案。 </a-list-item>
-              <a-list-item> 累计创建了 {{ counts.viaCount || 0 }} 条车辆路径方案。 </a-list-item>
-              <a-list-item> 累计创建了 {{ counts.routeCount || 0 }} 条车辆轨迹。 </a-list-item>
-              <a-list-item></a-list-item>
-            </a-list>
+            <div class="tagsTitle">标签</div>
+            <div>
+              <template v-for="(tag, index) in tags">
+                <a-tooltip v-if="tag.length > 20" :key="tag" :title="tag">
+                  <a-tag :key="tag" :closable="index !== 0" :close="() => handleTagClose(tag)">{{
+                    `${tag.slice(0, 20)}...`
+                  }}</a-tag>
+                </a-tooltip>
+                <a-tag v-else :key="tag" :closable="index !== 0" :close="() => handleTagClose(tag)">{{ tag }}</a-tag>
+              </template>
+              <a-input
+                v-if="tagInputVisible"
+                ref="tagInput"
+                type="text"
+                size="small"
+                :style="{ width: '78px' }"
+                :value="tagInputValue"
+                @change="handleInputChange"
+                @blur="handleTagInputConfirm"
+                @keyup.enter="handleTagInputConfirm"
+              />
+              <a-tag v-else @click="showTagInput" style="background: #fff; borderStyle: dashed;">
+                <a-icon type="plus" />New Tag
+              </a-tag>
+            </div>
           </div>
+
           <a-divider :dashed="true" />
         </a-card>
       </a-col>
@@ -49,6 +71,8 @@
         </a-card>
       </a-col>
     </a-row>
+
+    <avatar-modal ref="modal" @success="handleUploadAvatar"> </avatar-modal>
   </div>
 </template>
 
@@ -57,21 +81,22 @@ import moment from 'moment'
 import { PageView, RouteView } from '@/layouts'
 import BaseSetting from './page/BaseSetting'
 import PasswordPage from './page/PasswordPage'
-
+import AvatarModal from './page/AvatarModal'
 import { mapGetters } from 'vuex'
 
 export default {
   components: {
     RouteView,
     PageView,
+    AvatarModal,
     BaseSetting,
     PasswordPage
   },
   data () {
     return {
-      counts: {},
-      countsLoading: false,
-
+      tags: ['旧街凉风', '坐拥百态', '醉酒入梦', '晚风抚人', '无人及你'],
+      tagInputVisible: false,
+      tagInputValue: '',
       tabListNoTitle: [
         {
           key: 'base',
@@ -85,9 +110,6 @@ export default {
       noTitleKey: 'base'
     }
   },
-  mounted () {
-    this.getCounts()
-  },
   filters: {
     dateToNow (date) {
       return moment(date).toNow(true)
@@ -96,22 +118,50 @@ export default {
       return moment(date).format('YYYY-MM-DD HH:mm:ss')
     }
   },
+  computed: {
+    user () {
+      return this.userInfo()
+    }
+  },
   methods: {
     ...mapGetters(['nickname', 'avatar', 'userInfo']),
 
+    handleBeforeUpload (file) {
+      console.log('before upload:', file)
+      this.$refs.modal.edit(file)
+      return false
+    },
+    handleUploadAvatar (avatarUrl) {
+      this.user['avatar'] = avatarUrl
+    },
     handleTabChange (key, type) {
       this[type] = key
     },
-
-    getCounts () {
-      this.countsLoading = true
-      var counts = {}
-      this.$set(counts, 'presetCount', 1)
-      this.$set(counts, 'actualCount', 1)
-      this.$set(counts, 'viaCount', 1)
-      this.$set(counts, 'routeCount', 1)
-      this.counts = counts
-      this.countsLoading = false
+    handleTagClose (removeTag) {
+      const tags = this.tags.filter(tag => tag !== removeTag)
+      this.tags = tags
+    },
+    // tag
+    showTagInput () {
+      this.tagInputVisible = true
+      this.$nextTick(() => {
+        this.$refs.tagInput.focus()
+      })
+    },
+    handleInputChange (e) {
+      this.tagInputValue = e.target.value
+    },
+    handleTagInputConfirm () {
+      const inputValue = this.tagInputValue
+      let tags = this.tags
+      if (inputValue && !tags.includes(inputValue)) {
+        tags = [...tags, inputValue]
+      }
+      Object.assign(this, {
+        tags,
+        tagInputVisible: false,
+        tagInputValue: ''
+      })
     }
   }
 }
