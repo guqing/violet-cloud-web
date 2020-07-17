@@ -4,23 +4,13 @@
       <a-form layout="inline">
         <a-row :gutter="48">
           <a-col :md="4" :sm="24">
-            <a-form-item label="操作人">
+            <a-form-item label="用户名">
               <a-input v-model="queryParam.username" placeholder="" />
             </a-form-item>
           </a-col>
-          <a-col :md="4" :sm="24">
-            <a-form-item label="操作内容">
-              <a-input-number v-model="queryParam.callNo" style="width: 100%" />
-            </a-form-item>
-          </a-col>
           <a-col :md="5" :sm="24">
-            <a-form-item label="操作时间">
+            <a-form-item label="登录时间">
               <a-range-picker style="width: 100%" @change="onDatePickerChange" />
-            </a-form-item>
-          </a-col>
-          <a-col :md="4" :sm="24">
-            <a-form-item label="操作地点">
-              <a-input v-model="queryParam.location" placeholder="" />
             </a-form-item>
           </a-col>
           <a-col :md="4" :sm="24">
@@ -67,70 +57,47 @@
         </template>
       </span>
     </s-table>
-
-    <action-modal ref="modal" @ok="handleModalOk"></action-modal>
   </a-card>
 </template>
-
 <script>
 import { STable } from '@/components'
-import actionLogApi from '@/api/action-log'
-import ActionModal from './modules/ActionModal'
+import loginLogApi from '@/api/login-log'
 
 export default {
-  name: 'ActionLog',
+  name: 'LoginLog',
   components: {
-    STable,
-    ActionModal
+    STable
   },
   data () {
     return {
-      mdl: {},
-      // 高级搜索 展开/关闭
-      advanced: false,
-      // 查询参数
       queryParam: {},
-      // 表头
       columns: [
         {
-          title: '操作人',
+          title: '用户名',
           dataIndex: 'username'
         },
         {
-          title: '内容',
-          dataIndex: 'operation',
+          title: '操作系统',
+          dataIndex: 'system'
+        },
+        {
+          title: '浏览器',
+          dataIndex: 'browser',
           ellipsis: true
         },
         {
-          title: '方法',
-          dataIndex: 'method',
+          title: '登录地点',
+          dataIndex: 'location',
           ellipsis: true
         },
         {
-          title: '入参',
-          dataIndex: 'params',
-          ellipsis: true
-        },
-        {
-          title: '执行耗时',
-          dataIndex: 'executionTime',
-          sorter: true,
-          customRender: (text) => {
-            return <a-tag color="green">{text} ms</a-tag>
-          }
-        },
-        {
-          title: 'IP',
+          title: 'IP地址',
           dataIndex: 'ip'
         },
         {
-          title: '位置',
-          dataIndex: 'location'
-        },
-        {
-          title: '操作时间',
-          dataIndex: 'createTime',
-          sorter: true
+          title: '登录时间',
+          dataIndex: 'loginTime',
+          ellipsis: true
         },
         {
           title: '操作',
@@ -146,7 +113,7 @@ export default {
         queryRequest.pageSize = parameter.pageSize
         Object.assign(queryRequest, this.queryParam)
         this.$log.debug('loadData.parameter', queryRequest)
-        return actionLogApi.list(queryRequest).then(res => {
+        return loginLogApi.list(queryRequest).then(res => {
           return {
             pageSize: res.data.pageSize,
             pageNo: res.data.current,
@@ -174,18 +141,9 @@ export default {
       this.queryParam.createFrom = dateStrings[0]
       this.queryParam.createTo = dateStrings[1]
     },
-    handleDelete (record) {
-      this.$log.debug('删除记录:', record)
-    },
-    handleOk () {
-
-    },
     onSelectChange (selectedRowKeys, selectedRows) {
       this.selectedRowKeys = selectedRowKeys
       this.selectedRows = selectedRows
-    },
-    toggleAdvanced () {
-      this.advanced = !this.advanced
     },
     resetSearchForm () {
       this.queryParam = {

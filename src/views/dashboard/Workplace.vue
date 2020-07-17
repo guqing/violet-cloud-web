@@ -88,7 +88,7 @@ import { timeFix } from '@/utils/util'
 import { mapState } from 'vuex'
 import Ellipsis from '@/components/Ellipsis'
 import { PageHeaderWrapper } from '@ant-design-vue/pro-layout'
-import logApi from '@/api/action-log'
+import actionLogApi from '@/api/action-log'
 
 export default {
   name: 'Workplace',
@@ -147,7 +147,7 @@ export default {
         current: this.pagination.current,
         pageSize: this.pagination.pageSize
       }
-      logApi.list(param).then(res => {
+      actionLogApi.list(param).then(res => {
         this.activities = res.data.list
         this.pagination.total = res.data.total
       })
