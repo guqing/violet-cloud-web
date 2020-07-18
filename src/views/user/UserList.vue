@@ -57,7 +57,6 @@
       rowKey="username"
       :columns="columns"
       :data="loadData"
-      showPagination="auto"
       :alert="{ show: true, clear: true }"
       :rowSelection="rowSelection"
     >

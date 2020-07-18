@@ -3,7 +3,7 @@ import store from '@/store'
 import storage from 'store'
 import notification from 'ant-design-vue/es/notification'
 import { VueAxios } from './axios'
-import { ACCESS_TOKEN } from '@/store/mutation-types'
+import { ACCESS_TOKEN, GATEWAY_ACCESS_TOKEN } from '@/store/mutation-types'
 
 // 创建 axios 实例
 const request = axios.create({
@@ -47,12 +47,23 @@ const errorHandler = (error) => {
 
 // request interceptor
 request.interceptors.request.use(config => {
-  const token = storage.get(ACCESS_TOKEN)
-  // 如果 token 存在
-  // 让每个请求携带自定义 token
-  if (token) {
-    config.headers['Authorization'] = 'bearer ' + token.access_token
+  // 网关服务请求带网关的token
+  if (config.url.startsWith('/route/auth')) {
+    const token = storage.get(GATEWAY_ACCESS_TOKEN)
+    console.log('网关认证token:', token)
+    if (token) {
+      config.headers['Authorization'] = 'bearer ' + token
+    }
+  } else {
+    // 其他请求带认证服务器的token
+    const token = storage.get(ACCESS_TOKEN)
+    // 如果 token 存在
+    // 让每个请求携带自定义 token
+    if (token) {
+      config.headers['Authorization'] = 'bearer ' + token.access_token
+    }
   }
+
   return config
 }, errorHandler)
 

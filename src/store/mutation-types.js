@@ -1,4 +1,5 @@
 export const ACCESS_TOKEN = 'Access_Token'
+export const GATEWAY_ACCESS_TOKEN = 'GATEWAY_Access_Token'
 
 export const SIDEBAR_TYPE = 'sidebar_type'
 export const TOGGLE_MOBILE_TYPE = 'is_mobile'
