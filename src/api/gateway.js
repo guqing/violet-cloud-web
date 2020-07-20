@@ -25,5 +25,12 @@ gatewayApi.listUser = function (parameter) {
     params: parameter
   })
 }
+gatewayApi.countUser = function (parameter) {
+  return axios({
+    url: '/route/auth/user/count',
+    method: 'get',
+    params: parameter
+  })
+}
 
 export default gatewayApi

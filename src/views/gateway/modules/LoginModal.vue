@@ -31,14 +31,12 @@
   </a-card>
 </template>
 <script>
-import gatewayApi from '@/api/gateway'
 import { mapActions } from 'vuex'
 
 export default {
-  name: 'RateLimitLog',
+  name: 'GateWayLoginModal',
   data () {
     return {
-      rateLimit: [],
       visible: false
     }
   },
@@ -52,6 +50,7 @@ export default {
       this.visible = true
     },
     handleGatewayAuth () {
+      this.$log.debug('handleGatewayAuth执行')
       this.form.validateFields((err, values) => {
         if (!err) {
           this.GateWayLogin(values).then(res => {
@@ -59,12 +58,6 @@ export default {
             this.$log.debug('网关认证token:', res)
           })
         }
-      })
-    },
-    handleRateLimitLogList () {
-      gatewayApi.rateLimitLogList().then(res => {
-        this.$log.debug(res)
-        this.rateLimit = res
       })
     }
   }

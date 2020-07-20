@@ -1,59 +1,95 @@
 <template>
   <div>
     <a-card :bordered="false" v-if="isAuthenticated">
-      <s-table
-        ref="table"
-        size="default"
+      <div class="table-operator">
+        <a-form layout="inline">
+          <a-row :gutter="15">
+            <a-col :md="5" :sm="24">
+              <a-form-item label="用户名">
+                <a-input placeholder="角色名称" v-model="queryParam.roleName" />
+              </a-form-item>
+            </a-col>
+            <a-col :md="5" :sm="24">
+              <a-form-item label="角色">
+                <a-input placeholder="角色描述" v-model="queryParam.remark" />
+              </a-form-item>
+            </a-col>
+            <a-col :md="5" :sm="24">
+              <span class="table-page-search-submitButtons">
+                <a-button type="primary" @click="handleSearch" :loading="loadingState.query">查询</a-button>
+                <a-button style="margin-left: 8px" @click="handleResetSearchForm" :loading="loadingState.reset">
+                  重置
+                </a-button>
+                <a-dropdown v-if="selectedRowKeys.length > 0">
+                  <a-menu slot="overlay">
+                    <a-menu-item key="1" @click="handleBatchDelete"><a-icon type="delete" />删除</a-menu-item>
+                  </a-menu>
+                  <a-button style="margin-left: 8px"> 批量操作 <a-icon type="down" /> </a-button>
+                </a-dropdown>
+              </span>
+            </a-col>
+          </a-row>
+        </a-form>
+      </div>
+      <a-alert type="info" show-icon>
+        <p slot="message" style="padding:0;margin:0px;">
+          <span style="margin-right: 12px">
+            已选择: <a style="font-weight: 600">{{ selectedRows.length }}</a>
+          </span>
+          <a style="margin-left: 24px" @click="clearSelect">清空</a>
+        </p>
+      </a-alert>
+      <a-table
         rowKey="id"
         :columns="columns"
-        :data="loadData"
-        showPagination="auto"
-        :alert="false"
-        :rowSelection="{ selectedKeys: selectedKeys, onChange: onSelectChange }"
+        :data-source="users"
+        :pagination="pagination"
+        :row-selection="{ selectedRowKeys: selectedRowKeys, onChange: onSelectChange }"
       >
-        <span slot="action">
-          <a-dropdown>
-            <a class="ant-dropdown-link"> 更多 <a-icon type="down" /> </a>
-            <a-menu slot="overlay">
-              <a-menu-item>
-                <a href="javascript:;">详情</a>
-              </a-menu-item>
-              <a-menu-item>
-                <a href="javascript:;">删除</a>
-              </a-menu-item>
-            </a-menu>
-          </a-dropdown>
+        <span slot="action" slot-scope="text, record">
+          <template>
+            <a @click="handleEdit(record)">编辑</a>
+            <a-divider type="vertical" />
+            <a @click="handleDelete(record)">编辑</a>
+          </template>
         </span>
-      </s-table>
+      </a-table>
     </a-card>
-    <login-modal></login-modal>
+    <login-modal v-if="!isAuthenticated"></login-modal>
   </div>
 </template>
 <script>
 import { GATEWAY_ACCESS_TOKEN } from '@/store/mutation-types'
 import LoginModal from './modules/LoginModal'
-import { STable } from '@/components'
 import gatewayApi from '@/api/gateway'
 import storage from 'store'
-
 
 export default {
   name: 'RouteUser',
   components: {
-    LoginModal,
-    STable
+    LoginModal
   },
   data () {
     return {
+      users: [],
+      pagination: {
+        current: 0,
+        pageSize: 10
+      },
+      queryParam: {},
+      loadingState: {
+        query: false,
+        reset: false
+      },
       // 表头
       columns: [
         {
           title: '用户名',
-          dataIndex: 'roleName'
+          dataIndex: 'username'
         },
         {
-          title: '权限',
-          dataIndex: 'remark'
+          title: '角色',
+          dataIndex: 'roles'
         },
         {
           title: '创建时间',
@@ -67,32 +103,7 @@ export default {
           scopedSlots: { customRender: 'action' }
         }
       ],
-      // 加载数据方法 必须为 Promise 对象
-      loadData: parameter => {
-        const requestParameters = Object.assign({}, this.queryParam)
-        requestParameters.current = parameter.pageNo
-        requestParameters.pageSize = parameter.pageSize
-        return gatewayApi.listUser(requestParameters).then(res => {
-          console.log(res)
-          return {
-            pageSize: res.data.pageSize,
-            pageNo: res.data.current,
-            totalCount: res.data.total,
-            totalPage: res.data.pages,
-            data: res.data.list
-          }
-        }).catch(err => {
-          this.$message.error(`查询出错:${err}`)
-          return {
-            pageSize: 0,
-            pageNo: 1,
-            totalCount: 0,
-            totalPage: 0,
-            data: []
-          }
-        })
-      },
-      selectedKeys: [],
+      selectedRowKeys: [],
       selectedRows: []
     }
   },
@@ -101,10 +112,53 @@ export default {
       return !!storage.get(GATEWAY_ACCESS_TOKEN)
     }
   },
+  mounted () {
+    this.handleListUser()
+  },
   methods: {
-    onSelectChange (selectedRoleKeys, selectedRoles) {
-      this.selectedRoleKeys = selectedRoleKeys
-      this.selectedRoles = selectedRoles
+    handleListUser () {
+      const param = Object.assign({}, this.queryParam)
+      param.current = this.pagination.current
+      param.pageSize = this.pagination.pageSize
+      gatewayApi.listUser(param).then(res => {
+        this.users = res
+      })
+      this.handleCountUser()
+    },
+    handleCountUser () {
+      gatewayApi.countUser(this.queryParam).then(res => {
+        this.pagination.total = res
+      })
+    },
+    handleEdit (record) {
+      this.$log.debug('编辑:', record)
+    },
+    handleDelete (record) {
+      this.$log.debug('删除:', record)
+    },
+    handleSearch () {
+      this.loadingState.query = true
+      setTimeout(() => {
+        this.loadingState.query = false
+      }, 1500)
+    },
+    handleResetSearchForm () {
+      this.loadingState.reset = true
+      this.users = {}
+      setTimeout(() => {
+        this.loadingState.reset = false
+      }, 1500)
+    },
+    handleBatchDelete () {
+
+    },
+    onSelectChange (selectedRowKeys, selectedRows) {
+      this.selectedRowKeys = selectedRowKeys
+      this.selectedRows = selectedRows
+    },
+    clearSelect (e) {
+      e.preventDefault()
+      this.onSelectChange([], [])
     }
   }
 }

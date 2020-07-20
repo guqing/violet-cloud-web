@@ -14,11 +14,12 @@ const request = axios.create({
 
 // 异常拦截处理器
 const errorHandler = (error) => {
+  console.log('请求异常:', error)
   if (error.response) {
     const data = error.response.data
     // 从 localstorage 获取 token
     const token = storage.get(ACCESS_TOKEN)
-    if (error.response.status === 'A0320') {
+    if (error.response.code === 'A0320') {
       notification.error({
         message: 'Forbidden',
         description: data.message
@@ -35,6 +36,11 @@ const errorHandler = (error) => {
           }, 1500)
         })
       }
+    } if (error.response.status === '401') {
+      notification.error({
+        message: 'Unauthorized',
+        description: '未授权或已过期，请重新登录'
+      })
     } else {
       notification.error({
         message: '请求失败',
@@ -50,7 +56,6 @@ request.interceptors.request.use(config => {
   // 网关服务请求带网关的token
   if (config.url.startsWith('/route/auth')) {
     const token = storage.get(GATEWAY_ACCESS_TOKEN)
-    console.log('网关认证token:', token)
     if (token) {
       config.headers['Authorization'] = 'bearer ' + token
     }
