@@ -12,19 +12,23 @@ const request = axios.create({
   timeout: 6000 // 请求超时时间
 })
 
+// 网关路径前缀
+const GATEWAY_PATH = '/route/auth'
+
 // 异常拦截处理器
 const errorHandler = (error) => {
-  console.log('请求异常:', error)
-  if (error.response) {
-    const data = error.response.data
+  console.log('请求异常:', error.response)
+  const res = error.response
+  if (res) {
+    const data = res.data
     // 从 localstorage 获取 token
     const token = storage.get(ACCESS_TOKEN)
-    if (error.response.code === 'A0320') {
+    if (data.dcode === 'A0320') {
       notification.error({
         message: 'Forbidden',
         description: data.message
       })
-    } else if (error.response.status === 'A0300') {
+    } else if (data.code === 'A0300') {
       notification.error({
         message: 'Unauthorized',
         description: '授权失败，请重新登录'
@@ -36,10 +40,10 @@ const errorHandler = (error) => {
           }, 1500)
         })
       }
-    } if (error.response.status === '401') {
+    } if (res.status === '401' && isGateWayRequest(res.config.url)) {
       notification.error({
         message: 'Unauthorized',
-        description: '未授权或已过期，请重新登录'
+        description: '认证已失效，请重新认证'
       })
     } else {
       notification.error({
@@ -53,18 +57,14 @@ const errorHandler = (error) => {
 
 // request interceptor
 request.interceptors.request.use(config => {
-  // 网关服务请求带网关的token
-  if (config.url.startsWith('/route/auth')) {
-    const token = storage.get(GATEWAY_ACCESS_TOKEN)
-    if (token) {
-      config.headers['Authorization'] = 'bearer ' + token
-    }
+  const gatewayToken = storage.get(GATEWAY_ACCESS_TOKEN)
+  if (gatewayToken && isGateWayRequest(config.url)) {
+    // 网关服务请求带网关的token
+    config.headers['Authorization'] = 'bearer ' + gatewayToken
   } else {
-    // 其他请求带认证服务器的token
     const token = storage.get(ACCESS_TOKEN)
-    // 如果 token 存在
-    // 让每个请求携带自定义 token
     if (token) {
+      // 其他请求带认证服务器的token
       config.headers['Authorization'] = 'bearer ' + token.access_token
     }
   }
@@ -82,6 +82,10 @@ const installer = {
   install (Vue) {
     Vue.use(VueAxios, request)
   }
+}
+
+function isGateWayRequest (url) {
+  return url.startsWith(GATEWAY_PATH)
 }
 
 export default request

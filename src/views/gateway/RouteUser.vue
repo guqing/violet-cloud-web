@@ -6,12 +6,7 @@
           <a-row :gutter="15">
             <a-col :md="5" :sm="24">
               <a-form-item label="用户名">
-                <a-input placeholder="角色名称" v-model="queryParam.roleName" />
-              </a-form-item>
-            </a-col>
-            <a-col :md="5" :sm="24">
-              <a-form-item label="角色">
-                <a-input placeholder="角色描述" v-model="queryParam.remark" />
+                <a-input placeholder="角色名称" v-model="queryParam.username" />
               </a-form-item>
             </a-col>
             <a-col :md="5" :sm="24">
@@ -138,13 +133,15 @@ export default {
     },
     handleSearch () {
       this.loadingState.query = true
+      this.handleListUser()
       setTimeout(() => {
         this.loadingState.query = false
       }, 1500)
     },
     handleResetSearchForm () {
       this.loadingState.reset = true
-      this.users = {}
+      this.handleListUser()
+      this.queryParam = {}
       setTimeout(() => {
         this.loadingState.reset = false
       }, 1500)

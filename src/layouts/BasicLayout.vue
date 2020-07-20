@@ -51,7 +51,7 @@ export default {
         // 定宽: true / 流式: false
         contentWidth: false,
         // 主题 'dark' | 'light'
-        theme: 'dark',
+        theme: 'light',
         // 主色调
         primaryColor: '#1890ff',
         fixedHeader: false,

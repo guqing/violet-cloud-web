@@ -14,7 +14,7 @@
  */
 
 export default {
-  navTheme: 'dark', // theme for nav menu
+  navTheme: 'light', // theme for nav menu
   primaryColor: '#52C41A', // primary color of ant design
   layout: 'sidemenu', // nav menu position: `sidemenu` or `topmenu`
   contentWidth: 'Fixed', // layout of content: `Fluid` or `Fixed`, only works when layout is topmenu
@@ -23,9 +23,9 @@ export default {
   fixSiderbar: false, // sticky siderbar
   colorWeak: false,
   menu: {
-    locale: true
+    locale: false
   },
-  title: 'Ant Design Pro',
+  title: 'Violet Cloud',
   multiTab: false,
   pwa: false,
   iconfontUrl: '',
