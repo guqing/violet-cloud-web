@@ -15,17 +15,21 @@
                 <a-button style="margin-left: 8px" @click="handleResetSearchForm" :loading="loadingState.reset">
                   重置
                 </a-button>
-                <a-dropdown v-if="selectedRowKeys.length > 0">
-                  <a-menu slot="overlay">
-                    <a-menu-item key="1" @click="handleBatchDelete"><a-icon type="delete" />删除</a-menu-item>
-                  </a-menu>
-                  <a-button style="margin-left: 8px"> 批量操作 <a-icon type="down" /> </a-button>
-                </a-dropdown>
               </span>
             </a-col>
           </a-row>
         </a-form>
+        <div style="margin-top: 15px;">
+          <a-button type="primary" @click="handleOpenCreateFrom"><a-icon type="plus" />新增</a-button>
+          <a-dropdown v-if="selectedRowKeys.length > 0">
+            <a-menu slot="overlay">
+              <a-menu-item key="1" @click="handleBatchDelete"><a-icon type="delete" />删除</a-menu-item>
+            </a-menu>
+            <a-button style="margin-left: 8px"> 批量操作 <a-icon type="down" /> </a-button>
+          </a-dropdown>
+        </div>
       </div>
+
       <a-alert type="info" show-icon>
         <p slot="message" style="padding:0;margin:0px;">
           <span style="margin-right: 12px">
@@ -45,7 +49,7 @@
           <template>
             <a @click="handleEdit(record)">编辑</a>
             <a-divider type="vertical" />
-            <a @click="handleDelete(record)">编辑</a>
+            <a @click="handleDeleteById(record)">删除</a>
           </template>
         </span>
       </a-table>
@@ -67,14 +71,18 @@ export default {
   data () {
     return {
       users: [],
+      userParam: {},
       pagination: {
         current: 0,
         pageSize: 10
       },
       queryParam: {},
       loadingState: {
+        create: false,
         query: false,
-        reset: false
+        reset: false,
+        delete: false,
+        update: false
       },
       // 表头
       columns: [
@@ -128,8 +136,9 @@ export default {
     handleEdit (record) {
       this.$log.debug('编辑:', record)
     },
-    handleDelete (record) {
+    handleDeleteById (record) {
       this.$log.debug('删除:', record)
+      this.deleteUser(record.id)
     },
     handleSearch () {
       this.loadingState.query = true
@@ -147,7 +156,53 @@ export default {
       }, 1500)
     },
     handleBatchDelete () {
+      this.deleteUser(this.selectedRowKeys)
+    },
+    handleDeleteUser (userIds) {
+      this.loadingState.delete = true
+      gatewayApi.deleteUser().then(res => {
+        this.$message.success('删除成功')
+      }).finally(() => {
+        setTimeout(() => {
+          this.loadingState.delete = false
+        }, 1500)
+      })
+    },
+    handleOpenCreateFrom () {
 
+    },
+    handleCreateUser () {
+      const that = this
+      this.$confirm({
+        title: '警告',
+        content: `确定要删除所选中的用户吗?`,
+        okText: '删除',
+        okType: 'danger',
+        cancelText: '取消',
+        onOk () {
+          that.loadingState.create = true
+          gatewayApi.createUser(this.userParam).then(res => {
+            that.$message.success('删除成功')
+          }).finally(() => {
+            setTimeout(() => {
+              that.loadingState.create = false
+            }, 1500)
+          })
+        },
+        onCancel () {
+          that.$log.info('Cancel')
+        }
+      })
+    },
+    handleUpdateUser () {
+      this.loadingState.update = true
+      gatewayApi.updateUser(this.userParam).then(res => {
+        this.$message.success('更新成功')
+      }).finally(() => {
+        setTimeout(() => {
+          this.loadingState.update = false
+        }, 1500)
+      })
     },
     onSelectChange (selectedRowKeys, selectedRows) {
       this.selectedRowKeys = selectedRowKeys
