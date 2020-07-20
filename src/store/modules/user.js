@@ -46,8 +46,8 @@ const user = {
     GateWayLogin ({ commit }, param) {
       return new Promise((resolve, reject) => {
         gatewayApi.login(param)
-          .then(response => {
-            var token = response.data
+          .then(res => {
+            var token = res.data
             storage.set(GATEWAY_ACCESS_TOKEN, token, 7 * 24 * 60 * 60 * 1000)
             commit('SET_GATEWAY_TOKEN', token)
             resolve()

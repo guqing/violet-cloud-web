@@ -10,9 +10,17 @@ gatewayApi.login = function (parameter) {
   })
 }
 
-gatewayApi.rateLimitLogList = function (parameter) {
+gatewayApi.listRateLimitLog = function (parameter) {
   return axios({
     url: '/route/auth/log/data',
+    method: 'get',
+    params: parameter
+  })
+}
+
+gatewayApi.listUser = function (parameter) {
+  return axios({
+    url: '/route/auth/user/data',
     method: 'get',
     params: parameter
   })
