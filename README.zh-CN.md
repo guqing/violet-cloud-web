@@ -1,36 +1,27 @@
 [English](./README.md) | 简体中文
 
-<h1 align="center">Ant Design Pro Vue</h1>
+<h1 align="center">Violet Cloud Web</h1>
 <div align="center">
-An out-of-box UI solution for enterprise applications as a Vue boilerplate. based on  <a href="https://vuecomponent.github.io/ant-design-vue/docs/vue/introduce-cn/" target="_blank">Ant Design of Vue</a>
+一个Spring Cloud的微服务快速开发脚手架的前台，基于 <a href="https://vuecomponent.github.io/ant-design-vue/docs/vue/introduce-cn/" target="_blank">Ant Design of Vue</a>
 </div>
 
 <div align="center">
 
-[![Backers on Open Collective](https://opencollective.com/ant-design-pro-vue/backers/badge.svg)](#backers) [![Sponsors on Open Collective](https://opencollective.com/ant-design-pro-vue/sponsors/badge.svg)](#sponsors) [![License](https://img.shields.io/npm/l/package.json.svg?style=flat)](https://github.com/sendya/ant-design-pro-vue/blob/master/LICENSE)
-[![Release](https://img.shields.io/github/release/sendya/ant-design-pro-vue.svg?style=flat)](https://github.com/sendya/ant-design-pro-vue/releases/latest)
-[![Travis branch](https://travis-ci.org/sendya/ant-design-pro-vue.svg?branch=master)](https://travis-ci.org/sendya/ant-design-pro-vue)
-
+[![Gitpod Ready-to-Code](https://img.shields.io/badge/Gitpod-Ready--to--Code-blue?logo=gitpod)](https://gitpod.io/#https://github.com/guqing/violet-cloud-web)
+![Last Commit](https://img.shields.io/github/last-commit/guqing/violet-cloud-web)
+![Size](https://img.shields.io/github/repo-size/guqing/violet-cloud-web)
+![License](https://img.shields.io/github/license/guqing/violet-cloud-web)
 </div>
-
-- 预览: https://preview.pro.loacg.com
-- 首页: https://pro.loacg.com
-- 文档: https://pro.loacg.com/docs/getting-started
-- 更新日志: https://pro.loacg.com/docs/changelog
-- 常见问题: https://pro.loacg.com/docs/faq
 
 
 Overview
 ----
-
-基于 [Ant Design of Vue](https://vuecomponent.github.io/ant-design-vue/docs/vue/introduce-cn/) 实现的 [Ant Design Pro](https://pro.ant.design/) 
-
-![工作台-多标签模式](https://static-2.loacg.com/open/static/github/20190224163345.jpg)
-
-![工作台+设置菜单](https://static-2.loacg.com/open/static/github/20181126112124.png)
-
-![个人设置](https://static-2.loacg.com/open/static/github/20180916-134251.png)
-
+![工作台](./public/screenshot/workplace.png)
+![角色管理](./public/screenshot/role_list.png)
+![菜单管理](./public/screenshot/menu_list.png)
+![系统日志](./public/screenshot/active_log.png)
+![网关用户管理](./public/screenshot/gateway_user.png)
+![个人中心](./public/screenshot/profile.png)
 
 环境和依赖
 ----
@@ -83,7 +74,7 @@ yarn run lint
 其他说明
 ----
 
-- **关于 Issue 反馈 (重要!重要!重要!) 请在开 *Issue* 前，先阅读该内容：[Issue / PR 编写建议](https://github.com/sendya/ant-design-pro-vue/issues/90)** 
+- **关于 Issue 反馈 (重要!重要!重要!) 请在开 *Issue* 前，先阅读该内容：[Issue / PR 编写建议](./docs/issues.md)** 
 
 - 项目使用的 [vue-cli3](https://cli.vuejs.org/guide/), 请确保你所使用的 vue-cli 是新版，并且已经学习 cli 官方文档使用教程
 
@@ -106,9 +97,3 @@ Modern browsers and IE10.
 | [<img src="https://raw.githubusercontent.com/alrra/browser-logos/master/src/edge/edge_48x48.png" alt="IE / Edge" width="24px" height="24px" />](http://godban.github.io/browsers-support-badges/)</br>IE / Edge | [<img src="https://raw.githubusercontent.com/alrra/browser-logos/master/src/firefox/firefox_48x48.png" alt="Firefox" width="24px" height="24px" />](http://godban.github.io/browsers-support-badges/)</br>Firefox | [<img src="https://raw.githubusercontent.com/alrra/browser-logos/master/src/chrome/chrome_48x48.png" alt="Chrome" width="24px" height="24px" />](http://godban.github.io/browsers-support-badges/)</br>Chrome | [<img src="https://raw.githubusercontent.com/alrra/browser-logos/master/src/safari/safari_48x48.png" alt="Safari" width="24px" height="24px" />](http://godban.github.io/browsers-support-badges/)</br>Safari | [<img src="https://raw.githubusercontent.com/alrra/browser-logos/master/src/opera/opera_48x48.png" alt="Opera" width="24px" height="24px" />](http://godban.github.io/browsers-support-badges/)</br>Opera |
 | --- | --- | --- | --- | --- |
 | IE10, Edge | last 2 versions | last 2 versions | last 2 versions | last 2 versions |
-
-
-## Contributors
-
-This project exists thanks to all the people who contribute. 
-<a href="https://github.com/sendya/ant-design-pro-vue/graphs/contributors"><img src="https://opencollective.com/ant-design-pro-vue/contributors.svg?width=890&button=false" /></a>

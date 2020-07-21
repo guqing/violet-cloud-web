@@ -9,7 +9,7 @@
           </a>
         </div>
         <div class="desc">
-          Ant Design 是西湖区最具影响力的 Web 设计规范
+          Violet Cloud 一个基于Spring Cloud的微服务快速开发脚手架
         </div>
       </div>
 
@@ -22,7 +22,7 @@
           <a href="_self">条款</a>
         </div>
         <div class="copyright">
-          Copyright &copy; 2020 guqing
+          Copyright &copy; 2020 violet cloud
         </div>
       </div>
     </div>
