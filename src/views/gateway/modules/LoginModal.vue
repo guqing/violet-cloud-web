@@ -31,7 +31,7 @@
   </a-card>
 </template>
 <script>
-import { mapActions } from 'vuex'
+import gatewayApi from '@/api/gateway'
 
 export default {
   name: 'GateWayLoginModal',
@@ -44,7 +44,6 @@ export default {
     this.form = this.$form.createForm(this, { name: 'gateway_login' })
   },
   methods: {
-    ...mapActions(['GateWayLogin']),
     handleOpenModal (e) {
       e.preventDefault()
       this.visible = true
@@ -53,9 +52,10 @@ export default {
       this.$log.debug('handleGatewayAuth执行')
       this.form.validateFields((err, values) => {
         if (!err) {
-          this.GateWayLogin(values).then(res => {
+          gatewayApi.login(values).then(res => {
+            var token = res.data
             this.visible = false
-            this.$log.debug('网关认证token:', res)
+            this.$store.commit('SET_GATEWAY_TOKEN', token)
           })
         }
       })

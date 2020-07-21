@@ -3,7 +3,7 @@ import store from '@/store'
 import storage from 'store'
 import notification from 'ant-design-vue/es/notification'
 import { VueAxios } from './axios'
-import { ACCESS_TOKEN, GATEWAY_ACCESS_TOKEN } from '@/store/mutation-types'
+import { ACCESS_TOKEN } from '@/store/mutation-types'
 
 // 创建 axios 实例
 const request = axios.create({
@@ -40,10 +40,18 @@ const errorHandler = (error) => {
           }, 1500)
         })
       }
-    } if (res.status === '401' && isGateWayRequest(res.config.url)) {
+    } if (res.status === 401 && isGateWayRequest(res.config.url)) {
       notification.error({
         message: 'Unauthorized',
         description: '认证已失效，请重新认证'
+      })
+
+      // 清除网关token
+      store.commit('SET_GATEWAY_TOKEN', '')
+    } if (res.status === 403 && isGateWayRequest(res.config.url)) {
+      notification.error({
+        message: 'Forbidden',
+        description: '未认证，禁止访问'
       })
     } else {
       notification.error({
@@ -57,7 +65,7 @@ const errorHandler = (error) => {
 
 // request interceptor
 request.interceptors.request.use(config => {
-  const gatewayToken = storage.get(GATEWAY_ACCESS_TOKEN)
+  const gatewayToken = store.getters.gatewayToken
   if (gatewayToken && isGateWayRequest(config.url)) {
     // 网关服务请求带网关的token
     config.headers['Authorization'] = 'bearer ' + gatewayToken

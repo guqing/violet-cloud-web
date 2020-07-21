@@ -40,7 +40,6 @@ const permission = {
 
 function getDnamicRouter (data, commit) {
   generatorDynamicRouter(data).then(res => {
-    console.log('GenerateRoutes routerMap:', res)
     commit('SET_ROUTERS', res)
     commit('SET_ROUTERMAP', res)
   })

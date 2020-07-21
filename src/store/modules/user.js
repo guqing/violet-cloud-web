@@ -1,7 +1,6 @@
 import storage from 'store'
 import { login, socailSignLogin, getInfo } from '@/api/login'
-import gatewayApi from '@/api/gateway'
-import { ACCESS_TOKEN, GATEWAY_ACCESS_TOKEN } from '@/store/mutation-types'
+import { ACCESS_TOKEN } from '@/store/mutation-types'
 import { welcome } from '@/utils/util'
 
 const user = {
@@ -42,20 +41,6 @@ const user = {
   },
 
   actions: {
-    // 网关用户登录
-    GateWayLogin ({ commit }, param) {
-      return new Promise((resolve, reject) => {
-        gatewayApi.login(param)
-          .then(res => {
-            var token = res.data
-            storage.set(GATEWAY_ACCESS_TOKEN, token, 7 * 24 * 60 * 60 * 1000)
-            commit('SET_GATEWAY_TOKEN', token)
-            resolve()
-          }).catch(error => {
-            reject(error)
-          })
-      })
-    },
     // 登录
     Login ({ commit }, userInfo) {
       return new Promise((resolve, reject) => {
