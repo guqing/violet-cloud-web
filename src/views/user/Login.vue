@@ -169,16 +169,6 @@ export default {
       }
     }
   },
-  created () {
-    // get2step({})
-    //   .then(res => {
-    //     this.requiredTwoStepCaptcha = res.result.stepCode
-    //   })
-    //   .catch(() => {
-    //     this.requiredTwoStepCaptcha = false
-    //   })
-    // this.requiredTwoStepCaptcha = true
-  },
   destroyed () {
     window.removeEventListener('message', this.resolveSocialLogin)
   },

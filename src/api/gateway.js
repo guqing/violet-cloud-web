@@ -25,6 +25,7 @@ gatewayApi.listUser = function (parameter) {
     params: parameter
   })
 }
+
 gatewayApi.countUser = function (parameter) {
   return axios({
     url: '/route/auth/user/count',
@@ -33,4 +34,27 @@ gatewayApi.countUser = function (parameter) {
   })
 }
 
+gatewayApi.createUser = function (parameter) {
+  return axios({
+    url: '/route/auth/user',
+    method: 'post',
+    data: parameter
+  })
+}
+
+gatewayApi.updateUser = function (parameter) {
+  return axios({
+    url: '/route/auth/user',
+    method: 'put',
+    data: parameter
+  })
+}
+
+gatewayApi.deleteUser = function (parameter) {
+  return axios({
+    url: '/route/auth/user',
+    method: 'delete',
+    data: parameter
+  })
+}
 export default gatewayApi

@@ -24,7 +24,7 @@ const constantRouterComponents = {
 
 // 前端未找到页面路由（固定不用改）
 const notFoundRouter = {
-  path: '*', redirect: '/404', hidden: true
+  path: '*', redirect: '/500', hidden: true
 }
 
 // 根级菜单
@@ -49,7 +49,7 @@ export const generatorDynamicRouter = (result) => {
   return new Promise(resolve => {
     const menuNav = []
     const childrenNav = []
-    //      后端数据, 根级树数组,  根级 PID
+    // 后端数据, 根级树数组,  根级 PID
     listToTree(result, childrenNav, 0)
     rootRouter.children = childrenNav
     menuNav.push(rootRouter)
