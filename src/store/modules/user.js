@@ -21,6 +21,7 @@ const user = {
     },
     SET_GATEWAY_TOKEN: (state, token) => {
       state.gatewayToken = token
+      sessionStorage.setItem('GateWay_Token', token)
     },
     SET_NAME: (state, { name, welcome }) => {
       state.name = name

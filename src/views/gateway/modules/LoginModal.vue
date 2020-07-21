@@ -34,7 +34,7 @@
 import gatewayApi from '@/api/gateway'
 
 export default {
-  name: 'GateWayLoginModal',
+  name: 'LoginModal',
   data () {
     return {
       visible: false

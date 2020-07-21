@@ -45,9 +45,6 @@ const errorHandler = (error) => {
         message: 'Unauthorized',
         description: '认证已失效，请重新认证'
       })
-
-      // 清除网关token
-      store.commit('SET_GATEWAY_TOKEN', '')
     } if (res.status === 403 && isGateWayRequest(res.config.url)) {
       notification.error({
         message: 'Forbidden',
