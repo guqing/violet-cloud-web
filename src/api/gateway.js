@@ -57,4 +57,20 @@ gatewayApi.deleteUser = function (parameter) {
     data: parameter
   })
 }
+
+gatewayApi.countRouteLog = function (parameter) {
+  return axios({
+    url: '/route/auth/log/count',
+    method: 'get',
+    params: parameter
+  })
+}
+
+gatewayApi.listRouteLog = function (parameter) {
+  return axios({
+    url: '/route/auth/log/data',
+    method: 'get',
+    params: parameter
+  })
+}
 export default gatewayApi

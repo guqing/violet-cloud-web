@@ -1,8 +1,156 @@
 <template>
-  <div>路由日志</div>
+  <div>
+    <a-card :bordered="false">
+      <div class="table-operator">
+        <a-form layout="inline">
+          <a-row :gutter="15">
+            <a-col :md="5" :sm="24">
+              <a-form-item label="用户名">
+                <a-input placeholder="角色名称" v-model="queryParam.username" />
+              </a-form-item>
+            </a-col>
+            <a-col :md="5" :sm="24">
+              <span class="table-page-search-submitButtons">
+                <a-button type="primary">查询</a-button>
+                <a-button style="margin-left: 8px">
+                  重置
+                </a-button>
+              </span>
+            </a-col>
+          </a-row>
+        </a-form>
+        <div style="margin-top: 15px;">
+          <a-button type="primary"><a-icon type="plus" />新增</a-button>
+          <a-dropdown v-if="selectedRowKeys.length > 0">
+            <a-menu slot="overlay">
+              <a-menu-item key="1"><a-icon type="delete" />删除</a-menu-item>
+            </a-menu>
+            <a-button style="margin-left: 8px"> 批量操作 <a-icon type="down" /> </a-button>
+          </a-dropdown>
+        </div>
+      </div>
+
+      <a-alert type="info" show-icon>
+        <p slot="message" style="padding:0;margin:0px;">
+          <span style="margin-right: 12px">
+            已选择: <a style="font-weight: 600">{{ selectedRows.length }}</a>
+          </span>
+          <a style="margin-left: 24px" @click="clearSelect">清空</a>
+        </p>
+      </a-alert>
+      <a-table
+        rowKey="id"
+        :columns="columns"
+        :data-source="activities"
+        :pagination="pagination"
+        :loading="loading"
+        @change="handleTableChange"
+        :row-selection="{ selectedRowKeys: selectedRowKeys, onChange: onSelectChange }"
+      >
+        <span slot="action" slot-scope="text, record">
+          <template>
+            <a @click="$refs.userModal.edit(record)">编辑</a>
+            <a-divider type="vertical" />
+            <a @click="handleDeleteById(record)">删除</a>
+          </template>
+        </span>
+      </a-table>
+    </a-card>
+  </div>
 </template>
 <script>
+import gatewayApi from '@/api/gateway'
+
 export default {
-  name: 'RouteLog'
+  name: 'RouteLog',
+  data () {
+    return {
+      activities: [],
+      loading: false,
+      pagination: {
+        current: 0,
+        pageSize: 10,
+        total: 0
+      },
+      queryParam: {},
+      // 表头
+      columns: [
+        {
+          title: '源路径',
+          dataIndex: 'requestUri'
+        },
+        {
+          title: '目标路径',
+          dataIndex: 'targetUri'
+        },
+        {
+          title: '请求方式',
+          dataIndex: 'requestMethod',
+          sorter: true
+        },
+        {
+          title: '目标微服务',
+          dataIndex: 'targetServer'
+        },
+        {
+          title: '访问IP',
+          dataIndex: 'ip'
+        },
+        {
+          title: '访问者位置',
+          dataIndex: 'location',
+          sorter: true
+        },
+        {
+          title: '访问时间',
+          dataIndex: 'createTime',
+          sorter: true
+        },
+        {
+          title: '操作',
+          dataIndex: 'action',
+          width: '150px',
+          scopedSlots: { customRender: 'action' }
+        }
+      ],
+      selectedRowKeys: [],
+      selectedRows: []
+    }
+  },
+  created () {
+    this.handleListActivites()
+  },
+  methods: {
+    handleTableChange (pagination, filters, sorter) {
+      const pager = { ...this.pagination }
+      pager.current = pagination.current
+      this.pagination = pager
+      this.handleListActivites()
+    },
+    handleListActivites () {
+      this.loading = true
+      const queryParam = Object.assign({}, this.queryParam)
+      queryParam.current = this.pagination.current
+      queryParam.pageSize = this.pagination.pageSize
+      console.log(queryParam)
+      // 获取数据总条数
+      gatewayApi.countRouteLog(queryParam).then(res => {
+        this.pagination.total = res
+      })
+      // 获取数据
+      gatewayApi.listRouteLog(queryParam).then(res => {
+        this.activities = res
+        this.loading = false
+      })
+    },
+    onSelectChange (selectedRowKeys, selectedRows) {
+      this.selectedRowKeys = selectedRowKeys
+      this.selectedRows = selectedRows
+    },
+    clearSelect (e) {
+      e.preventDefault()
+      this.onSelectChange([], [])
+    }
+  }
 }
 </script>

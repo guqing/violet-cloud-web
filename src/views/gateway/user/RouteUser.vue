@@ -54,7 +54,6 @@
         </span>
       </a-table>
     </a-card>
-    <login-modal v-if="!isAuthenticated"></login-modal>
     <user-modal ref="userModal"></user-modal>
   </div>
 </template>
@@ -73,7 +72,8 @@ export default {
       userParam: {},
       pagination: {
         current: 0,
-        pageSize: 10
+        pageSize: 10,
+        total: 0
       },
       queryParam: {},
       loadingState: {
@@ -105,11 +105,6 @@ export default {
       ],
       selectedRowKeys: [],
       selectedRows: []
-    }
-  },
-  computed: {
-    isAuthenticated () {
-      return !!this.$store.getters.gatewayToken
     }
   },
   created () {
