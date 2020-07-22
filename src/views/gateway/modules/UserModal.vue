@@ -1,7 +1,16 @@
 <template>
   <a-card :bordered="false">
-    <a-modal v-model="visible" :title="title" :confirmLoading="loading" @ok="handleCreateOrUpdateUser">
+    <a-modal
+      v-model="visible"
+      :title="title"
+      :confirmLoading="loading"
+      @ok="handleCreateOrUpdateUser"
+      @cancel="handleCancel"
+    >
       <a-form :form="form">
+        <a-form-item label="ID" v-show="false">
+          <a-input v-decorator="['id']" />
+        </a-form-item>
         <a-form-item>
           <a-input
             v-decorator="[
@@ -54,6 +63,7 @@
 </template>
 <script>
 import gatewayApi from '@/api/gateway'
+import pick from 'lodash.pick'
 
 export default {
   name: 'RouteUserModal',
@@ -85,6 +95,9 @@ export default {
       this.visible = true
       this.title = '编辑用户'
       this.userParam = Object.assign({}, record)
+      this.$nextTick(() => {
+        this.form.setFieldsValue(pick(this.userParam, 'id', 'username', 'roles'))
+      })
     },
     create () {
       this.visible = true
@@ -101,6 +114,8 @@ export default {
           gatewayApi.createUser(this.userParam).then(res => {
             this.$message.success('创建成功')
           }).finally(() => {
+            this.handleResetForm()
+            this.visible = false
             setTimeout(() => {
               this.loading = false
             }, 1500)
@@ -110,13 +125,21 @@ export default {
           gatewayApi.updateUser(this.userParam).then(res => {
             this.$message.success('更新成功')
           }).finally(() => {
+            this.visible = false
+            this.handleResetForm()
             setTimeout(() => {
               this.loading = false
             }, 1500)
           })
         }
-        this.visible = false
       })
+    },
+    handleCancel () {
+      this.handleResetForm()
+    },
+    handleResetForm () {
+      this.userParam = {}
+      this.form.resetFields()
     }
   }
 }

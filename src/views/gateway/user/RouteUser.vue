@@ -132,7 +132,7 @@ export default {
     },
     handleDeleteById (record) {
       this.$log.debug('删除:', record)
-      this.deleteUser(record.id)
+      this.handleDeleteUser([record.id])
     },
     handleSearch () {
       this.loadingState.query = true
@@ -162,7 +162,7 @@ export default {
         cancelText: '取消',
         onOk () {
           that.loadingState.delete = true
-          gatewayApi.deleteUser().then(res => {
+          gatewayApi.deleteUser(userIds).then(res => {
             this.$message.success('删除成功')
           }).finally(() => {
             setTimeout(() => {
@@ -173,14 +173,6 @@ export default {
         onCancel () {
           that.$log.info('Cancel')
         }
-      })
-      this.loadingState.delete = true
-      gatewayApi.deleteUser().then(res => {
-        this.$message.success('删除成功')
-      }).finally(() => {
-        setTimeout(() => {
-          this.loadingState.delete = false
-        }, 1500)
       })
     },
     onSelectChange (selectedRowKeys, selectedRows) {

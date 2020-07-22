@@ -48,7 +48,7 @@ const errorHandler = (error) => {
     } if (res.status === 403 && isGateWayRequest(res.config.url)) {
       notification.error({
         message: 'Forbidden',
-        description: '未认证，禁止访问'
+        description: '抱歉，你无此操作权限，禁止访问'
       })
     } else {
       notification.error({
