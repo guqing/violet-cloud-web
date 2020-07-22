@@ -35,7 +35,7 @@ const themePluginOption = {
       case '.ant-menu-horizontal > .ant-menu-item > a:hover':
       case '.ant-menu-horizontal>.ant-menu-item>a:hover':
         return '.ant-menu-horizontal:not(ant-menu-light):not(.ant-menu-dark) > .ant-menu-item > a:hover'
-      default :
+      default:
         return selector
     }
   }
