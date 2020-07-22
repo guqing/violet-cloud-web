@@ -71,7 +71,7 @@ export default {
       users: [],
       userParam: {},
       pagination: {
-        current: 0,
+        current: 1,
         pageSize: 10,
         total: 0
       },

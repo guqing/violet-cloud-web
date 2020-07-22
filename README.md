@@ -29,18 +29,18 @@ An Micro service rapid development scaffold use <a href="#" target="_blank">Ant 
 > Note:  [Yarn](https://yarnpkg.com/) package management is recommended, the exact same version loaded with the demo site of this project (yarn.lock) . but you can also use npm
 
 ### Preview
-![Workplace](./public/screenshot/workplace.png)
-![RoleList](./public/screenshot/role_list.png)
-![MenuList](./public/screenshot/menu_list.png)
-![ActiveLog](./public/screenshot/active_log.png)
-![GatewayUser](./public/screenshot/gateway_user.png)
-![Profile](./public/screenshot/profile.png)
+![Workplace](./docs/screenshot/workplace.png)
+![RoleList](./docs/screenshot/role_list.png)
+![MenuList](./docs/screenshot/menu_list.png)
+![ActiveLog](./docs/screenshot/active_log.png)
+![GatewayUser](./docs/screenshot/gateway_user.png)
+![Profile](./docs/screenshot/profile.png)
 ### Project setup
 
 - Clone repo
 ```bash
-git clone https://github.com/sendya/ant-design-pro-vue.git
-cd ant-design-pro-vue
+git clone https://github.com/guqing/violet-cloud-web.git
+cd violet-cloud-web
 ```
 
 - Install dependencies

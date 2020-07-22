@@ -16,12 +16,12 @@
 
 Overview
 ----
-![工作台](./public/screenshot/workplace.png)
-![角色管理](./public/screenshot/role_list.png)
-![菜单管理](./public/screenshot/menu_list.png)
-![系统日志](./public/screenshot/active_log.png)
-![网关用户管理](./public/screenshot/gateway_user.png)
-![个人中心](./public/screenshot/profile.png)
+![工作台](./docs/screenshot/workplace.png)
+![角色管理](./docs/screenshot/role_list.png)
+![菜单管理](./docs/screenshot/menu_list.png)
+![系统日志](./docs/screenshot/active_log.png)
+![网关用户管理](./docs/screenshot/gateway_user.png)
+![个人中心](./docs/screenshot/profile.png)
 
 环境和依赖
 ----
@@ -45,8 +45,8 @@ Overview
 
 - 拉取项目代码
 ```bash
-git clone https://github.com/sendya/ant-design-pro-vue.git
-cd ant-design-pro-vue
+git clone https://github.com/guqing/violet-cloud-web.git
+cd violet-cloud-web
 ```
 
 - 安装依赖
@@ -82,7 +82,7 @@ yarn run lint
 
 - 组件按需加载 `/src/main.js` L14 相关代码 `import './core/lazy_use'` / `import './core/use'` 
 
-- [修改 Ant Design 配色 (@kokoroli)](https://github.com/kokoroli/antd-awesome/blob/master/docs/Ant_Design_%E6%A0%B7%E5%BC%8F%E8%A6%86%E7%9B%96.md)
+- [修改 Violet Cloud 配色 (@kokoroli)](https://github.com/kokoroli/antd-awesome/blob/master/docs/Ant_Design_%E6%A0%B7%E5%BC%8F%E8%A6%86%E7%9B%96.md)
 
 - I18n: [多语言支持 (@musnow)](./src/locales/index.js)
 

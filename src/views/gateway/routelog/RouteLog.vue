@@ -68,7 +68,7 @@ export default {
       activities: [],
       loading: false,
       pagination: {
-        current: 0,
+        current: 1,
         pageSize: 10,
         total: 0
       },
