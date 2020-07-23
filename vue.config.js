@@ -94,15 +94,19 @@ const vueConfig = {
 
   devServer: {
     // development server port 8000
-    port: 8000
+    port: 8000,
     // If you want to turn on the proxy, please remove the mockjs /src/main.jsL11
-    // proxy: {
-    //   '/api': {
-    //     target: 'https://mock.ihx.me/mock/5baf3052f7da7e07e04a5116/antd-pro',
-    //     ws: false,
-    //     changeOrigin: true
-    //   }
-    // }
+    proxy: {
+      // @see https://cli.vuejs.org/config/#devserver-proxy
+      // about more: https://github.com/chimurai/http-proxy-middleware
+      [process.env.VUE_APP_API_BASE_URL]: {
+        target: process.env.VUE_APP_API_BASE_URL,
+        changeOrigin: true,
+        pathRewrite: {
+          ['^' + process.env.VUE_APP_API_BASE_URL]: ''
+        }
+      }
+    }
   },
 
   // disable source map in production
