@@ -99,11 +99,11 @@ const vueConfig = {
     proxy: {
       // @see https://cli.vuejs.org/config/#devserver-proxy
       // about more: https://github.com/chimurai/http-proxy-middleware
-      [process.env.VUE_APP_API_BASE_URL]: {
+      '^/api': {
         target: process.env.VUE_APP_API_BASE_URL,
         changeOrigin: true,
         pathRewrite: {
-          ['^' + process.env.VUE_APP_API_BASE_URL]: ''
+          '^/api': ''
         }
       }
     }
