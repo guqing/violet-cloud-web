@@ -7,7 +7,7 @@
             <div class="avatar" title="点击可以修改头像">
               <a-upload name="file" :showUploadList="false" :beforeUpload="handleBeforeUpload">
                 <div class="ant-upload-preview" type="upload">
-                  <a-avatar size="large" :icon="user" :src="avatar()" style="width: 100%; height: 100%;" />
+                  <a-avatar size="large" :icon="user" :src="avatar()" class="avatar-preview" />
                 </div>
               </a-upload>
             </div>
@@ -125,7 +125,6 @@ export default {
   },
   methods: {
     ...mapGetters(['nickname', 'avatar', 'userInfo']),
-
     handleBeforeUpload (file) {
       console.log('before upload:', file)
       this.$refs.modal.edit(file)
@@ -227,6 +226,13 @@ export default {
     font-weight: 500;
     color: rgba(0, 0, 0, 0.85);
     margin-bottom: 12px;
+  }
+  .avatar {
+    border: 1px solid #ccc;
+  }
+  .avatar-preview {
+    width: 100%;
+    height: 100%;
   }
 }
 </style>

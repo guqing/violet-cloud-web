@@ -31,7 +31,6 @@
       <a-row :gutter="24">
         <a-col :xl="24" :lg="24" :md="24" :sm="24" :xs="24">
           <a-card
-            class="project-list"
             :loading="loading"
             style="margin-bottom: 24px;"
             :bordered="false"
@@ -129,10 +128,9 @@ export default {
     }
   },
   created () {
+    console.log(this.$router)
     this.user = this.userInfo
     this.avatar = this.userInfo.avatar
-  },
-  mounted () {
     this.handleListActivity()
   },
   methods: {
