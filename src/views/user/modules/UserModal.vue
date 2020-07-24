@@ -14,14 +14,14 @@
                   {
                     required: true,
                     message: '请输入用户名',
-                    trigger: 'blur'
+                    trigger: 'blur',
                   },
                   {
-                    validator: rules.username,
-                    trigger: 'blur'
-                  }
-                ]
-              }
+                    validator: validateUsername,
+                    trigger: 'blur',
+                  },
+                ],
+              },
             ]"
           />
         </a-form-item>
@@ -32,9 +32,9 @@
               {
                 rules: [
                   { required: rules.passwordRequired, message: '请输入密码', whitespace: true },
-                  { min: 3, message: '字符长度必须大于3' }
-                ]
-              }
+                  { min: 3, message: '字符长度必须大于3' },
+                ],
+              },
             ]"
           />
         </a-form-item>
@@ -45,19 +45,15 @@
               {
                 rules: [
                   {
-                    required: true,
-                    message: '请输入邮箱地址'
-                  },
-                  {
                     type: 'email',
-                    message: '邮箱地址格式不正确'
+                    message: '邮箱地址格式不正确',
                   },
                   {
-                    validator: rules.email,
-                    trigger: 'blur'
-                  }
-                ]
-              }
+                    validator: validateEmail,
+                    trigger: 'blur',
+                  },
+                ],
+              },
             ]"
           />
         </a-form-item>
@@ -66,7 +62,7 @@
           <a-select
             v-decorator="['roleIds', { rules: [{ required: true, validator: rules.roles }] }]"
             mode="multiple"
-            style="width: 100%"
+            style="width: 100%;"
             placeholder="选择角色"
           >
             <a-select-option :value="role.id" label="roleName" v-for="(role, index) in roles" :key="index">
@@ -91,29 +87,6 @@ const validateRoles = (rule, value, callback) => {
     callback()
   }
 }
-const validateUsername = (rule, value, callback) => {
-  if (!/^[A-Za-z0-9]+$/.test(value)) {
-    callback(new Error('只能输入字母或数字'))
-  } else {
-    userApi.checkUsername(value).then(res => {
-      if (res.data) {
-        callback(new Error('用户名已经被使用'))
-      } else {
-        callback()
-      }
-    })
-  }
-}
-
-const validateEmail = (rule, value, callback) => {
-  userApi.checkEmail(value).then(res => {
-    if (res.data) {
-      callback(new Error('邮箱地址已经被使用'))
-    } else {
-      callback()
-    }
-  })
-}
 
 export default {
   name: 'UserModal',
@@ -121,9 +94,7 @@ export default {
     return {
       rules: {
         passwordRequired: true,
-        roles: validateRoles,
-        username: validateUsername,
-        email: validateEmail
+        roles: validateRoles
       },
       roles: [],
       labelCol: {
@@ -192,7 +163,9 @@ export default {
         this.$message.success('更新成功')
         this.$emit('ok')
       }).finally(() => {
-        this.confirmLoading = false
+        setTimeout(() => {
+          this.confirmLoading = false
+        }, 1500)
         this.close()
       })
     },
@@ -201,13 +174,45 @@ export default {
         this.$message.success('保存成功')
         this.$emit('ok')
       }).finally(() => {
-        this.confirmLoading = false
+        setTimeout(() => {
+          this.confirmLoading = false
+        }, 1500)
         this.close()
       })
     },
     handleCancel () {
       this.close()
-    }
+    },
+    validateEmail (rule, value, callback) {
+      // 没有做任何修改
+      if (this.editParam.email === value) {
+        callback()
+        return
+      }
+
+      userApi.checkEmail(value).then(res => {
+        if (res.data) {
+          callback(new Error('邮箱地址已经被使用'))
+        } else {
+          callback()
+        }
+      })
+    },
+    validateUsername (rule, value, callback) {
+      if (!/^[A-Za-z0-9]+$/.test(value)) {
+        callback(new Error('只能输入字母或数字'))
+      } else if (this.editParam.username === value) {
+        callback()
+      } else {
+        userApi.checkUsername(value).then(res => {
+          if (res.data) {
+            callback(new Error('用户名已经被使用'))
+          } else {
+            callback()
+          }
+        })
+      }
+    },
   }
 }
 </script>

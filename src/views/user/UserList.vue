@@ -23,14 +23,14 @@
           </a-col>
           <a-col :md="5" :sm="24">
             <a-form-item label="创建时间">
-              <a-range-picker style="width: 100%" @change="onDatePickerChange" />
+              <a-range-picker style="width: 100%;" @change="onDatePickerChange" />
             </a-form-item>
           </a-col>
 
           <a-col :md="4" :sm="24">
             <span class="table-page-search-submitButtons">
               <a-button type="primary" @click="handleSearch" :loading="loadingState.query">查询</a-button>
-              <a-button style="margin-left: 8px" @click="handleSearchReset" :loading="loadingState.reset">
+              <a-button style="margin-left: 8px;" @click="handleSearchReset" :loading="loadingState.reset">
                 重置
               </a-button>
             </span>
@@ -47,7 +47,7 @@
           <!-- lock | unlock -->
           <a-menu-item key="2" v-action:update @click="handleLockUserInBatch()"><a-icon type="lock" />锁定</a-menu-item>
         </a-menu>
-        <a-button style="margin-left: 8px"> 批量操作 <a-icon type="down" /> </a-button>
+        <a-button style="margin-left: 8px;"> 批量操作 <a-icon type="down" /> </a-button>
       </a-dropdown>
     </div>
 
@@ -131,13 +131,11 @@ export default {
       columns: [
         {
           title: '用户名',
-          dataIndex: 'username',
-          scopedSlots: { customRender: 'username' }
+          dataIndex: 'username'
         },
         {
           title: '昵称',
-          dataIndex: 'nickname',
-          scopedSlots: { customRender: 'nickname' }
+          dataIndex: 'nickname'
         },
         {
           title: '性别',
@@ -154,22 +152,34 @@ export default {
           }
         },
         {
+          title: '邮箱',
+          dataIndex: 'email',
+          customRender: (text) => {
+            if (text) {
+              return text
+            }
+            return '未知'
+          }
+        },
+        {
           title: '手机号',
           dataIndex: 'mobile',
-          sorter: true,
-          needTotal: true,
-          scopedSlots: { customRender: 'mobile' }
+          scopedSlots: { customRender: 'mobile' },
+          customRender: (text) => {
+            if (text) {
+              return text
+            }
+            return '未知'
+          }
         },
         {
           title: '角色',
           dataIndex: 'roleNames',
-          needTotal: true,
           scopedSlots: { customRender: 'roleNames' }
         },
         {
           title: '状态',
           dataIndex: 'status',
-          sorter: true,
           customRender: function (text, value) {
             switch (text) {
               case 0:
