@@ -11,13 +11,13 @@
             <a-input
               size="large"
               type="text"
-              placeholder="账户: admin"
+              placeholder="账户: test"
               v-decorator="[
                 'username',
                 {
                   rules: [{ required: true, message: '请输入帐户名或邮箱地址' }, { validator: handleUsernameOrEmail }],
-                  validateTrigger: 'change'
-                }
+                  validateTrigger: 'change',
+                },
               ]"
             >
               <a-icon slot="prefix" type="user" :style="{ color: 'rgba(0,0,0,.25)' }" />
@@ -29,13 +29,13 @@
               size="large"
               type="password"
               autocomplete="false"
-              placeholder="密码: admin"
+              placeholder="密码: 123456"
               v-decorator="[
                 'password',
                 {
                   rules: [{ required: true, message: '请输入密码' }],
-                  validateTrigger: 'blur'
-                }
+                  validateTrigger: 'blur',
+                },
               ]"
             >
               <a-icon slot="prefix" type="lock" :style="{ color: 'rgba(0,0,0,.25)' }" />
@@ -55,11 +55,11 @@
                     {
                       required: true,
                       pattern: /^1[34578]\d{9}$/,
-                      message: '请输入正确的手机号'
-                    }
+                      message: '请输入正确的手机号',
+                    },
                   ],
-                  validateTrigger: 'change'
-                }
+                  validateTrigger: 'change',
+                },
               ]"
             >
               <a-icon slot="prefix" type="mobile" :style="{ color: 'rgba(0,0,0,.25)' }" />
@@ -77,8 +77,8 @@
                     'captcha',
                     {
                       rules: [{ required: true, message: '请输入验证码' }],
-                      validateTrigger: 'blur'
-                    }
+                      validateTrigger: 'blur',
+                    },
                   ]"
                 >
                   <a-icon slot="prefix" type="mail" :style="{ color: 'rgba(0,0,0,.25)' }" />
@@ -105,7 +105,7 @@
         >
       </a-form-item>
 
-      <a-form-item style="margin-top:24px">
+      <a-form-item style="margin-top: 24px;">
         <a-button
           size="large"
           type="primary"

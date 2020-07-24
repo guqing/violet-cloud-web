@@ -23,7 +23,7 @@
           <a-form-model-item label="上级菜单">
             <a-tree-select
               v-model="menuForm.parentId"
-              style="width: 100%"
+              style="width: 100%;"
               :dropdown-style="{ maxHeight: '400px', overflow: 'auto' }"
               :tree-data="menuTreeData"
               tree-default-expand-all
@@ -73,7 +73,7 @@
             </a-form-model-item>
           </a-col>
           <a-form-model-item :wrapper-col="menuFormButtonWrapperCol">
-            <a-button type="primary" @click="handleSaveOrUpdateMenu" :loading="loadingState.save">
+            <a-button type="primary" @click="handleSaveOrUpdateMenu" :loading="loadingState.save" v-action:save>
               保存
             </a-button>
             <a-button :style="{ marginLeft: '8px' }" @click="handleResetMenuForm" :loading="loadingState.reset">

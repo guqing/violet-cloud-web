@@ -7,7 +7,7 @@
             <div class="avatar" title="点击可以修改头像">
               <a-upload name="file" :showUploadList="false" :beforeUpload="handleBeforeUpload">
                 <div class="ant-upload-preview" type="upload">
-                  <img :src="avatar()" />
+                  <a-avatar size="large" :icon="user" :src="avatar()" style="width: 100%; height: 100%;" />
                 </div>
               </a-upload>
             </div>
@@ -49,7 +49,7 @@
                 @blur="handleTagInputConfirm"
                 @keyup.enter="handleTagInputConfirm"
               />
-              <a-tag v-else @click="showTagInput" style="background: #fff; borderStyle: dashed;">
+              <a-tag v-else @click="showTagInput" style="background: #fff; borderstyle: dashed;">
                 <a-icon type="plus" />New Tag
               </a-tag>
             </div>
@@ -60,11 +60,11 @@
       </a-col>
       <a-col :md="24" :lg="16">
         <a-card
-          style="width:100%"
+          style="width: 100%;"
           :bordered="false"
           :tabList="tabListNoTitle"
           :activeTabKey="noTitleKey"
-          @tabChange="key => handleTabChange(key, 'noTitleKey')"
+          @tabChange="(key) => handleTabChange(key, 'noTitleKey')"
         >
           <base-setting v-if="noTitleKey === 'base'"></base-setting>
           <password-page v-else-if="noTitleKey === 'password'"></password-page>
