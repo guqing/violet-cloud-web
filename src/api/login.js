@@ -30,6 +30,13 @@ export function socailSignLogin (parameter) {
   })
 }
 
+export function listSupportSocail () {
+  return axios({
+    url: '/auth/social/list',
+    method: 'get'
+  })
+}
+
 export var socialLoginApi = axios.defaults.baseURL + `/auth/social/login/`
 
 export function getInfo () {

@@ -27,6 +27,23 @@
             </p>
           </div>
           <a-divider />
+
+          <div class="social-account">
+            <div class="socail-account-title">关联第三方账号</div>
+            <a-list class="social-account-list" item-layout="horizontal" :data-source="socailAccounts">
+              <a-list-item slot="renderItem" slot-scope="item, index" :key="index">
+                <a slot="actions" v-if="item.isConnected">取消关联</a>
+                <a slot="actions" v-else>关联</a>
+                <a-list-item-meta>
+                  <a slot="title" href="https://www.antdv.com/">{{ item.name }}</a>
+                  <a-avatar slot="avatar" :src="item.logo" />
+                  <div>{{ item.isConnected ? '已关联' : '未关联' }}</div>
+                </a-list-item-meta>
+              </a-list-item>
+            </a-list>
+          </div>
+          <a-divider :dashed="true" />
+
           <div class="account-center-tags">
             <div class="tagsTitle">标签</div>
             <div>
@@ -83,6 +100,8 @@ import BaseSetting from './page/BaseSetting'
 import PasswordPage from './page/PasswordPage'
 import AvatarModal from './page/AvatarModal'
 import { mapGetters } from 'vuex'
+import { listSupportSocail } from '@/api/login'
+import { getSocailInfo } from '@/utils/socailInfo'
 
 export default {
   components: {
@@ -94,6 +113,7 @@ export default {
   },
   data () {
     return {
+      socailAccounts: [],
       tags: ['旧街凉风', '坐拥百态', '醉酒入梦', '晚风抚人', '无人及你'],
       tagInputVisible: false,
       tagInputValue: '',
@@ -123,8 +143,27 @@ export default {
       return this.userInfo()
     }
   },
+  mounted () {
+    this.handleListSupportSocial()
+  },
   methods: {
     ...mapGetters(['nickname', 'avatar', 'userInfo']),
+    handleListSupportSocial () {
+      listSupportSocail().then(res => {
+        var socailAccounts = []
+        res.data.forEach(item => {
+          var socailInfo = getSocailInfo(item)
+          socailAccounts.push({
+            name: socailInfo.name,
+            url: socailInfo.url,
+            provider: item,
+            logo: `/icon/${item.toLowerCase()}.png`,
+            isConnected: false
+          })
+          this.socailAccounts = socailAccounts
+        })
+      })
+    },
     handleBeforeUpload (file) {
       console.log('before upload:', file)
       this.$refs.modal.edit(file)
