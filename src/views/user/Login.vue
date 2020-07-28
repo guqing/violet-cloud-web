@@ -293,7 +293,7 @@ export default {
         })
       } else {
         // resolve bind
-        this.$log.debug('socail account not bind')
+        this.$log.debug('socail account not bind jump register page to bind')
         this.$router.push({ name: 'register', params: data.authUser })
       }
     }

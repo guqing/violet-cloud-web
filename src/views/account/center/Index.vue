@@ -33,7 +33,7 @@
             <a-list class="social-account-list" item-layout="horizontal" :data-source="socailAccounts">
               <a-list-item slot="renderItem" slot-scope="item, index" :key="index">
                 <a slot="actions" v-if="item.isConnected">取消关联</a>
-                <a slot="actions" v-else>关联</a>
+                <a slot="actions" v-else @click="handleBindSocialAccount(item.provider)">关联</a>
                 <a-list-item-meta>
                   <a slot="title" href="https://www.antdv.com/">{{ item.name }}</a>
                   <a-avatar slot="avatar" :src="item.logo" />
@@ -100,7 +100,7 @@ import BaseSetting from './page/BaseSetting'
 import PasswordPage from './page/PasswordPage'
 import AvatarModal from './page/AvatarModal'
 import { mapGetters } from 'vuex'
-import { listSupportSocail } from '@/api/login'
+import { listSupportSocail, socialLoginApi } from '@/api/login'
 import { getSocailInfo } from '@/utils/socailInfo'
 
 export default {
@@ -113,6 +113,11 @@ export default {
   },
   data () {
     return {
+      oauthType: '',
+      page: {
+        width: window.screen.width * 0.5,
+        height: window.screen.height * 0.5
+      },
       socailAccounts: [],
       tags: ['旧街凉风', '坐拥百态', '醉酒入梦', '晚风抚人', '无人及你'],
       tagInputVisible: false,
@@ -146,8 +151,22 @@ export default {
   mounted () {
     this.handleListSupportSocial()
   },
+  destroyed () {
+    window.removeEventListener('message', this.resolveBindResult)
+  },
   methods: {
     ...mapGetters(['nickname', 'avatar', 'userInfo']),
+    handleBindSocialAccount (oauthType) {
+      this.oauthType = oauthType
+      const url = `${socialLoginApi}${oauthType}/bind`
+      window.open(url, 'Bind Social Account', `height=${this.page.height}, width=${this.page.width}, top=10%, left=10%, toolbar=no, menubar=no, scrollbars=no, resizable=no,location=no, status=no`)
+      window.addEventListener('message', this.resolveBindResult, false)
+    },
+    resolveBindResult (e) {
+      const data = e.data.data
+      data.token = null
+      this.$log.debug('解析得到绑定结果:', data)
+    },
     handleListSupportSocial () {
       listSupportSocail().then(res => {
         var socailAccounts = []
