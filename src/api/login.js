@@ -22,6 +22,14 @@ export function login (parameter) {
   })
 }
 
+export function bindSocial (parameter) {
+  return axios({
+    url: '/auth/social/bind',
+    method: 'post',
+    data: parameter
+  })
+}
+
 export function socailSignLogin (parameter) {
   return axios({
     url: '/auth/social/sign/login',
@@ -33,6 +41,13 @@ export function socailSignLogin (parameter) {
 export function listSupportSocail () {
   return axios({
     url: '/auth/social/list',
+    method: 'get'
+  })
+}
+
+export function listUserConnectedSocail () {
+  return axios({
+    url: '/auth/social/providers',
     method: 'get'
   })
 }

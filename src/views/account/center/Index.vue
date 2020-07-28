@@ -100,7 +100,7 @@ import BaseSetting from './page/BaseSetting'
 import PasswordPage from './page/PasswordPage'
 import AvatarModal from './page/AvatarModal'
 import { mapGetters } from 'vuex'
-import { listSupportSocail, socialLoginApi } from '@/api/login'
+import { listSupportSocail, socialLoginApi, bindSocial, listUserConnectedSocail } from '@/api/login'
 import { getSocailInfo } from '@/utils/socailInfo'
 
 export default {
@@ -118,6 +118,7 @@ export default {
         width: window.screen.width * 0.5,
         height: window.screen.height * 0.5
       },
+      userConnectedSocail: [],
       socailAccounts: [],
       tags: ['旧街凉风', '坐拥百态', '醉酒入梦', '晚风抚人', '无人及你'],
       tagInputVisible: false,
@@ -158,28 +159,36 @@ export default {
     ...mapGetters(['nickname', 'avatar', 'userInfo']),
     handleBindSocialAccount (oauthType) {
       this.oauthType = oauthType
-      const url = `${socialLoginApi}/${oauthType}/bind`
+      const url = `${socialLoginApi}/${oauthType.toLowerCase()}/bind`
       window.open(url, 'Bind Social Account', `height=${this.page.height}, width=${this.page.width}, top=10%, left=10%, toolbar=no, menubar=no, scrollbars=no, resizable=no,location=no, status=no`)
       window.addEventListener('message', this.resolveBindResult, false)
     },
     resolveBindResult (e) {
-      const data = e.data.data
-      data.token = null
-      this.$log.debug('解析得到绑定结果:', data)
+      this.$log.debug('解析得到绑定结果:', e.data, e.data.data)
+      if (e.data.authUser) {
+        bindSocial(e.data.authUser).then(res => {
+          this.$message.success('绑定成功')
+        }).catch(err => {
+          this.$message.error(`绑定失败:${err.message}`)
+        })
+      }
     },
     handleListSupportSocial () {
-      listSupportSocail().then(res => {
-        var socailAccounts = []
-        res.data.forEach(item => {
-          var socailInfo = getSocailInfo(item)
-          socailAccounts.push({
-            name: socailInfo.name,
-            url: socailInfo.url,
-            provider: item,
-            logo: `/icon/${item.toLowerCase()}.png`,
-            isConnected: false
+      listUserConnectedSocail().then(res => {
+        this.userConnectedSocail = res.data
+        listSupportSocail().then(res => {
+          var socailAccounts = []
+          res.data.forEach(item => {
+            var socailInfo = getSocailInfo(item)
+            socailAccounts.push({
+              name: socailInfo.name,
+              url: socailInfo.url,
+              provider: item,
+              logo: `/icon/${item.toLowerCase()}.png`,
+              isConnected: this.userConnectedSocail.indexOf(item) > -1
+            })
+            this.socailAccounts = socailAccounts
           })
-          this.socailAccounts = socailAccounts
         })
       })
     },
