@@ -158,7 +158,7 @@ export default {
     ...mapGetters(['nickname', 'avatar', 'userInfo']),
     handleBindSocialAccount (oauthType) {
       this.oauthType = oauthType
-      const url = `${socialLoginApi}${oauthType}/bind`
+      const url = `${socialLoginApi}/${oauthType}/bind`
       window.open(url, 'Bind Social Account', `height=${this.page.height}, width=${this.page.width}, top=10%, left=10%, toolbar=no, menubar=no, scrollbars=no, resizable=no,location=no, status=no`)
       window.addEventListener('message', this.resolveBindResult, false)
     },

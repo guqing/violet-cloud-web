@@ -279,7 +279,7 @@ export default {
       })
     },
     handleSocialLogin (oauthType) {
-      const url = socialLoginApi + oauthType
+      const url = `${socialLoginApi}/${oauthType}/login`
       window.open(url, 'newWindow', `resizable=yes, height=${this.socialPage.height},
       width=${this.socialPage.width}, top=10%, left=10%, toolbar=no, menubar=no, scrollbars=no, resizable=no,location=no, status=no`)
       window.addEventListener('message', this.resolveSocialLogin, false)

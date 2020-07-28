@@ -37,7 +37,7 @@ export function listSupportSocail () {
   })
 }
 
-export var socialLoginApi = axios.defaults.baseURL + `/auth/social/login/`
+export var socialLoginApi = axios.defaults.baseURL + `/auth/social/login`
 
 export function getInfo () {
   return axios({
