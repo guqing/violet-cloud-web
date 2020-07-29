@@ -150,7 +150,7 @@ export default {
     }
   },
   mounted () {
-    this.handleListSupportSocial()
+    this.handleListUserSocial()
   },
   destroyed () {
     window.removeEventListener('message', this.resolveBindResult)
@@ -168,27 +168,31 @@ export default {
       if (e.data.authUser) {
         bindSocial(e.data.authUser).then(res => {
           this.$message.success('绑定成功')
+          this.handleListUserSocial()
         }).catch(err => {
           this.$message.error(`绑定失败:${err.message}`)
         })
       }
     },
-    handleListSupportSocial () {
+    handleListUserSocial () {
       listUserConnectedSocail().then(res => {
         this.userConnectedSocail = res.data
-        listSupportSocail().then(res => {
-          var socailAccounts = []
-          res.data.forEach(item => {
-            var socailInfo = getSocailInfo(item)
-            socailAccounts.push({
-              name: socailInfo.name,
-              url: socailInfo.url,
-              provider: item,
-              logo: `/icon/${item.toLowerCase()}.png`,
-              isConnected: this.userConnectedSocail.indexOf(item) > -1
-            })
-            this.socailAccounts = socailAccounts
+        this.handleListSupportSocial()
+      })
+    },
+    handleListSupportSocial () {
+      listSupportSocail().then(res => {
+        var socailAccounts = []
+        res.data.forEach(item => {
+          var socailInfo = getSocailInfo(item)
+          socailAccounts.push({
+            name: socailInfo.name,
+            url: socailInfo.url,
+            provider: item,
+            logo: `/icon/${item.toLowerCase()}.png`,
+            isConnected: this.userConnectedSocail.indexOf(item) > -1
           })
+          this.socailAccounts = socailAccounts
         })
       })
     },
