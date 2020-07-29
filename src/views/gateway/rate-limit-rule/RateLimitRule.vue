@@ -9,6 +9,16 @@
             </a-form-item>
           </a-col>
           <a-col :md="5" :sm="24">
+            <a-form-item label="请求IP">
+              <a-input placeholder="角色名称" v-model="queryParam.username" />
+            </a-form-item>
+          </a-col>
+          <a-col :md="5" :sm="24">
+            <a-form-item label="请求时间">
+              <a-input placeholder="角色名称" />
+            </a-form-item>
+          </a-col>
+          <a-col :md="5" :sm="24">
             <span class="table-page-search-submitButtons">
               <a-button type="primary">查询</a-button>
               <a-button style="margin-left: 8px;">
@@ -46,7 +56,7 @@
       @change="handleTableChange"
       :row-selection="{ selectedRowKeys: selectedRowKeys, onChange: onSelectChange }"
     >
-      <span slot="action" slot-scope="text, record">
+      <span slot="action">
         <template>
           <a>编辑</a>
           <a-divider type="vertical" />
