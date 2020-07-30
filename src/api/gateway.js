@@ -73,4 +73,21 @@ gatewayApi.listRouteLog = function (parameter) {
     params: parameter
   })
 }
+
+gatewayApi.listRateLimitRule = function (parameter) {
+  return axios({
+    url: '/route/auth/rateLimitRule/data',
+    method: 'get',
+    params: parameter
+  })
+}
+
+gatewayApi.countRateLimitRule = function (parameter) {
+  return axios({
+    url: '/route/auth/rateLimitRule/count',
+    method: 'get',
+    params: parameter
+  })
+}
+
 export default gatewayApi

@@ -189,7 +189,8 @@ export default {
             that.$message.success('解绑成功')
             that.handleListUserSocial()
           })
-        }
+        },
+        onCancel () { }
       })
     },
     handleListUserSocial () {

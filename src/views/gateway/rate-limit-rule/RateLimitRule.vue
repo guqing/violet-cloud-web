@@ -5,26 +5,16 @@
         <a-row :gutter="15">
           <a-col :md="5" :sm="24">
             <a-form-item label="请求URI">
-              <a-input placeholder="角色名称" v-model="queryParam.username" />
+              <a-input placeholder="请求URI" v-model="queryParam.requestUri" />
             </a-form-item>
           </a-col>
           <a-col :md="5" :sm="24">
-            <a-form-item label="请求IP">
-              <a-input placeholder="角色名称" v-model="queryParam.username" />
-            </a-form-item>
-          </a-col>
-          <a-col :md="5" :sm="24">
-            <a-form-item label="请求时间">
-              <a-input placeholder="角色名称" />
-            </a-form-item>
-          </a-col>
-          <a-col :md="5" :sm="24">
-            <span class="table-page-search-submitButtons">
-              <a-button type="primary">查询</a-button>
-              <a-button style="margin-left: 8px;">
+            <a-form-item>
+              <a-button type="primary" @click="handleSearch">查询</a-button>
+              <a-button style="margin-left: 8px;" @click="handleFormReset">
                 重置
               </a-button>
-            </span>
+            </a-form-item>
           </a-col>
         </a-row>
       </a-form>
@@ -67,6 +57,8 @@
   </a-card>
 </template>
 <script>
+import gatewayApi from '@/api/gateway'
+
 export default {
   name: 'RateLimitRule',
   data () {
@@ -107,7 +99,13 @@ export default {
         },
         {
           title: '状态',
-          dataIndex: 'status'
+          dataIndex: 'status',
+          customRender: (text) => {
+            if (text === '1') {
+              return <a-tag color="green">正常</a-tag>
+            }
+            return <a-tag color="orange">禁用</a-tag>
+          }
         },
         {
           title: '创建时间',
@@ -124,7 +122,26 @@ export default {
       selectedRows: []
     }
   },
+  created () {
+    this.handleListRateLimitRule()
+  },
   methods: {
+    handleListRateLimitRule () {
+      this.loading = true
+      gatewayApi.countRateLimitRule(this.queryParam).then(res => {
+        this.pagination.total = res
+      })
+      gatewayApi.listRateLimitRule(this.queryParam).then(res => {
+        this.limitRules = res
+      }).finally(() => { this.loading = false })
+    },
+    handleSearch () {
+      this.handleListRateLimitRule()
+    },
+    handleFormReset () {
+      this.queryParam = {}
+      this.handleListRateLimitRule()
+    },
     handleTableChange (pagination, filters, sorter) {
       const pager = { ...this.pagination }
       pager.current = pagination.current
