@@ -30,6 +30,13 @@ export function bindSocial (parameter) {
   })
 }
 
+export function unbindSocial (parameter) {
+  return axios({
+    url: `/auth/social/unbind/${parameter}`,
+    method: 'post'
+  })
+}
+
 export function socailSignLogin (parameter) {
   return axios({
     url: '/auth/social/sign/login',

@@ -32,7 +32,7 @@
             <div class="socail-account-title">关联第三方账号</div>
             <a-list class="social-account-list" item-layout="horizontal" :data-source="socailAccounts">
               <a-list-item slot="renderItem" slot-scope="item, index" :key="index">
-                <a slot="actions" v-if="item.isConnected">取消关联</a>
+                <a slot="actions" v-if="item.isConnected" @click="handleUnbindSocial(item.provider)">取消关联</a>
                 <a slot="actions" v-else @click="handleBindSocialAccount(item.provider)">关联</a>
                 <a-list-item-meta>
                   <a slot="title" href="https://www.antdv.com/">{{ item.name }}</a>
@@ -49,9 +49,9 @@
             <div>
               <template v-for="(tag, index) in tags">
                 <a-tooltip v-if="tag.length > 20" :key="tag" :title="tag">
-                  <a-tag :key="tag" :closable="index !== 0" :close="() => handleTagClose(tag)">{{
-                    `${tag.slice(0, 20)}...`
-                  }}</a-tag>
+                  <a-tag :key="tag" :closable="index !== 0" :close="() => handleTagClose(tag)">
+                    {{ `${tag.slice(0, 20)}...` }}
+                  </a-tag>
                 </a-tooltip>
                 <a-tag v-else :key="tag" :closable="index !== 0" :close="() => handleTagClose(tag)">{{ tag }}</a-tag>
               </template>
@@ -100,7 +100,13 @@ import BaseSetting from './page/BaseSetting'
 import PasswordPage from './page/PasswordPage'
 import AvatarModal from './page/AvatarModal'
 import { mapGetters } from 'vuex'
-import { listSupportSocail, socialLoginApi, bindSocial, listUserConnectedSocail } from '@/api/login'
+import {
+  listSupportSocail,
+  socialLoginApi,
+  bindSocial,
+  listUserConnectedSocail,
+  unbindSocial
+} from '@/api/login'
 import { getSocailInfo } from '@/utils/socailInfo'
 
 export default {
@@ -113,7 +119,6 @@ export default {
   },
   data () {
     return {
-      oauthType: '',
       page: {
         width: window.screen.width * 0.5,
         height: window.screen.height * 0.5
@@ -158,9 +163,10 @@ export default {
   methods: {
     ...mapGetters(['nickname', 'avatar', 'userInfo']),
     handleBindSocialAccount (oauthType) {
-      this.oauthType = oauthType
       const url = `${socialLoginApi}/${oauthType.toLowerCase()}/bind`
-      window.open(url, 'Bind Social Account', `height=${this.page.height}, width=${this.page.width}, top=10%, left=10%, toolbar=no, menubar=no, scrollbars=no, resizable=no,location=no, status=no`)
+      window.open(url,
+        'Bind Social Account',
+        `height=${this.page.height},width=${this.page.width}, top=10%, left=10%, toolbar=no, menubar=no, scrollbars=no, resizable=no,location=no, status=no`)
       window.addEventListener('message', this.resolveBindResult, false)
     },
     resolveBindResult (e) {
@@ -173,6 +179,18 @@ export default {
           this.$message.error(`绑定失败:${err.message}`)
         })
       }
+    },
+    handleUnbindSocial (oauthType) {
+      var that = this
+      this.$confirm({
+        title: '确定要解除绑定吗?',
+        onOk () {
+          unbindSocial(oauthType).then(res => {
+            that.$message.success('解绑成功')
+            that.handleListUserSocial()
+          })
+        }
+      })
     },
     handleListUserSocial () {
       listUserConnectedSocail().then(res => {
