@@ -45,18 +45,10 @@ userApi.updateAvatar = function (parameter) {
   })
 }
 
-userApi.updateAvatar = function (parameter) {
+userApi.updatePassword = function (parameter) {
   return axios({
-    url: '/admin/user/avatar',
+    url: '/admin/user/password',
     method: 'put',
-    data: parameter
-  })
-}
-
-userApi.updateAvatar = function (parameter) {
-  return axios({
-    url: '/admin/user',
-    method: 'delete',
     data: parameter
   })
 }

@@ -95,7 +95,10 @@ export default {
         },
         {
           title: '请求间隔',
-          dataIndex: 'intervalSec'
+          dataIndex: 'intervalSec',
+          customRender: (text) => {
+            return text + ' 秒'
+          }
         },
         {
           title: '状态',
