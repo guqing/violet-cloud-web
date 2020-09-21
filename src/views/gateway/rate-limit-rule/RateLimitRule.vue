@@ -3,38 +3,32 @@
     <div class="table-operator">
       <a-form layout="inline">
         <a-row :gutter="15">
-          <a-col :md="5" :sm="24">
-            <a-form-item label="请求URI">
-              <a-input placeholder="请求URI" v-model="queryParam.requestUri" />
-            </a-form-item>
-          </a-col>
-          <a-col :md="5" :sm="24">
-            <a-form-item>
-              <a-button type="primary" @click="handleSearch">查询</a-button>
-              <a-button style="margin-left: 8px;" @click="handleFormReset">
-                重置
-              </a-button>
-            </a-form-item>
-          </a-col>
+          <a-form-item label="请求URI">
+            <a-input placeholder="请求URI" v-model="queryParam.requestUri" />
+          </a-form-item>
+          <a-form-item>
+            <a-button type="primary" @click="handleSearch">查询</a-button>
+            <a-button style="margin-left: 8px" @click="handleFormReset"> 重置 </a-button>
+          </a-form-item>
         </a-row>
       </a-form>
-      <div style="margin-top: 15px;">
+      <div style="margin-top: 15px">
         <a-button type="primary"><a-icon type="plus" />新增</a-button>
         <a-dropdown v-if="selectedRowKeys.length > 0">
           <a-menu slot="overlay">
             <a-menu-item key="1"><a-icon type="delete" />删除</a-menu-item>
           </a-menu>
-          <a-button style="margin-left: 8px;"> 批量操作 <a-icon type="down" /> </a-button>
+          <a-button style="margin-left: 8px"> 批量操作 <a-icon type="down" /> </a-button>
         </a-dropdown>
       </div>
     </div>
 
     <a-alert type="info" show-icon>
-      <p slot="message" style="padding: 0; margin: 0px;">
-        <span style="margin-right: 12px;">
-          已选择: <a style="font-weight: 600;">{{ selectedRows.length }}</a>
+      <p slot="message" style="padding: 0; margin: 0px">
+        <span style="margin-right: 12px">
+          已选择: <a style="font-weight: 600">{{ selectedRows.length }}</a>
         </span>
-        <a style="margin-left: 24px;" @click="clearSelect">清空</a>
+        <a style="margin-left: 24px" @click="clearSelect">清空</a>
       </p>
     </a-alert>
     <a-table

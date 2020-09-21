@@ -4,34 +4,28 @@
       <div class="table-operator">
         <a-form layout="inline">
           <a-row :gutter="15">
-            <a-col :md="5" :sm="24">
-              <a-form-item label="用户名">
-                <a-input placeholder="角色名称" v-model="queryParam.username" />
-              </a-form-item>
-            </a-col>
-            <a-col :md="5" :sm="24">
-              <span class="table-page-search-submitButtons">
-                <a-button type="primary">查询</a-button>
-                <a-button style="margin-left: 8px">
-                  重置
-                </a-button>
-              </span>
-            </a-col>
+            <a-form-item label="用户名">
+              <a-input placeholder="角色名称" v-model="queryParam.username" />
+            </a-form-item>
+            <a-form-item>
+              <a-button type="primary">查询</a-button>
+              <a-button style="margin-left: 8px"> 重置 </a-button>
+            </a-form-item>
+
+            <a-form-item>
+              <a-dropdown v-if="selectedRowKeys.length > 0">
+                <a-menu slot="overlay">
+                  <a-menu-item key="1"><a-icon type="delete" />删除</a-menu-item>
+                </a-menu>
+                <a-button> 批量操作 <a-icon type="down" /> </a-button>
+              </a-dropdown>
+            </a-form-item>
           </a-row>
         </a-form>
-        <div style="margin-top: 15px;">
-          <a-button type="primary"><a-icon type="plus" />新增</a-button>
-          <a-dropdown v-if="selectedRowKeys.length > 0">
-            <a-menu slot="overlay">
-              <a-menu-item key="1"><a-icon type="delete" />删除</a-menu-item>
-            </a-menu>
-            <a-button style="margin-left: 8px"> 批量操作 <a-icon type="down" /> </a-button>
-          </a-dropdown>
-        </div>
       </div>
 
       <a-alert type="info" show-icon>
-        <p slot="message" style="padding:0;margin:0px;">
+        <p slot="message" style="padding: 0; margin: 0px">
           <span style="margin-right: 12px">
             已选择: <a style="font-weight: 600">{{ selectedRows.length }}</a>
           </span>
@@ -49,8 +43,6 @@
       >
         <span slot="action" slot-scope="text, record">
           <template>
-            <a @click="$refs.userModal.edit(record)">编辑</a>
-            <a-divider type="vertical" />
             <a @click="handleDeleteById(record)">删除</a>
           </template>
         </span>

@@ -4,22 +4,18 @@
       <div class="table-operator">
         <a-form layout="inline">
           <a-row :gutter="15">
-            <a-col :md="5" :sm="24">
-              <a-form-item label="用户名">
-                <a-input placeholder="角色名称" v-model="queryParam.username" />
-              </a-form-item>
-            </a-col>
-            <a-col :md="5" :sm="24">
-              <span class="table-page-search-submitButtons">
-                <a-button type="primary" @click="handleSearch" :loading="loadingState.query">查询</a-button>
-                <a-button style="margin-left: 8px" @click="handleResetSearchForm" :loading="loadingState.reset">
-                  重置
-                </a-button>
-              </span>
-            </a-col>
+            <a-form-item label="用户名">
+              <a-input placeholder="角色名称" v-model="queryParam.username" />
+            </a-form-item>
+            <a-form-item>
+              <a-button type="primary" @click="handleSearch" :loading="loadingState.query">查询</a-button>
+              <a-button style="margin-left: 8px" @click="handleResetSearchForm" :loading="loadingState.reset">
+                重置
+              </a-button>
+            </a-form-item>
           </a-row>
         </a-form>
-        <div style="margin-top: 15px;">
+        <div style="margin-top: 15px">
           <a-button type="primary" @click="$refs.userModal.create()"><a-icon type="plus" />新增</a-button>
           <a-dropdown v-if="selectedRowKeys.length > 0">
             <a-menu slot="overlay">
@@ -31,7 +27,7 @@
       </div>
 
       <a-alert type="info" show-icon>
-        <p slot="message" style="padding:0;margin:0px;">
+        <p slot="message" style="padding: 0; margin: 0px">
           <span style="margin-right: 12px">
             已选择: <a style="font-weight: 600">{{ selectedRows.length }}</a>
           </span>
