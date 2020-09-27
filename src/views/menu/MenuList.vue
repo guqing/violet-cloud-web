@@ -23,7 +23,7 @@
           <a-form-model-item label="上级菜单">
             <a-tree-select
               v-model="menuForm.parentId"
-              style="width: 100%;"
+              style="width: 100%"
               :dropdown-style="{ maxHeight: '400px', overflow: 'auto' }"
               :tree-data="menuTreeData"
               tree-default-expand-all
@@ -35,12 +35,8 @@
           </a-form-model-item>
           <a-form-model-item label="资源类型">
             <a-radio-group default-value="0" button-style="solid" v-model="menuForm.type">
-              <a-radio-button value="0">
-                菜单
-              </a-radio-button>
-              <a-radio-button value="1">
-                按钮
-              </a-radio-button>
+              <a-radio-button value="0"> 菜单 </a-radio-button>
+              <a-radio-button value="1"> 按钮 </a-radio-button>
             </a-radio-group>
           </a-form-model-item>
           <a-form-model-item label="访问路径" v-show="showMenuFormItem" prop="path">
@@ -56,7 +52,9 @@
             <a-input v-model="menuForm.perms" placeholder="使用冒号分割层级，例如user:list" />
           </a-form-model-item>
           <a-form-model-item label="图标">
-            <a-input v-model="menuForm.icon" placeholder="选择一个图标可以展示在菜单标题左侧" />
+            <a-input v-model="menuForm.icon" @click="handleSelectIcon" placeholder="选择一个图标可以展示在菜单标题左侧">
+              <a-icon slot="suffix" :type="menuForm.icon" />
+            </a-input>
           </a-form-model-item>
           <a-col :style="{ display: moreFormItem ? 'block' : 'none' }">
             <a-form-model-item label="重定向地址" v-show="showMenuFormItem">
@@ -84,6 +82,15 @@
             </a>
           </a-form-model-item>
         </a-form-model>
+
+        <a-modal
+          title="选择图标"
+          :visible="iconSelect.visible"
+          @cancel="iconSelect.visible = false"
+          @ok="handleIconSelectOk"
+        >
+          <icon-selector v-model="iconSelect.selected" @change="handleChangeIcon" />
+        </a-modal>
       </a-col>
     </a-row>
   </a-card>
@@ -93,6 +100,7 @@
 import menuApi from '@/api/menu'
 import { baseMixin } from '@/store/app-mixin'
 import { ROUTER_MAP } from '@/store/mutation-types'
+import IconSelector from '@/components/IconSelector'
 import storage from 'store'
 
 const validatePath = (rule, value, callback) => {
@@ -127,8 +135,16 @@ const validateComponentPath = (rule, value, callback) => {
 export default {
   name: 'TreeList',
   mixins: [baseMixin],
+  components: {
+    IconSelector
+  },
   data () {
     return {
+      iconSelect: {
+        visible: false,
+        selected: ''
+      },
+      iconSelectorVisible: false,
       loadingState: {
         save: false,
         reset: false
@@ -170,6 +186,16 @@ export default {
     }
   },
   methods: {
+    handleChangeIcon (type) {
+      this.iconSelect.selected = type
+    },
+    handleSelectIcon () {
+      this.iconSelect.visible = true
+    },
+    handleIconSelectOk () {
+      this.menuForm.icon = this.iconSelect.selected
+      this.iconSelect.visible = false
+    },
     handleRoleEdit (role) {
       var menuIdArray = role.menuIds
       var menuIdStringArray = menuIdArray.map(String)
