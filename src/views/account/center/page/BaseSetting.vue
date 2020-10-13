@@ -19,7 +19,17 @@
 
           <a-form-item label="电子邮件">
             <a-input
-              v-decorator="['email', { rules: [{ type: 'email', message: '邮箱地址格式不正确!' }] }]"
+              v-decorator="[
+                'email',
+                {
+                  rules: [
+                    { type: 'email', message: '邮箱地址格式不正确!' },
+                    {
+                      validator: validateDuplicateEmail,
+                    },
+                  ],
+                },
+              ]"
               placeholder="exp@admin.com"
             />
           </a-form-item>
@@ -41,11 +51,13 @@
 import userApi from '@/api/user'
 import { mapActions } from 'vuex'
 import pick from 'lodash.pick'
+import antiShake from '@/utils/antiShake'
 
 export default {
   name: 'BaseSetting',
   data () {
     return {
+      currentUser: {}
     }
   },
   beforeCreate () {
@@ -59,19 +71,26 @@ export default {
 
     loadUser () {
       this.GetInfo().then(res => {
+        this.currentUser = pick(res, 'email', 'mobile')
         this.form.setFieldsValue(pick(res, 'nickname', 'email', 'mobile', 'description'))
       })
     },
-
+    validateDuplicateEmail (rule, value, callback) {
+      if (this.currentUser.email === value) {
+        callback()
+      }
+      antiShake(() => {
+        // 防抖
+        userApi.checkEmail(value).then(res => {
+          if (res.data) {
+            callback(new Error('邮箱地址已经存在'))
+          } else {
+            callback()
+          }
+        })
+      }, 500)
+    },
     handleUpdateUserInfo (e) {
-      // if (this.user.nickname === '') {
-      //   this.$message.warning('昵称不能为空')
-      //   return
-      // }
-      // if (this.user.description.length > 144) {
-      //   this.$message.warning('个人说明不能超过144个字符')
-      //   return
-      // }
       e.preventDefault()
       this.form.validateFields((err, values) => {
         if (!err) {
