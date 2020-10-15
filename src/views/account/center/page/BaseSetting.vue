@@ -49,31 +49,27 @@
 
 <script>
 import userApi from '@/api/user'
-import { mapActions } from 'vuex'
+import { mapGetters } from 'vuex'
 import pick from 'lodash.pick'
 import antiShake from '@/utils/antiShake'
 
 export default {
   name: 'BaseSetting',
-  data () {
-    return {
-      currentUser: {}
-    }
-  },
   beforeCreate () {
     this.form = this.$form.createForm(this, { name: 'user_profile' })
   },
+  computed: {
+    ...mapGetters(['userInfo']),
+    currentUser () {
+      return pick(this.userInfo, 'nickname', 'email', 'mobile', 'description')
+    }
+  },
   mounted () {
-    this.loadUser()
+    this.initForm()
   },
   methods: {
-    ...mapActions(['GetInfo']),
-
-    loadUser () {
-      this.GetInfo().then(res => {
-        this.currentUser = pick(res, 'email', 'mobile')
-        this.form.setFieldsValue(pick(res, 'nickname', 'email', 'mobile', 'description'))
-      })
+    initForm () {
+      this.form.setFieldsValue(this.currentUser)
     },
     validateDuplicateEmail (rule, value, callback) {
       if (this.currentUser.email === value) {
@@ -96,9 +92,7 @@ export default {
         if (!err) {
           userApi.updateProfile(values).then(res => {
             this.$message.success('保存成功')
-            this.loadUser()
             // 更新vuex状态
-            // this.GetInfo()
             this.$store.dispatch('GetInfo')
           }).catch(err => {
             this.$message.error(`更新用户信息出错,error: ${err.message}`)
