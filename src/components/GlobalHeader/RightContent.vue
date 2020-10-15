@@ -35,8 +35,7 @@ export default {
   },
   data () {
     return {
-      showMenu: true,
-      currentUser: {}
+      showMenu: true
     }
   },
   computed: {
@@ -46,12 +45,12 @@ export default {
         'ant-pro-global-header-index-right': true,
         [`ant-pro-global-header-index-${(this.topMenu && this.isMobile) && this.theme || 'light'}`]: true
       }
-    }
-  },
-  mounted () {
-    this.currentUser = {
-      name: this.nickname,
-      avatar: this.avatar
+    },
+    currentUser () {
+      return {
+        name: this.nickname,
+        avatar: this.avatar
+      }
     }
   }
 }
