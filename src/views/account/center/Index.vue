@@ -7,12 +7,12 @@
             <div class="avatar" title="点击可以修改头像">
               <a-upload name="file" :showUploadList="false" :beforeUpload="handleBeforeUpload">
                 <div class="ant-upload-preview" type="upload">
-                  <a-avatar size="large" :icon="user" :src="avatar()" class="avatar-preview" />
+                  <a-avatar size="large" :icon="user" :src="user.avatar" class="avatar-preview" />
                 </div>
               </a-upload>
             </div>
-            <div class="username">{{ nickname() }}</div>
-            <div class="bio">{{ userInfo().description }}</div>
+            <div class="username">{{ user.nickname }}</div>
+            <div class="bio">{{ user.description }}</div>
           </div>
           <div class="account-center-detail">
             <p>
@@ -66,7 +66,7 @@
                 @blur="handleTagInputConfirm"
                 @keyup.enter="handleTagInputConfirm"
               />
-              <a-tag v-else @click="showTagInput" style="background: #fff; borderstyle: dashed;">
+              <a-tag v-else @click="showTagInput" style="background: #fff; borderstyle: dashed">
                 <a-icon type="plus" />New Tag
               </a-tag>
             </div>
@@ -77,7 +77,7 @@
       </a-col>
       <a-col :md="24" :lg="16">
         <a-card
-          style="width: 100%;"
+          style="width: 100%"
           :bordered="false"
           :tabList="tabListNoTitle"
           :activeTabKey="noTitleKey"
@@ -99,7 +99,7 @@ import { PageView, RouteView } from '@/layouts'
 import BaseSetting from './page/BaseSetting'
 import PasswordPage from './page/PasswordPage'
 import AvatarModal from './page/AvatarModal'
-import { mapGetters } from 'vuex'
+import { mapGetters, mapActions } from 'vuex'
 import {
   listSupportSocail,
   socialLoginApi,
@@ -108,6 +108,7 @@ import {
   unbindSocial
 } from '@/api/login'
 import { getSocailInfo } from '@/utils/socailInfo'
+import userApi from '@/api/user'
 
 export default {
   components: {
@@ -161,7 +162,8 @@ export default {
     window.removeEventListener('message', this.resolveBindResult)
   },
   methods: {
-    ...mapGetters(['nickname', 'avatar', 'userInfo']),
+    ...mapGetters(['userInfo']),
+    ...mapActions(['GetInfo']),
     handleBindSocialAccount (oauthType) {
       const url = `${socialLoginApi}/${oauthType.toLowerCase()}/bind`
       window.open(url,
@@ -221,7 +223,12 @@ export default {
       return false
     },
     handleUploadAvatar (avatarUrl) {
-      this.user['avatar'] = avatarUrl
+      // 更新用户头像
+      userApi.updateAvatar(avatarUrl).then(res => {
+        this.$message.success('更新成功')
+        // 更新vue state
+        this.GetInfo()
+      })
     },
     handleTabChange (key, type) {
       this[type] = key

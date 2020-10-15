@@ -39,9 +39,8 @@ userApi.updateProfile = function (parameter) {
 
 userApi.updateAvatar = function (parameter) {
   return axios({
-    url: '/admin/user/avatar',
-    method: 'put',
-    data: parameter
+    url: `/admin/user/avatar?avatar=${parameter}`,
+    method: 'put'
   })
 }
 

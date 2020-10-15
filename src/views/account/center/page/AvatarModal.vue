@@ -54,6 +54,8 @@
   </a-modal>
 </template>
 <script>
+import ossApi from '@/api/oss'
+
 export default {
   data () {
     return {
@@ -74,10 +76,16 @@ export default {
     }
   },
   methods: {
-    edit (id) {
+    edit (file) {
       this.visible = true
-      this.id = id
-      /* 获取原始头像 */
+      const reader = new FileReader()
+      // 把Array Buffer转化为blob 如果是base64不需要
+      // 转化为base64
+      reader.readAsDataURL(file)
+      reader.onload = () => {
+        console.log(this.options.img)
+        this.options.img = reader.result
+      }
     },
     close () {
       this.id = null
@@ -112,7 +120,7 @@ export default {
 
     // 上传图片（点击上传按钮）
     finish (type) {
-      console.log('finish')
+      console.log('starting upload image...')
       const _this = this
       const formData = new FormData()
       // 输出
@@ -121,22 +129,13 @@ export default {
           const img = window.URL.createObjectURL(data)
           this.model = true
           this.modelSrc = img
-          formData.append('file', data, this.fileName)
-          this.$http.post('https://www.mocky.io/v2/5cc8019d300000980a055e76', formData, { contentType: false, processData: false, headers: { 'Content-Type': 'application/x-www-form-urlencoded' } })
-            .then((response) => {
-              console.log('upload response:', response)
-              // var res = response.data
-              // if (response.status === 'done') {
-              //   _this.imgFile = ''
-              //   _this.headImg = res.realPathList[0] // 完整路径
-              //   _this.uploadImgRelaPath = res.relaPathList[0] // 非完整路径
-              //   _this.$message.success('上传成功')
-              //   this.visible = false
-              // }
-              _this.$message.success('上传成功')
-              _this.$emit('ok', response.url)
-              _this.visible = false
-            })
+          formData.append('object', data, this.fileName)
+          // 调用接口上传文件
+          ossApi.createObject(formData).then(res => {
+            console.log('success, upload response:', res.objectContent.httpRequest)
+            _this.$emit('success', res.objectContent.httpRequest.uri)
+            _this.visible = false
+          })
         })
       } else {
         this.$refs.cropper.getCropData((data) => {
