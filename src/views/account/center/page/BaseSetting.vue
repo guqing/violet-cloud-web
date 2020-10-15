@@ -98,7 +98,8 @@ export default {
             this.$message.success('保存成功')
             this.loadUser()
             // 更新vuex状态
-            this.GetInfo()
+            // this.GetInfo()
+            this.$store.dispatch('GetInfo')
           }).catch(err => {
             this.$message.error(`更新用户信息出错,error: ${err.message}`)
           })

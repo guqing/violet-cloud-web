@@ -65,7 +65,6 @@ export default {
       fileList: [],
       uploading: false,
       options: {
-        // img: 'https://zos.alipayobjects.com/rmsportal/jkjgkEfvpUPVyRjUImniVslZfWPnJuuZ.png',
         img: '',
         autoCrop: true,
         autoCropWidth: 200,
@@ -83,7 +82,6 @@ export default {
       // 转化为base64
       reader.readAsDataURL(file)
       reader.onload = () => {
-        console.log(this.options.img)
         this.options.img = reader.result
       }
     },
@@ -132,7 +130,7 @@ export default {
           formData.append('object', data, this.fileName)
           // 调用接口上传文件
           ossApi.createObject(formData).then(res => {
-            console.log('success, upload response:', res.objectContent.httpRequest)
+            console.log('success, upload response:', res.objectContent.httpRequest.uri)
             _this.$emit('success', res.objectContent.httpRequest.uri)
             _this.visible = false
           })

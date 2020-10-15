@@ -7,23 +7,25 @@
             <div class="avatar" title="点击可以修改头像">
               <a-upload name="file" :showUploadList="false" :beforeUpload="handleBeforeUpload">
                 <div class="ant-upload-preview" type="upload">
-                  <a-avatar size="large" :icon="user" :src="user.avatar" class="avatar-preview" />
+                  <a-avatar size="large" icon="user" :src="avatar" class="avatar-preview" />
                 </div>
               </a-upload>
             </div>
-            <div class="username">{{ user.nickname }}</div>
-            <div class="bio">{{ user.description }}</div>
+            <div class="username">{{ userInfo.nickname }}</div>
+            <div class="bio">{{ userInfo.description }}</div>
           </div>
           <div class="account-center-detail">
             <p>
               <a-icon type="crown" />
-              <a-tag v-for="(item, index) in user.roleNames" :key="index">{{ item }}</a-tag>
+              <a-tag v-for="(item, index) in userInfo.roleNames" :key="index">{{ item }}</a-tag>
             </p>
-            <p v-if="user.email" title="邮箱地址"><a-icon type="mail" />{{ user.email }}</p>
-            <p v-if="user.mobile" title="手机号"><a-icon type="phone" />{{ user.mobile }}</p>
-            <p v-if="user.createTime" title="账号年龄"><a-icon type="calendar" />{{ user.createTime | dateToNow }}</p>
-            <p v-if="user.lastLoginTime" title="上次登录时间">
-              <a-icon type="safety" />{{ user.lastLoginTime | formatDate }}
+            <p v-if="userInfo.email" title="邮箱地址"><a-icon type="mail" />{{ userInfo.email }}</p>
+            <p v-if="userInfo.mobile" title="手机号"><a-icon type="phone" />{{ userInfo.mobile }}</p>
+            <p v-if="userInfo.createTime" title="账号年龄">
+              <a-icon type="calendar" />{{ userInfo.createTime | dateToNow }}
+            </p>
+            <p v-if="userInfo.lastLoginTime" title="上次登录时间">
+              <a-icon type="safety" />{{ userInfo.lastLoginTime | formatDate }}
             </p>
           </div>
           <a-divider />
@@ -99,7 +101,7 @@ import { PageView, RouteView } from '@/layouts'
 import BaseSetting from './page/BaseSetting'
 import PasswordPage from './page/PasswordPage'
 import AvatarModal from './page/AvatarModal'
-import { mapGetters, mapActions } from 'vuex'
+import { mapGetters } from 'vuex'
 import {
   listSupportSocail,
   socialLoginApi,
@@ -151,9 +153,7 @@ export default {
     }
   },
   computed: {
-    user () {
-      return this.userInfo()
-    }
+    ...mapGetters(['avatar', 'userInfo'])
   },
   mounted () {
     this.handleListUserSocial()
@@ -162,8 +162,6 @@ export default {
     window.removeEventListener('message', this.resolveBindResult)
   },
   methods: {
-    ...mapGetters(['userInfo']),
-    ...mapActions(['GetInfo']),
     handleBindSocialAccount (oauthType) {
       const url = `${socialLoginApi}/${oauthType.toLowerCase()}/bind`
       window.open(url,
@@ -227,7 +225,7 @@ export default {
       userApi.updateAvatar(avatarUrl).then(res => {
         this.$message.success('更新成功')
         // 更新vue state
-        this.GetInfo()
+        this.$store.commit('SET_AVATAR', avatarUrl)
       })
     },
     handleTabChange (key, type) {
