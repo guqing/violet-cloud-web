@@ -22,6 +22,7 @@
         <a-form :label-col="labelCol" :wrapper-col="wrapperCol">
           <a-form-item label="上级组">
             <a-tree-select
+              allowClear
               v-model="userGroupForm.parentId"
               style="width: 100%"
               :dropdown-style="{ maxHeight: '400px', overflow: 'auto' }"
@@ -35,9 +36,7 @@
           </a-form-item>
           <a-form-item label="排序">
             <a-tooltip :trigger="['focus']" placement="topLeft" overlay-class-name="numeric-input">
-              <template slot="title">
-                请输入整数数字
-              </template>
+              <template slot="title"> 请输入整数数字 </template>
               <a-input
                 v-model.number="userGroupForm.sortIndex"
                 type="number"
@@ -47,12 +46,8 @@
             </a-tooltip>
           </a-form-item>
           <a-form-item :wrapper-col="groupFormButtonWrapperCol">
-            <a-button type="primary" v-limitclick="handleSaveOrUpdate" v-action:save>
-              保存
-            </a-button>
-            <a-button :style="{ marginLeft: '8px' }" @click="handleResetGroupForm">
-              重置
-            </a-button>
+            <a-button type="primary" v-limitclick="handleSaveOrUpdate" v-action:save> 保存 </a-button>
+            <a-button :style="{ marginLeft: '8px' }" @click="handleResetGroupForm"> 重置 </a-button>
           </a-form-item>
         </a-form>
       </a-col>

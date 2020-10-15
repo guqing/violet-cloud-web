@@ -22,6 +22,7 @@
         <a-form-model ref="menuForm" :model="menuForm" :rules="rules" :label-col="labelCol" :wrapper-col="wrapperCol">
           <a-form-model-item label="上级菜单">
             <a-tree-select
+              allowClear
               v-model="menuForm.parentId"
               style="width: 100%"
               :dropdown-style="{ maxHeight: '400px', overflow: 'auto' }"

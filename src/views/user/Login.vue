@@ -100,12 +100,12 @@
 
       <a-form-item>
         <a-checkbox v-decorator="['rememberMe']" checked>自动登录</a-checkbox>
-        <router-link :to="{ name: 'recover', params: { user: 'aaa' } }" class="forge-password" style="float: right;">
+        <router-link :to="{ name: 'recover', params: { user: 'aaa' } }" class="forge-password" style="float: right">
           忘记密码</router-link
         >
       </a-form-item>
 
-      <a-form-item style="margin-top: 24px;">
+      <a-form-item style="margin-top: 24px">
         <a-button
           size="large"
           type="primary"
@@ -126,9 +126,7 @@
         <a>
           <a-icon class="item-icon" type="weibo-circle"></a-icon>
         </a>
-        <router-link class="register" :to="{ name: 'register' }">
-          注册账户
-        </router-link>
+        <router-link class="register" :to="{ name: 'register' }"> 注册账户 </router-link>
       </div>
     </a-form>
     <!--
@@ -207,7 +205,6 @@ export default {
 
       validateFields(validateFieldsKey, { force: true }, (err, values) => {
         if (!err) {
-          console.log('login form', values)
           const loginParams = { ...values }
           delete loginParams.username
           loginParams[!state.loginType ? 'email' : 'username'] = values.username
