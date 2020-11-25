@@ -13,7 +13,7 @@ export const hasAnyPermission = Vue.directive('hasAnyPermission', {
       if (permissions.includes(action)) {
         return
       } else {
-        el.parentNode && el.parentNode.removeChild(el) || (el.style.display = 'none')
+        ;(el.parentNode && el.parentNode.removeChild(el)) || (el.style.display = 'none')
       }
     }
   }
@@ -25,11 +25,10 @@ export const hasNoPermission = Vue.directive('hasNoPermission', {
     const actionNames = binding.value
     const permissions = store.getters.userInfo.permissions
     const elVal = vnode.context.$route.meta.permission
-
     for (const actionName of actionNames) {
       var action = elVal + ':' + actionName
       if (permissions.includes(action)) {
-        el.parentNode && el.parentNode.removeChild(el) || (el.style.display = 'none')
+        ;(el.parentNode && el.parentNode.removeChild(el)) || (el.style.display = 'none')
       }
     }
   }

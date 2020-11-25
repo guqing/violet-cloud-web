@@ -1,5 +1,31 @@
 <template>
   <a-card :bordered="false">
+    <div class="table-page-search-wrapper">
+      <a-form layout="inline">
+        <a-row :gutter="15">
+          <a-col :md="4" :sm="24">
+            <a-form-item>
+              <a-input placeholder="用户名" />
+            </a-form-item>
+          </a-col>
+          <a-col :md="4" :sm="24">
+            <span class="table-page-search-submitButtons">
+              <a-button type="primary">查询</a-button>
+              <a-button style="margin-left: 8px;">
+                重置
+              </a-button>
+              <a-dropdown v-show="menuOpsVisible">
+                <a-menu slot="overlay">
+                  <a-menu-item key="1" v-action:delete><a-icon type="delete" />删除</a-menu-item>
+                </a-menu>
+                <a-button style="margin-left: 8px;"> 批量操作 <a-icon type="down" /> </a-button>
+              </a-dropdown>
+            </span>
+          </a-col>
+        </a-row>
+      </a-form>
+    </div>
+
     <a-row :gutter="8" type="flex" justify="center">
       <a-col :lg="12" :md="24" :order="isMobile ? 1 : 0">
         <a-spin tip="Loading..." :spinning="treeDataLoading">
@@ -49,7 +75,13 @@
           <a-form-model-item label="组件路径" v-show="showMenuFormItem" prop="component">
             <a-input v-model="menuForm.component" placeholder="相对于views下的组件，例如:user/UserList" />
           </a-form-model-item>
-          <a-form-model-item label="权限标识">
+          <a-form-model-item>
+            <span slot="label">
+              权限标识&nbsp;
+              <a-tooltip title="user:list中user表示组件名称,list表示按钮操作标识">
+                <a-icon type="question-circle-o" />
+              </a-tooltip>
+            </span>
             <a-input v-model="menuForm.perms" placeholder="使用冒号分割层级，例如user:list" />
           </a-form-model-item>
           <a-form-model-item label="图标">
@@ -64,7 +96,13 @@
             <a-form-model-item label="是否缓存组件" v-show="showMenuFormItem">
               <a-switch v-model="menuForm.keepAlive" checked-children="是" un-checked-children="否" default-checked />
             </a-form-model-item>
-            <a-form-model-item label="是否隐藏菜单栏" v-show="showMenuFormItem">
+            <a-form-model-item v-show="showMenuFormItem">
+              <span slot="label">
+                是否隐藏菜单栏&nbsp;
+                <a-tooltip title="当菜单类型为菜单时如果开启了隐藏则始终不会显示">
+                  <a-icon type="question-circle-o" />
+                </a-tooltip>
+              </span>
               <a-switch v-model="menuForm.hidden" checked-children="隐藏" un-checked-children="显示" />
             </a-form-model-item>
             <a-form-model-item label="排序">
@@ -115,16 +153,7 @@ const validatePath = (rule, value, callback) => {
   }
   callback()
 }
-const validateComponentName = (rule, value, callback) => {
-  if (value !== '') {
-    if (/^[A-Za-z0-9]+$/.test(value)) {
-      callback()
-    } else {
-      callback(new Error('只能输入字母或数字'))
-    }
-  }
-  callback()
-}
+
 const validateComponentPath = (rule, value, callback) => {
   if (value !== '') {
     var result = /^[A-Za-z0-9/]+([\w.,@?^=%&:/~+#-]*[\w@?^=%&/~+#-])?$/.test(value)
@@ -161,7 +190,24 @@ export default {
           { max: 150, message: '长度不能超过150字符', trigger: 'blur' }
         ],
         path: [{ validator: validatePath, trigger: 'change' }],
-        name: [{ validator: validateComponentName, trigger: 'change' }],
+        name: [
+          {
+            validator: (rule, value, callback) => {
+              if (!this.menuForm.type || this.menuForm.type === '0') {
+                callback(new Error('资源类型为菜单时不能为空'))
+              } else if (value !== '') {
+                if (/^[A-Za-z0-9]+$/.test(value)) {
+                  callback()
+                } else {
+                  callback(new Error('只能输入字母或数字'))
+                }
+              } else {
+                callback()
+              }
+            },
+            trigger: 'blur'
+          }
+        ],
         component: [{ validator: validateComponentPath, trigger: 'change' }]
       },
       moreFormItem: false,
@@ -183,6 +229,9 @@ export default {
   computed: {
     showMenuFormItem() {
       return (this.menuForm.type || '0') === '0'
+    },
+    menuOpsVisible() {
+      return this.checkedMenuKeys.length > 0
     }
   },
   methods: {
