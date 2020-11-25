@@ -5,18 +5,20 @@
         <a-row :gutter="15">
           <a-col :md="4" :sm="24">
             <a-form-item>
-              <a-input placeholder="用户名" />
+              <a-input placeholder="标题" v-model="queryParam.title" />
             </a-form-item>
           </a-col>
           <a-col :md="4" :sm="24">
             <span class="table-page-search-submitButtons">
-              <a-button type="primary">查询</a-button>
-              <a-button style="margin-left: 8px;">
+              <a-button type="primary" @click="handleSearch">查询</a-button>
+              <a-button style="margin-left: 8px;" @click="handleSearchReset">
                 重置
               </a-button>
               <a-dropdown v-show="menuOpsVisible">
                 <a-menu slot="overlay">
-                  <a-menu-item key="1" v-action:delete><a-icon type="delete" />删除</a-menu-item>
+                  <a-menu-item key="1" v-action:delete @click="handleDeleteInBatch"
+                    ><a-icon type="delete" />删除</a-menu-item
+                  >
                 </a-menu>
                 <a-button style="margin-left: 8px;"> 批量操作 <a-icon type="down" /> </a-button>
               </a-dropdown>
@@ -173,6 +175,7 @@ export default {
   },
   data() {
     return {
+      queryParam: {},
       iconSelect: {
         visible: false,
         selected: ''
@@ -194,15 +197,17 @@ export default {
           {
             validator: (rule, value, callback) => {
               if (!this.menuForm.type || this.menuForm.type === '0') {
-                callback(new Error('资源类型为菜单时不能为空'))
-              } else if (value !== '') {
-                if (/^[A-Za-z0-9]+$/.test(value)) {
-                  callback()
+                if (!value) {
+                  callback(new Error('资源类型为菜单时不能为空'))
+                } else if (value !== '') {
+                  if (/^[A-Za-z0-9]+$/.test(value)) {
+                    callback()
+                  } else {
+                    callback(new Error('只能输入字母或数字'))
+                  }
                 } else {
-                  callback(new Error('只能输入字母或数字'))
+                  callback()
                 }
-              } else {
-                callback()
               }
             },
             trigger: 'blur'
@@ -254,7 +259,7 @@ export default {
     listTreeMenu() {
       this.treeDataLoading = true
       menuApi
-        .listTreeMenu()
+        .listTreeMenu(this.queryParam)
         .then(res => {
           this.menuTreeData = res.data
         })
@@ -330,6 +335,32 @@ export default {
       setTimeout(() => {
         this.loadingState.reset = false
       }, 1500)
+    },
+    handleSearch() {
+      this.listTreeMenu()
+    },
+    handleSearchReset() {
+      this.queryParam = {}
+      this.listTreeMenu()
+    },
+    handleDeleteInBatch() {
+      const that = this
+      this.$confirm({
+        title: '警告',
+        content: `确定要删除所选中的菜单吗?`,
+        okText: '删除',
+        okType: 'danger',
+        cancelText: '取消',
+        onOk() {
+          that.$log.debug('批量删除菜单或按钮', that.checkedMenuKeys)
+          menuApi.deleteByIds(that.checkedMenuKeys).then(res => {
+            that.$message.success('删除成功')
+          })
+        },
+        onCancel() {
+          that.$log.info('Cancel')
+        }
+      })
     }
   }
 }
