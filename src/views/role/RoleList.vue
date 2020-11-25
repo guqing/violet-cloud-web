@@ -152,24 +152,27 @@ export default {
         const requestParameters = Object.assign({}, this.queryParam)
         requestParameters.current = parameter.pageNo
         requestParameters.pageSize = parameter.pageSize
-        return roleApi.listRole(requestParameters).then(res => {
-          return {
-            pageSize: res.data.pageSize,
-            pageNo: res.data.current,
-            totalCount: res.data.total,
-            totalPage: res.data.pages,
-            data: res.data.list
-          }
-        }).catch(err => {
-          this.$message.error(`查询出错:${err}`)
-          return {
-            pageSize: 0,
-            pageNo: 1,
-            totalCount: 0,
-            totalPage: 0,
-            data: []
-          }
-        })
+        return roleApi
+          .listRole(requestParameters)
+          .then(res => {
+            return {
+              pageSize: res.data.pageSize,
+              pageNo: res.data.current,
+              totalCount: res.data.total,
+              totalPage: res.data.pages,
+              data: res.data.list
+            }
+          })
+          .catch(err => {
+            this.$message.error(`查询出错:${err}`)
+            return {
+              pageSize: 0,
+              pageNo: 1,
+              totalCount: 0,
+              totalPage: 0,
+              data: []
+            }
+          })
       },
       expandedMenuKeys: [],
       autoExpandParent: false,
@@ -244,11 +247,16 @@ export default {
       this.loadingState.save = true
       var menuIds = this.handleRelatedParentRoleMenuKeys()
       this.roleForm.menuIds = menuIds
-      roleApi.createOrUpdate(this.roleForm).then(res => {
-        this.$message.success('保存成功')
-        this.handleResetRoleForm()
-        this.$refs.table.refresh()
-      }).finally(() => { this.loadingState.save = false })
+      roleApi
+        .createOrUpdate(this.roleForm)
+        .then(res => {
+          this.$message.success('保存成功')
+          this.handleResetRoleForm()
+          this.$refs.table.refresh()
+        })
+        .finally(() => {
+          this.loadingState.save = false
+        })
     },
     handleRelatedParentRoleMenuKeys() {
       var menuIds = []
@@ -330,6 +338,7 @@ export default {
           that.$log.debug('批量删除角色', that.selectedRoleKeys)
           roleApi.deleteByIds(that.selectedRoleKeys).then(res => {
             that.$message.success('删除成功')
+            this.$refs.table.refresh()
           })
         },
         onCancel() {

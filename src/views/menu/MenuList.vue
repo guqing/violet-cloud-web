@@ -355,6 +355,7 @@ export default {
           that.$log.debug('批量删除菜单或按钮', that.checkedMenuKeys)
           menuApi.deleteByIds(that.checkedMenuKeys).then(res => {
             that.$message.success('删除成功')
+            this.listTreeMenu()
           })
         },
         onCancel() {
