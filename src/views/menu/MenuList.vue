@@ -65,7 +65,7 @@
               <a-switch v-model="menuForm.keepAlive" checked-children="是" un-checked-children="否" default-checked />
             </a-form-model-item>
             <a-form-model-item label="是否隐藏菜单栏" v-show="showMenuFormItem">
-              <a-switch v-model="menuForm.hidden" checked-children="显示" un-checked-children="隐藏" />
+              <a-switch v-model="menuForm.hidden" checked-children="隐藏" un-checked-children="显示" />
             </a-form-model-item>
             <a-form-model-item label="排序">
               <a-input v-model="menuForm.sortIndex" placeholder="菜单显示排序" />
@@ -113,6 +113,7 @@ const validatePath = (rule, value, callback) => {
       callback(new Error('请输入合法的访问url'))
     }
   }
+  callback()
 }
 const validateComponentName = (rule, value, callback) => {
   if (value !== '') {
@@ -122,6 +123,7 @@ const validateComponentName = (rule, value, callback) => {
       callback(new Error('只能输入字母或数字'))
     }
   }
+  callback()
 }
 const validateComponentPath = (rule, value, callback) => {
   if (value !== '') {
@@ -132,6 +134,7 @@ const validateComponentPath = (rule, value, callback) => {
       callback(new Error('请输入合法的组件路径'))
     }
   }
+  callback()
 }
 export default {
   name: 'TreeList',
@@ -157,12 +160,8 @@ export default {
           { required: true, message: '请输入菜单或按钮的名称', trigger: 'blur' },
           { max: 150, message: '长度不能超过150字符', trigger: 'blur' }
         ],
-        path: [
-          { validator: validatePath, trigger: 'change' }
-        ],
-        name: [
-          { validator: validateComponentName, trigger: 'change' }
-        ],
+        path: [{ validator: validatePath, trigger: 'change' }],
+        name: [{ validator: validateComponentName, trigger: 'change' }],
         component: [{ validator: validateComponentPath, trigger: 'change' }]
       },
       moreFormItem: false,
@@ -205,22 +204,28 @@ export default {
     },
     listTreeMenu() {
       this.treeDataLoading = true
-      menuApi.listTreeMenu().then(res => {
-        this.menuTreeData = res.data
-      }).catch(err => {
-        this.menuTreeData = []
-        this.$message.error(`查询出错:${err}`)
-      }).finally(() => { this.treeDataLoading = false })
+      menuApi
+        .listTreeMenu()
+        .then(res => {
+          this.menuTreeData = res.data
+        })
+        .catch(err => {
+          this.menuTreeData = []
+          this.$message.error(`查询出错:${err}`)
+        })
+        .finally(() => {
+          this.treeDataLoading = false
+        })
     },
     onTreeMenuExpand(expandedKeys) {
-      console.log('onExpand', expandedKeys)
+      this.$log.debug('onExpand', expandedKeys)
       // if not set autoExpandParent to false, if children expanded, parent can not collapse.
       // or, you can remove all expanded children keys.
       this.expandedMenuKeys = expandedKeys
       this.autoExpandParent = false
     },
     onTreeMenuCheck(checkedMenuKeys) {
-      console.log('onCheck', checkedMenuKeys)
+      this.$log.debug('onCheck', checkedMenuKeys)
     },
     onSelect(selectedKeys, event) {
       this.handleToggleTreeMenu(selectedKeys, event)
@@ -247,16 +252,19 @@ export default {
       this.$refs['menuForm'].validate(valid => {
         if (valid) {
           this.menuForm.type = '0'
-          menuApi.saveOrUpdate(this.menuForm).then(res => {
-            this.$message.success('保存成功')
-            this.listTreeMenu()
-            storage.remove(ROUTER_MAP)
-            this.handleResetMenuForm()
-          }).finally(() => {
-            setTimeout(() => {
-              this.loadingState.save = false
-            }, 1500)
-          })
+          menuApi
+            .saveOrUpdate(this.menuForm)
+            .then(res => {
+              this.$message.success('保存成功')
+              this.listTreeMenu()
+              storage.remove(ROUTER_MAP)
+              this.handleResetMenuForm()
+            })
+            .finally(() => {
+              setTimeout(() => {
+                this.loadingState.save = false
+              }, 1000)
+            })
         } else {
           setTimeout(() => {
             this.loadingState.save = false
@@ -266,7 +274,7 @@ export default {
     },
     handleResetMenuForm() {
       this.loadingState.reset = true
-      console.log('清除表单执行')
+      this.$log.debug('清除表单执行')
       this.menuForm = {}
       this.checkedMenuKeys = []
       this.expandedMenuKeys = []
