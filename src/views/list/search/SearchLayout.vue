@@ -32,7 +32,7 @@ const getActiveKey = (path) => {
 }
 export default {
   name: 'SearchLayout',
-  data () {
+  data() {
     return {
       tabList: [
         { key: '1', tab: '文章' },
@@ -43,7 +43,7 @@ export default {
       search: true
     }
   },
-  created () {
+  created() {
     this.tabActiveKey = getActiveKey(this.$route.path)
 
     this.$watch('$route', (val) => {
@@ -51,7 +51,7 @@ export default {
     })
   },
   methods: {
-    handleTabChange (key) {
+    handleTabChange(key) {
       this.tabActiveKey = key
       switch (key) {
         case '1':

@@ -67,7 +67,7 @@ import pick from 'lodash.pick'
 
 export default {
   name: 'RouteUserModal',
-  data () {
+  data() {
     return {
       title: '新增用户',
       visible: false,
@@ -79,11 +79,11 @@ export default {
       ]
     }
   },
-  beforeCreate () {
+  beforeCreate() {
     this.form = this.$form.createForm(this, { name: 'gateway_user_modal' })
   },
   computed: {
-    isCreate () {
+    isCreate() {
       if (this.userParam.id) {
         return false
       }
@@ -91,7 +91,7 @@ export default {
     }
   },
   methods: {
-    edit (record) {
+    edit(record) {
       this.visible = true
       this.title = '编辑用户'
       this.userParam = Object.assign({}, record)
@@ -99,11 +99,11 @@ export default {
         this.form.setFieldsValue(pick(this.userParam, 'id', 'username', 'roles'))
       })
     },
-    create () {
+    create() {
       this.visible = true
       this.title = '新增用户'
     },
-    handleCreateOrUpdateUser () {
+    handleCreateOrUpdateUser() {
       this.form.validateFields((err, values) => {
         if (err) {
           return
@@ -134,10 +134,10 @@ export default {
         }
       })
     },
-    handleCancel () {
+    handleCancel() {
       this.handleResetForm()
     },
-    handleResetForm () {
+    handleResetForm() {
       this.userParam = {}
       this.form.resetFields()
     }

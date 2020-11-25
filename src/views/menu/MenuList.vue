@@ -139,7 +139,7 @@ export default {
   components: {
     IconSelector
   },
-  data () {
+  data() {
     return {
       iconSelect: {
         visible: false,
@@ -178,32 +178,32 @@ export default {
       menuTreeData: []
     }
   },
-  created () {
+  created() {
     this.listTreeMenu()
   },
   computed: {
-    showMenuFormItem () {
+    showMenuFormItem() {
       return (this.menuForm.type || '0') === '0'
     }
   },
   methods: {
-    handleChangeIcon (type) {
+    handleChangeIcon(type) {
       this.iconSelect.selected = type
     },
-    handleSelectIcon () {
+    handleSelectIcon() {
       this.iconSelect.visible = true
     },
-    handleIconSelectOk () {
+    handleIconSelectOk() {
       this.menuForm.icon = this.iconSelect.selected
       this.iconSelect.visible = false
     },
-    handleRoleEdit (role) {
+    handleRoleEdit(role) {
       var menuIdArray = role.menuIds
       var menuIdStringArray = menuIdArray.map(String)
       this.checkedMenuKeys = menuIdStringArray
       this.expandedMenuKeys = menuIdStringArray
     },
-    listTreeMenu () {
+    listTreeMenu() {
       this.treeDataLoading = true
       menuApi.listTreeMenu().then(res => {
         this.menuTreeData = res.data
@@ -212,17 +212,17 @@ export default {
         this.$message.error(`查询出错:${err}`)
       }).finally(() => { this.treeDataLoading = false })
     },
-    onTreeMenuExpand (expandedKeys) {
+    onTreeMenuExpand(expandedKeys) {
       console.log('onExpand', expandedKeys)
       // if not set autoExpandParent to false, if children expanded, parent can not collapse.
       // or, you can remove all expanded children keys.
       this.expandedMenuKeys = expandedKeys
       this.autoExpandParent = false
     },
-    onTreeMenuCheck (checkedMenuKeys) {
+    onTreeMenuCheck(checkedMenuKeys) {
       console.log('onCheck', checkedMenuKeys)
     },
-    onSelect (selectedKeys, event) {
+    onSelect(selectedKeys, event) {
       this.handleToggleTreeMenu(selectedKeys, event)
 
       this.selectedKeys = selectedKeys
@@ -236,13 +236,13 @@ export default {
         })
       }
     },
-    handleToggleTreeMenu (selectedKeys, event) {
+    handleToggleTreeMenu(selectedKeys, event) {
       // 控制树形菜单的展开与折叠
       if (event.node.dataRef.hasChildren) {
         this.expandedMenuKeys = selectedKeys
       }
     },
-    handleSaveOrUpdateMenu () {
+    handleSaveOrUpdateMenu() {
       this.loadingState.save = true
       this.$refs['menuForm'].validate(valid => {
         if (valid) {
@@ -264,7 +264,7 @@ export default {
         }
       })
     },
-    handleResetMenuForm () {
+    handleResetMenuForm() {
       this.loadingState.reset = true
       console.log('清除表单执行')
       this.menuForm = {}

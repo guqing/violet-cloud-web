@@ -32,16 +32,16 @@
 <script>
 export default {
   name: 'Step3',
-  data () {
+  data() {
     return {
       loading: false
     }
   },
   methods: {
-    finish () {
+    finish() {
       this.$emit('finish')
     },
-    toOrderList () {
+    toOrderList() {
       this.$router.push('/list/table-list')
     }
   }

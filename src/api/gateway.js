@@ -2,7 +2,7 @@ import { axios } from '@/utils/request'
 
 const gatewayApi = {}
 
-gatewayApi.login = function (parameter) {
+gatewayApi.login = function(parameter) {
   return axios({
     url: '/route/login',
     method: 'get',
@@ -10,7 +10,7 @@ gatewayApi.login = function (parameter) {
   })
 }
 
-gatewayApi.listRateLimitLog = function (parameter) {
+gatewayApi.listRateLimitLog = function(parameter) {
   return axios({
     url: '/route/auth/log/data',
     method: 'get',
@@ -18,7 +18,7 @@ gatewayApi.listRateLimitLog = function (parameter) {
   })
 }
 
-gatewayApi.listUser = function (parameter) {
+gatewayApi.listUser = function(parameter) {
   return axios({
     url: '/route/auth/user/data',
     method: 'get',
@@ -26,7 +26,7 @@ gatewayApi.listUser = function (parameter) {
   })
 }
 
-gatewayApi.countUser = function (parameter) {
+gatewayApi.countUser = function(parameter) {
   return axios({
     url: '/route/auth/user/count',
     method: 'get',
@@ -34,7 +34,7 @@ gatewayApi.countUser = function (parameter) {
   })
 }
 
-gatewayApi.createUser = function (parameter) {
+gatewayApi.createUser = function(parameter) {
   return axios({
     url: '/route/auth/user',
     method: 'post',
@@ -42,7 +42,7 @@ gatewayApi.createUser = function (parameter) {
   })
 }
 
-gatewayApi.updateUser = function (parameter) {
+gatewayApi.updateUser = function(parameter) {
   return axios({
     url: '/route/auth/user',
     method: 'put',
@@ -50,7 +50,7 @@ gatewayApi.updateUser = function (parameter) {
   })
 }
 
-gatewayApi.deleteUser = function (parameter) {
+gatewayApi.deleteUser = function(parameter) {
   return axios({
     url: '/route/auth/user',
     method: 'delete',
@@ -58,7 +58,7 @@ gatewayApi.deleteUser = function (parameter) {
   })
 }
 
-gatewayApi.countRouteLog = function (parameter) {
+gatewayApi.countRouteLog = function(parameter) {
   return axios({
     url: '/route/auth/log/count',
     method: 'get',
@@ -66,7 +66,7 @@ gatewayApi.countRouteLog = function (parameter) {
   })
 }
 
-gatewayApi.listRouteLog = function (parameter) {
+gatewayApi.listRouteLog = function(parameter) {
   return axios({
     url: '/route/auth/log/data',
     method: 'get',
@@ -74,7 +74,7 @@ gatewayApi.listRouteLog = function (parameter) {
   })
 }
 
-gatewayApi.listRateLimitRule = function (parameter) {
+gatewayApi.listRateLimitRule = function(parameter) {
   return axios({
     url: '/route/auth/rateLimitRule/data',
     method: 'get',
@@ -82,7 +82,7 @@ gatewayApi.listRateLimitRule = function (parameter) {
   })
 }
 
-gatewayApi.countRateLimitRule = function (parameter) {
+gatewayApi.countRateLimitRule = function(parameter) {
   return axios({
     url: '/route/auth/rateLimitRule/count',
     method: 'get',

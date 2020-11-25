@@ -55,7 +55,7 @@ import gatewayApi from '@/api/gateway'
 
 export default {
   name: 'RouteLog',
-  data () {
+  data() {
     return {
       activities: [],
       loading: false,
@@ -109,17 +109,17 @@ export default {
       selectedRows: []
     }
   },
-  created () {
+  created() {
     this.handleListActivites()
   },
   methods: {
-    handleTableChange (pagination, filters, sorter) {
+    handleTableChange(pagination, filters, sorter) {
       const pager = { ...this.pagination }
       pager.current = pagination.current
       this.pagination = pager
       this.handleListActivites()
     },
-    handleListActivites () {
+    handleListActivites() {
       this.loading = true
       const queryParam = Object.assign({}, this.queryParam)
       queryParam.current = this.pagination.current
@@ -135,11 +135,11 @@ export default {
         this.loading = false
       })
     },
-    onSelectChange (selectedRowKeys, selectedRows) {
+    onSelectChange(selectedRowKeys, selectedRows) {
       this.selectedRowKeys = selectedRowKeys
       this.selectedRows = selectedRows
     },
-    clearSelect (e) {
+    clearSelect(e) {
       e.preventDefault()
       this.onSelectChange([], [])
     }

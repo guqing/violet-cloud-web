@@ -141,7 +141,7 @@ export default {
   components: {
     STable
   },
-  data () {
+  data() {
     return {
       description: '列表使用场景：后台管理中的权限管理以及角色管理，可用于基于 RBAC 设计的角色权限控制，颗粒度细到每一个操作类型。',
 
@@ -209,7 +209,7 @@ export default {
     }
   },
   filters: {
-    statusFilter (status) {
+    statusFilter(status) {
       const statusMap = {
         1: '正常',
         2: '禁用'
@@ -217,11 +217,11 @@ export default {
       return statusMap[status]
     }
   },
-  created () {
+  created() {
     this.loadPermissionList()
   },
   methods: {
-    loadPermissionList () {
+    loadPermissionList() {
       // permissionList
       new Promise(resolve => {
         const data = [
@@ -238,19 +238,19 @@ export default {
         this.permissionList = res
       })
     },
-    handleEdit (record) {
+    handleEdit(record) {
       this.mdl = Object.assign({}, record)
       console.log(this.mdl)
       this.visible = true
     },
-    handleOk () {
+    handleOk() {
 
     },
-    onChange (selectedRowKeys, selectedRows) {
+    onChange(selectedRowKeys, selectedRows) {
       this.selectedRowKeys = selectedRowKeys
       this.selectedRows = selectedRows
     },
-    toggleAdvanced () {
+    toggleAdvanced() {
       this.advanced = !this.advanced
     }
   },

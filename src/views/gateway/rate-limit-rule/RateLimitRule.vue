@@ -55,7 +55,7 @@ import gatewayApi from '@/api/gateway'
 
 export default {
   name: 'RateLimitRule',
-  data () {
+  data() {
     return {
       limitRules: [],
       loading: false,
@@ -119,11 +119,11 @@ export default {
       selectedRows: []
     }
   },
-  created () {
+  created() {
     this.handleListRateLimitRule()
   },
   methods: {
-    handleListRateLimitRule () {
+    handleListRateLimitRule() {
       this.loading = true
       gatewayApi.countRateLimitRule(this.queryParam).then(res => {
         this.pagination.total = res
@@ -132,23 +132,23 @@ export default {
         this.limitRules = res
       }).finally(() => { this.loading = false })
     },
-    handleSearch () {
+    handleSearch() {
       this.handleListRateLimitRule()
     },
-    handleFormReset () {
+    handleFormReset() {
       this.queryParam = {}
       this.handleListRateLimitRule()
     },
-    handleTableChange (pagination, filters, sorter) {
+    handleTableChange(pagination, filters, sorter) {
       const pager = { ...this.pagination }
       pager.current = pagination.current
       this.pagination = pager
     },
-    onSelectChange (selectedRowKeys, selectedRows) {
+    onSelectChange(selectedRowKeys, selectedRows) {
       this.selectedRowKeys = selectedRowKeys
       this.selectedRows = selectedRows
     },
-    clearSelect (e) {
+    clearSelect(e) {
       e.preventDefault()
       this.onSelectChange([], [])
     }

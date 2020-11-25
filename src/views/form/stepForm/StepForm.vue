@@ -31,7 +31,7 @@ export default {
     Step2,
     Step3
   },
-  data () {
+  data() {
     return {
       currentTab: 0,
       // form
@@ -41,17 +41,17 @@ export default {
   methods: {
 
     // handler
-    nextStep () {
+    nextStep() {
       if (this.currentTab < 2) {
         this.currentTab += 1
       }
     },
-    prevStep () {
+    prevStep() {
       if (this.currentTab > 0) {
         this.currentTab -= 1
       }
     },
-    finish () {
+    finish() {
       this.currentTab = 0
     }
   }

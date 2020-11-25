@@ -2,7 +2,7 @@ import { axios } from '@/utils/request'
 
 const groupApi = {}
 
-groupApi.list = function (parameter) {
+groupApi.list = function(parameter) {
   return axios({
     url: '/admin/group/list',
     method: 'get',
@@ -10,14 +10,14 @@ groupApi.list = function (parameter) {
   })
 }
 
-groupApi.getById = function (parameter) {
+groupApi.getById = function(parameter) {
   return axios({
     url: `/admin/group/${parameter}`,
     method: 'get'
   })
 }
 
-groupApi.createOrUpdate = function (parameter) {
+groupApi.createOrUpdate = function(parameter) {
   return axios({
     url: `/admin/group/save`,
     method: 'post',

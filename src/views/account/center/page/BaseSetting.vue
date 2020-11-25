@@ -55,23 +55,23 @@ import antiShake from '@/utils/antiShake'
 
 export default {
   name: 'BaseSetting',
-  beforeCreate () {
+  beforeCreate() {
     this.form = this.$form.createForm(this, { name: 'user_profile' })
   },
   computed: {
     ...mapGetters(['userInfo']),
-    currentUser () {
+    currentUser() {
       return pick(this.userInfo, 'nickname', 'email', 'mobile', 'description')
     }
   },
-  mounted () {
+  mounted() {
     this.initForm()
   },
   methods: {
-    initForm () {
+    initForm() {
       this.form.setFieldsValue(this.currentUser)
     },
-    validateDuplicateEmail (rule, value, callback) {
+    validateDuplicateEmail(rule, value, callback) {
       if (this.currentUser.email === value) {
         callback()
       }
@@ -86,7 +86,7 @@ export default {
         })
       }, 500)
     },
-    handleUpdateUserInfo (e) {
+    handleUpdateUserInfo(e) {
       e.preventDefault()
       this.form.validateFields((err, values) => {
         if (!err) {

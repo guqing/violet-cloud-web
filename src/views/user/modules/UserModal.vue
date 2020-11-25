@@ -90,7 +90,7 @@ const validateRoles = (rule, value, callback) => {
 
 export default {
   name: 'UserModal',
-  data () {
+  data() {
     return {
       rules: {
         passwordRequired: true,
@@ -110,23 +110,23 @@ export default {
       confirmLoading: false
     }
   },
-  beforeCreate () {
+  beforeCreate() {
     this.form = this.$form.createForm(this)
     this.$log.debug('form::', this.form)
   },
-  created () {
+  created() {
     this.handleRoleList()
   },
   methods: {
-    handleRoleList () {
+    handleRoleList() {
       roleApi.options().then(res => {
         this.roles = res.data
       })
     },
-    add () {
+    add() {
       this.visible = true
     },
-    edit (record) {
+    edit(record) {
       this.visible = true
       // 编辑时不校验密码
       this.rules.passwordRequired = false
@@ -136,11 +136,11 @@ export default {
         this.form.setFieldsValue({ 'roleIds': this.editParam.roleIds.map(Number) || [] })
       })
     },
-    close () {
+    close() {
       this.$emit('close')
       this.visible = false
     },
-    handleOk () {
+    handleOk() {
       const that = this
       // 触发表单验证
       this.form.validateFields((err, values) => {
@@ -158,7 +158,7 @@ export default {
         }
       })
     },
-    handleUpdateUser (values) {
+    handleUpdateUser(values) {
       userApi.update(values).then(res => {
         this.$message.success('更新成功')
         this.$emit('ok')
@@ -169,7 +169,7 @@ export default {
         this.close()
       })
     },
-    handleCreateUser (values) {
+    handleCreateUser(values) {
       userApi.create(values).then(res => {
         this.$message.success('保存成功')
         this.$emit('ok')
@@ -180,10 +180,10 @@ export default {
         this.close()
       })
     },
-    handleCancel () {
+    handleCancel() {
       this.close()
     },
-    validateEmail (rule, value, callback) {
+    validateEmail(rule, value, callback) {
       // 没有做任何修改
       if (this.editParam.email === value) {
         callback()
@@ -198,7 +198,7 @@ export default {
         }
       })
     },
-    validateUsername (rule, value, callback) {
+    validateUsername(rule, value, callback) {
       if (!/^[A-Za-z0-9]+$/.test(value)) {
         callback(new Error('只能输入字母或数字'))
       } else if (this.editParam.username === value) {

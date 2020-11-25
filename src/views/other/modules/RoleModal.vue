@@ -28,7 +28,7 @@ import pick from 'lodash.pick'
 
 export default {
   name: 'RoleModal',
-  data () {
+  data() {
     return {
       labelCol: {
         xs: { span: 24 },
@@ -46,14 +46,14 @@ export default {
       permissions: []
     }
   },
-  created () {
+  created() {
     this.loadPermissions()
   },
   methods: {
-    add () {
+    add() {
       this.edit({ id: 0 })
     },
-    edit (record) {
+    edit(record) {
       this.mdl = Object.assign({}, record)
       this.visible = true
 
@@ -75,11 +75,11 @@ export default {
       })
       console.log('this.mdl', this.mdl)
     },
-    close () {
+    close() {
       this.$emit('close')
       this.visible = false
     },
-    handleOk () {
+    handleOk() {
       const _this = this
       // 触发表单验证
       this.form.validateFields((err, values) => {
@@ -104,21 +104,21 @@ export default {
         }
       })
     },
-    handleCancel () {
+    handleCancel() {
       this.close()
     },
-    onChangeCheck (permission) {
+    onChangeCheck(permission) {
       permission.indeterminate = !!permission.selected.length && (permission.selected.length < permission.actionsOptions.length)
       permission.checkedAll = permission.selected.length === permission.actionsOptions.length
     },
-    onChangeCheckAll (e, permission) {
+    onChangeCheckAll(e, permission) {
       Object.assign(permission, {
         selected: e.target.checked ? permission.actionsOptions.map(obj => obj.value) : [],
         indeterminate: false,
         checkedAll: e.target.checked
       })
     },
-    loadPermissions () {
+    loadPermissions() {
       const that = this
       getPermissions().then(res => {
         const result = res.result

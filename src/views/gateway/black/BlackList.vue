@@ -59,7 +59,7 @@
 <script>
 export default {
   name: 'Black',
-  data () {
+  data() {
     return {
       limitRules: [],
       loading: false,
@@ -115,16 +115,16 @@ export default {
     }
   },
   methods: {
-    handleTableChange (pagination, filters, sorter) {
+    handleTableChange(pagination, filters, sorter) {
       const pager = { ...this.pagination }
       pager.current = pagination.current
       this.pagination = pager
     },
-    onSelectChange (selectedRowKeys, selectedRows) {
+    onSelectChange(selectedRowKeys, selectedRows) {
       this.selectedRowKeys = selectedRowKeys
       this.selectedRows = selectedRows
     },
-    clearSelect (e) {
+    clearSelect(e) {
       e.preventDefault()
       this.onSelectChange([], [])
     }

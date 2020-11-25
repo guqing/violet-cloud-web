@@ -2,7 +2,7 @@ import { axios } from '@/utils/request'
 
 const userApi = {}
 
-userApi.list = function (parameter) {
+userApi.list = function(parameter) {
   return axios({
     url: '/admin/user/list',
     method: 'get',
@@ -13,7 +13,7 @@ userApi.list = function (parameter) {
   })
 }
 
-userApi.create = function (parameter) {
+userApi.create = function(parameter) {
   return axios({
     url: '/admin/user',
     method: 'post',
@@ -21,7 +21,7 @@ userApi.create = function (parameter) {
   })
 }
 
-userApi.update = function (parameter) {
+userApi.update = function(parameter) {
   return axios({
     url: '/admin/user',
     method: 'put',
@@ -29,7 +29,7 @@ userApi.update = function (parameter) {
   })
 }
 
-userApi.updateProfile = function (parameter) {
+userApi.updateProfile = function(parameter) {
   return axios({
     url: '/admin/user/profile',
     method: 'put',
@@ -37,14 +37,14 @@ userApi.updateProfile = function (parameter) {
   })
 }
 
-userApi.updateAvatar = function (parameter) {
+userApi.updateAvatar = function(parameter) {
   return axios({
     url: `/admin/user/avatar?avatar=${parameter}`,
     method: 'put'
   })
 }
 
-userApi.updatePassword = function (parameter) {
+userApi.updatePassword = function(parameter) {
   return axios({
     url: '/admin/user/password',
     method: 'put',
@@ -52,7 +52,7 @@ userApi.updatePassword = function (parameter) {
   })
 }
 
-userApi.resetPassword = function (parameter) {
+userApi.resetPassword = function(parameter) {
   return axios({
     url: `/admin/user/reset/${parameter}`,
     method: 'put'

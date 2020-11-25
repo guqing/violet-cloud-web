@@ -86,13 +86,13 @@ export default {
       default: false
     }
   },
-  data () {
+  data() {
     return {
       form: this.$form.createForm(this)
     }
   },
   methods: {
-    handleSubmit (e) {
+    handleSubmit(e) {
       e.preventDefault()
       this.form.validateFields((err, values) => {
         if (!err) {
@@ -103,7 +103,7 @@ export default {
         }
       })
     },
-    validate (rule, value, callback) {
+    validate(rule, value, callback) {
       const regex = /^user-(.*)$/
       if (!regex.test(value)) {
         callback(new Error('需要以 user- 开头'))

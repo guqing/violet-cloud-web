@@ -88,7 +88,7 @@ export default {
     STable,
     RoleModal
   },
-  data () {
+  data() {
     return {
       description: '列表使用场景：后台管理中的权限管理以及角色管理，可用于基于 RBAC 设计的角色权限控制，颗粒度细到每一个操作类型。',
 
@@ -140,7 +140,7 @@ export default {
     }
   },
   methods: {
-    handleEdit (record) {
+    handleEdit(record) {
       this.mdl = Object.assign({}, record)
 
       this.mdl.permissions.forEach(permission => {
@@ -152,15 +152,15 @@ export default {
       console.log(this.mdl)
       this.visible = true
     },
-    handleOk () {
+    handleOk() {
       // 新增/修改 成功时，重载列表
       this.$refs.table.refresh()
     },
-    onChange (selectedRowKeys, selectedRows) {
+    onChange(selectedRowKeys, selectedRows) {
       this.selectedRowKeys = selectedRowKeys
       this.selectedRows = selectedRows
     },
-    toggleAdvanced () {
+    toggleAdvanced() {
       this.advanced = !this.advanced
     }
   },

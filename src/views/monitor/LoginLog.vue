@@ -68,7 +68,7 @@ export default {
   components: {
     STable
   },
-  data () {
+  data() {
     return {
       queryParam: {},
       columns: [
@@ -137,15 +137,15 @@ export default {
     }
   },
   methods: {
-    onDatePickerChange (dates, dateStrings) {
+    onDatePickerChange(dates, dateStrings) {
       this.queryParam.createFrom = dateStrings[0]
       this.queryParam.createTo = dateStrings[1]
     },
-    onSelectChange (selectedRowKeys, selectedRows) {
+    onSelectChange(selectedRowKeys, selectedRows) {
       this.selectedRowKeys = selectedRowKeys
       this.selectedRows = selectedRows
     },
-    resetSearchForm () {
+    resetSearchForm() {
       this.queryParam = {
         createFrom: null,
         createTo: null

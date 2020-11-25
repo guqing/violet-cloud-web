@@ -35,20 +35,20 @@ import gatewayApi from '@/api/gateway'
 
 export default {
   name: 'LoginModal',
-  data () {
+  data() {
     return {
       visible: false
     }
   },
-  beforeCreate () {
+  beforeCreate() {
     this.form = this.$form.createForm(this, { name: 'gateway_login' })
   },
   methods: {
-    handleOpenModal (e) {
+    handleOpenModal(e) {
       e.preventDefault()
       this.visible = true
     },
-    handleGatewayAuth () {
+    handleGatewayAuth() {
       this.$log.debug('handleGatewayAuth执行')
       this.form.validateFields((err, values) => {
         if (!err) {

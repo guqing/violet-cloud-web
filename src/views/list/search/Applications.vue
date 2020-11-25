@@ -114,7 +114,7 @@ export default {
     StandardFormRow,
     CardInfo
   },
-  data () {
+  data() {
     return {
       data: [],
       form: this.$form.createForm(this),
@@ -122,18 +122,18 @@ export default {
     }
   },
   filters: {
-    fromNow (date) {
+    fromNow(date) {
       return moment(date).fromNow()
     }
   },
-  mounted () {
+  mounted() {
     this.getList()
   },
   methods: {
-    handleChange (value) {
+    handleChange(value) {
       console.log(`selected ${value}`)
     },
-    getList () {
+    getList() {
       this.$http.get('/list/article', { params: { count: 8 } }).then(res => {
         console.log('res', res)
         this.data = res.result

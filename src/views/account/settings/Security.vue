@@ -22,7 +22,7 @@
 
 <script>
 export default {
-  data () {
+  data() {
     return {
       data: [
         { title: '账户密码', description: '当前密码强度', value: '强', actions: { title: '修改', callback: () => { this.$message.info('This is a normal message') } } },

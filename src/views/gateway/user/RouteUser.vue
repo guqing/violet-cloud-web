@@ -62,7 +62,7 @@ export default {
   components: {
     UserModal
   },
-  data () {
+  data() {
     return {
       users: [],
       userParam: {},
@@ -103,11 +103,11 @@ export default {
       selectedRows: []
     }
   },
-  created () {
+  created() {
     this.handleListUser()
   },
   methods: {
-    handleListUser () {
+    handleListUser() {
       const param = Object.assign({}, this.queryParam)
       param.current = this.pagination.current
       param.pageSize = this.pagination.pageSize
@@ -116,23 +116,23 @@ export default {
       })
       this.handleCountUser()
     },
-    handleCountUser () {
+    handleCountUser() {
       gatewayApi.countUser(this.queryParam).then(res => {
         this.pagination.total = res
       })
     },
-    handleDeleteById (record) {
+    handleDeleteById(record) {
       this.$log.debug('删除:', record)
       this.handleDeleteUser([record.id])
     },
-    handleSearch () {
+    handleSearch() {
       this.loadingState.query = true
       this.handleListUser()
       setTimeout(() => {
         this.loadingState.query = false
       }, 1500)
     },
-    handleResetSearchForm () {
+    handleResetSearchForm() {
       this.loadingState.reset = true
       this.handleListUser()
       this.queryParam = {}
@@ -140,10 +140,10 @@ export default {
         this.loadingState.reset = false
       }, 1500)
     },
-    handleBatchDelete () {
+    handleBatchDelete() {
       this.deleteUser(this.selectedRowKeys)
     },
-    handleDeleteUser (userIds) {
+    handleDeleteUser(userIds) {
       const that = this
       this.$confirm({
         title: '警告',
@@ -151,7 +151,7 @@ export default {
         okText: '删除',
         okType: 'danger',
         cancelText: '取消',
-        onOk () {
+        onOk() {
           that.loadingState.delete = true
           gatewayApi.deleteUser(userIds).then(res => {
             this.$message.success('删除成功')
@@ -161,16 +161,16 @@ export default {
             }, 1500)
           })
         },
-        onCancel () {
+        onCancel() {
           that.$log.info('Cancel')
         }
       })
     },
-    onSelectChange (selectedRowKeys, selectedRows) {
+    onSelectChange(selectedRowKeys, selectedRows) {
       this.selectedRowKeys = selectedRowKeys
       this.selectedRows = selectedRows
     },
-    clearSelect (e) {
+    clearSelect(e) {
       e.preventDefault()
       this.onSelectChange([], [])
     }

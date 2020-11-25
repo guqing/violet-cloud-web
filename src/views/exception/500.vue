@@ -12,7 +12,7 @@
   export default {
     name: 'Exception500',
     methods: {
-      toHome () {
+      toHome() {
         this.$router.push({ path: '/' })
       }
     }

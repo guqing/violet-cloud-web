@@ -41,22 +41,22 @@ const themeMap = {
 
 export default {
   mixins: [baseMixin],
-  data () {
+  data() {
     return {
     }
   },
   filters: {
-    themeFilter (theme) {
+    themeFilter(theme) {
       return themeMap[theme]
     }
   },
   methods: {
-    colorFilter (color) {
+    colorFilter(color) {
       const c = colorList.find(o => o.color === color)
       return c && c.key
     },
 
-    onChange (checked) {
+    onChange(checked) {
       if (checked) {
         this.$store.commit(TOGGLE_NAV_THEME, NAV_THEME.DARK)
       } else {

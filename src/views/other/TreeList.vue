@@ -62,7 +62,7 @@ export default {
     STree,
     OrgModal
   },
-  data () {
+  data() {
     return {
       openKeys: ['key-01'],
 
@@ -114,38 +114,38 @@ export default {
       selectedRows: []
     }
   },
-  created () {
+  created() {
     getOrgTree().then(res => {
       this.orgTree = res.result
     })
   },
   methods: {
-    handleClick (e) {
+    handleClick(e) {
       console.log('handleClick', e)
       this.queryParam = {
         key: e.key
       }
       this.$refs.table.refresh(true)
     },
-    handleAdd (item) {
+    handleAdd(item) {
       console.log('add button, item', item)
       this.$message.info(`提示：你点了 ${item.key} - ${item.title} `)
       this.$refs.modal.add(item.key)
     },
-    handleTitleClick (item) {
+    handleTitleClick(item) {
       console.log('handleTitleClick', item)
     },
-    titleClick (e) {
+    titleClick(e) {
       console.log('titleClick', e)
     },
-    handleSaveOk () {
+    handleSaveOk() {
 
     },
-    handleSaveClose () {
+    handleSaveClose() {
 
     },
 
-    onSelectChange (selectedRowKeys, selectedRows) {
+    onSelectChange(selectedRowKeys, selectedRows) {
       this.selectedRowKeys = selectedRowKeys
       this.selectedRows = selectedRows
     }

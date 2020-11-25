@@ -15,7 +15,7 @@ export default {
     RateLimitLog
   },
   computed: {
-    isAuthenticated () {
+    isAuthenticated() {
       if (this.$store.getters.gatewayToken) {
         return true
       }

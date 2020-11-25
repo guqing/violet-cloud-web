@@ -11,7 +11,7 @@ import { axios } from '@/utils/request'
  * @param parameter
  * @returns {*}
  */
-export function login (parameter) {
+export function login(parameter) {
   return axios({
     url: '/auth/oauth/token?grant_type=password',
     method: 'post',
@@ -22,7 +22,7 @@ export function login (parameter) {
   })
 }
 
-export function bindSocial (parameter) {
+export function bindSocial(parameter) {
   return axios({
     url: '/auth/social/bind',
     method: 'post',
@@ -30,14 +30,14 @@ export function bindSocial (parameter) {
   })
 }
 
-export function unbindSocial (parameter) {
+export function unbindSocial(parameter) {
   return axios({
     url: `/auth/social/unbind/${parameter}`,
     method: 'post'
   })
 }
 
-export function socailSignLogin (parameter) {
+export function socailSignLogin(parameter) {
   return axios({
     url: '/auth/social/sign/login',
     method: 'post',
@@ -45,14 +45,14 @@ export function socailSignLogin (parameter) {
   })
 }
 
-export function listSupportSocail () {
+export function listSupportSocail() {
   return axios({
     url: '/auth/social/list',
     method: 'get'
   })
 }
 
-export function listUserConnectedSocail () {
+export function listUserConnectedSocail() {
   return axios({
     url: '/auth/social/providers',
     method: 'get'
@@ -61,7 +61,7 @@ export function listUserConnectedSocail () {
 
 export var socialLoginApi = axios.defaults.baseURL + `/auth/social/login`
 
-export function getInfo () {
+export function getInfo() {
   return axios({
     url: '/auth/oauth/user',
     method: 'get',

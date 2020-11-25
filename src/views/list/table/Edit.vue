@@ -98,7 +98,7 @@ export default {
       default: ''
     }
   },
-  data () {
+  data() {
     return {
       labelCol: {
         xs: { span: 24 },
@@ -121,16 +121,16 @@ export default {
   // beforeCreate () {
   //   this.form = this.$form.createForm(this)
   // },
-  mounted () {
+  mounted() {
     this.$nextTick(() => {
       this.loadEditInfo(this.record)
     })
   },
   methods: {
-    handleGoBack () {
+    handleGoBack() {
       this.$emit('onGoBack')
     },
-    handleSubmit () {
+    handleSubmit() {
       const { form: { validateFields } } = this
       validateFields((err, values) => {
         if (!err) {
@@ -139,10 +139,10 @@ export default {
         }
       })
     },
-    handleGetInfo () {
+    handleGetInfo() {
 
     },
-    loadEditInfo (data) {
+    loadEditInfo(data) {
       const { form } = this
       // ajax
       console.log(`将加载 ${this.id} 信息到表单`)

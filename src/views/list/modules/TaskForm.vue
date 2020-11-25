@@ -51,7 +51,7 @@ export default {
       default: null
     }
   },
-  data () {
+  data() {
     return {
       labelCol: {
         xs: { span: 24 },
@@ -64,23 +64,23 @@ export default {
       form: this.$form.createForm(this)
     }
   },
-  mounted () {
+  mounted() {
     this.record && this.form.setFieldsValue(pick(this.record, fields))
   },
   methods: {
-    onOk () {
+    onOk() {
       console.log('监听了 modal ok 事件')
       return new Promise(resolve => {
         resolve(true)
       })
     },
-    onCancel () {
+    onCancel() {
       console.log('监听了 modal cancel 事件')
       return new Promise(resolve => {
         resolve(true)
       })
     },
-    handleSubmit () {
+    handleSubmit() {
       const { form: { validateFields } } = this
       this.visible = true
       validateFields((errors, values) => {

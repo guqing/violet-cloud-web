@@ -465,7 +465,7 @@ const columns = [
 
 export default {
   name: 'BigForm',
-  data () {
+  data() {
     return {
       showSubmit: true,
       form1: this.$form.createForm(this),
@@ -498,43 +498,43 @@ export default {
         }]
     }
   },
-  mounted () {
+  mounted() {
     // 加 10 个表单行
     new Array(10).fill(0).forEach(() => {
       this.newMember()
     })
   },
   methods: {
-    handleForm1Submit (e) {
+    handleForm1Submit(e) {
       e.preventDefault()
       this.form1.validateFields()
     },
-    handleForm2Submit (e) {
+    handleForm2Submit(e) {
       e.preventDefault()
       this.form2.validateFields()
     },
 
-    handleChange (value, key, column) {
+    handleChange(value, key, column) {
       const target = this.data.find(item => key === item.key)
       if (target) {
         target[column] = value
       }
     },
 
-    toggle (record) {
+    toggle(record) {
 
     },
-    saveRow (record) {
+    saveRow(record) {
 
     },
-    cancel (key) {
+    cancel(key) {
 
     },
-    remove (key) {
+    remove(key) {
       this.data = this.data.filter(item => item.key !== key)
     },
 
-    newMember () {
+    newMember() {
       const length = this.data.length
       this.data.push({
         key: length === 0 ? '1' : (parseInt(this.data[length - 1].key) + 1).toString(),

@@ -113,14 +113,14 @@
 <script>
 export default {
   name: 'BaseForm',
-  data () {
+  data() {
     return {
       form: this.$form.createForm(this)
     }
   },
   methods: {
     // handler
-    handleSubmit (e) {
+    handleSubmit(e) {
       e.preventDefault()
       this.form.validateFields((err, values) => {
         if (!err) {

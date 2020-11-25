@@ -61,7 +61,7 @@
 <script>
 export default {
   name: 'Step2',
-  data () {
+  data() {
     return {
       labelCol: { lg: { span: 5 }, sm: { span: 5 } },
       wrapperCol: { lg: { span: 19 }, sm: { span: 19 } },
@@ -71,14 +71,14 @@ export default {
     }
   },
   methods: {
-    nextStep () {
+    nextStep() {
       const that = this
       const { form: { validateFields } } = this
       that.loading = true
       validateFields((err, values) => {
         if (!err) {
           console.log('表单 values', values)
-          that.timer = setTimeout(function () {
+          that.timer = setTimeout(function() {
             that.loading = false
             that.$emit('nextStep')
           }, 1500)
@@ -87,11 +87,11 @@ export default {
         }
       })
     },
-    prevStep () {
+    prevStep() {
       this.$emit('prevStep')
     }
   },
-  beforeDestroy () {
+  beforeDestroy() {
     clearTimeout(this.timer)
   }
 }

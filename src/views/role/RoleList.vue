@@ -112,7 +112,7 @@ export default {
   components: {
     STable
   },
-  data () {
+  data() {
     return {
       loadingState: {
         save: false,
@@ -182,11 +182,11 @@ export default {
       selectedRoles: []
     }
   },
-  created () {
+  created() {
     this.listTreeMenu()
   },
   computed: {
-    roleFormButtonWrapperCol () {
+    roleFormButtonWrapperCol() {
       return {
         span: this.wrapperCol.span,
         offset: this.labelCol.span
@@ -194,7 +194,7 @@ export default {
     }
   },
   methods: {
-    handleRoleEdit (role) {
+    handleRoleEdit(role) {
       // 先清除要展开的keys
       this.editExpandedMenuKeys = []
 
@@ -209,38 +209,38 @@ export default {
         Object.assign(this.roleForm, role)
       })
     },
-    listTreeMenu () {
+    listTreeMenu() {
       menuApi.listTreeMenu().then(res => {
         this.menuTreeData = res.data
       })
     },
-    onTreeMenuExpand (expandedKeys) {
+    onTreeMenuExpand(expandedKeys) {
       // if not set autoExpandParent to false, if children expanded, parent can not collapse.
       // or, you can remove all expanded children keys.
       this.expandedMenuKeys = expandedKeys
       this.autoExpandParent = false
     },
-    onTreeMenuCheck (checkedMenuKeys) {
+    onTreeMenuCheck(checkedMenuKeys) {
       console.log('onCheck', checkedMenuKeys)
     },
-    onMenuSelect (selectedMenuKeys, info) {
+    onMenuSelect(selectedMenuKeys, info) {
       this.$log.debug('onMenuSelect', info.node.dataRef.key)
       var parentIds = this.findParentIdsById(this.menuTreeData, info.node.dataRef.key)
       this.$log.debug('on menu select find all parent ids:', parentIds)
 
       this.selectedMenuKeys = selectedMenuKeys
     },
-    handleClick (e) {
+    handleClick(e) {
       this.queryParam = {
         key: e.key
       }
       this.$refs.table.refresh(true)
     },
-    onRoleSelectChange (selectedRoleKeys, selectedRoles) {
+    onRoleSelectChange(selectedRoleKeys, selectedRoles) {
       this.selectedRoleKeys = selectedRoleKeys
       this.selectedRoles = selectedRoles
     },
-    handleSaveOrUpdateRole () {
+    handleSaveOrUpdateRole() {
       this.loadingState.save = true
       var menuIds = this.handleRelatedParentRoleMenuKeys()
       this.roleForm.menuIds = menuIds
@@ -250,7 +250,7 @@ export default {
         this.$refs.table.refresh()
       }).finally(() => { this.loadingState.save = false })
     },
-    handleRelatedParentRoleMenuKeys () {
+    handleRelatedParentRoleMenuKeys() {
       var menuIds = []
       // 遍历每一个元素寻找其父元素添加到集合中，否则编辑后父元素的id不会自动关联导致父元元素无法显示
       for (var item of this.checkedMenuKeys) {
@@ -261,15 +261,15 @@ export default {
       var menuIdSet = new Set(menuIds)
       return Array.from(menuIdSet)
     },
-    handleResetRoleForm () {
+    handleResetRoleForm() {
       this.roleForm = {}
       this.checkedMenuKeys = []
       this.expandedMenuKeys = []
     },
-    handleTreeChildrenIdsSelector (menuIdArray) {
+    handleTreeChildrenIdsSelector(menuIdArray) {
       this.handleTreeParentIdsSelector(this.menuTreeData)
       var that = this
-      return menuIdArray.filter(function (item) {
+      return menuIdArray.filter(function(item) {
         if (!that.treeParentIds.includes(item)) {
           return item
         } else {
@@ -277,7 +277,7 @@ export default {
         }
       })
     },
-    handleTreeParentIdsSelector (treeList) {
+    handleTreeParentIdsSelector(treeList) {
       for (var i in treeList) {
         var data = treeList[i]
         if (data.hasChildren) {
@@ -286,9 +286,9 @@ export default {
         }
       }
     },
-    findParentIdsById (tree, id) {
+    findParentIdsById(tree, id) {
       var temp = []
-      var forFn = function (arr, id) {
+      var forFn = function(arr, id) {
         for (var i = 0; i < arr.length; i++) {
           var item = arr[i]
           if (item.id === id) {
@@ -303,14 +303,14 @@ export default {
       forFn(tree, id)
       return temp
     },
-    handleSearch () {
+    handleSearch() {
       this.loadingState.query = true
       this.$refs.table.refresh()
       setTimeout(() => {
         this.loadingState.query = false
       }, 1500)
     },
-    handleResetSearchForm () {
+    handleResetSearchForm() {
       this.loadingState.reset = true
       this.queryParam = {}
       this.$refs.table.refresh()
@@ -318,7 +318,7 @@ export default {
         this.loadingState.reset = false
       }, 1500)
     },
-    handleBatchDeleteRole () {
+    handleBatchDeleteRole() {
       const that = this
       this.$confirm({
         title: '警告',
@@ -326,13 +326,13 @@ export default {
         okText: '删除',
         okType: 'danger',
         cancelText: '取消',
-        onOk () {
+        onOk() {
           that.$log.debug('批量删除角色', that.selectedRoleKeys)
           roleApi.deleteByIds(that.selectedRoleKeys).then(res => {
             that.$message.success('删除成功')
           })
         },
-        onCancel () {
+        onCancel() {
           that.$log.info('Cancel')
         }
       })

@@ -29,7 +29,7 @@
 <script>
 export default {
   name: 'OrgModal',
-  data () {
+  data() {
     return {
       labelCol: {
         xs: { span: 24 },
@@ -44,29 +44,29 @@ export default {
       mdl: {}
     }
   },
-  beforeCreate () {
+  beforeCreate() {
     this.form = this.$form.createForm(this)
     console.log('form::', this.form)
   },
-  created () {
+  created() {
 
   },
   methods: {
-    add (id) {
+    add(id) {
       this.edit({ parentId: id })
     },
-    edit (record) {
+    edit(record) {
       this.mdl = Object.assign({}, record)
       this.visible = true
       this.$nextTick(() => {
         this.form.setFieldsValue({ ...record })
       })
     },
-    close () {
+    close() {
       this.$emit('close')
       this.visible = false
     },
-    handleOk () {
+    handleOk() {
       const _this = this
       // 触发表单验证
       this.form.validateFields((err, values) => {
@@ -91,7 +91,7 @@ export default {
         }
       })
     },
-    handleCancel () {
+    handleCancel() {
       this.close()
     }
 

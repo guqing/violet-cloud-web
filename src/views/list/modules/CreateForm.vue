@@ -42,7 +42,7 @@ export default {
       default: () => null
     }
   },
-  data () {
+  data() {
     this.formLayout = {
       labelCol: {
         xs: { span: 24 },
@@ -57,7 +57,7 @@ export default {
       form: this.$form.createForm(this)
     }
   },
-  created () {
+  created() {
     console.log('custom modal created')
 
     // 防止表单未注册

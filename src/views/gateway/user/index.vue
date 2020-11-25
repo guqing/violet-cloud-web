@@ -15,7 +15,7 @@ export default {
     RouteUser
   },
   computed: {
-    isAuthenticated () {
+    isAuthenticated() {
       if (this.$store.getters.gatewayToken) {
         return true
       }

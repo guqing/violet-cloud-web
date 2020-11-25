@@ -84,12 +84,12 @@ request.interceptors.response.use((response) => {
 
 const installer = {
   vm: {},
-  install (Vue) {
+  install(Vue) {
     Vue.use(VueAxios, request)
   }
 }
 
-function isGateWayRequest (url) {
+function isGateWayRequest(url) {
   return url.startsWith(GATEWAY_PATH)
 }
 

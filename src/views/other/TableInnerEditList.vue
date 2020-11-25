@@ -123,7 +123,7 @@ export default {
   components: {
     STable
   },
-  data () {
+  data() {
     return {
       // 高级搜索 展开/关闭
       advanced: false,
@@ -186,11 +186,11 @@ export default {
   },
   methods: {
 
-    handleChange (value, key, column, record) {
+    handleChange(value, key, column, record) {
       console.log(value, key, column)
       record[column.dataIndex] = value
     },
-    edit (row) {
+    edit(row) {
       row.editable = true
       // row = Object.assign({}, row)
     },
@@ -202,30 +202,30 @@ export default {
         okText: '删除',
         okType: 'danger',
         cancelText: '取消',
-        onOk () {
+        onOk() {
           console.log('OK')
           // 在这里调用删除接口
           return new Promise((resolve, reject) => {
             setTimeout(Math.random() > 0.5 ? resolve : reject, 1000)
           }).catch(() => console.log('Oops errors!'))
         },
-        onCancel () {
+        onCancel() {
           console.log('Cancel')
         }
       })
     },
-    save (row) {
+    save(row) {
       row.editable = false
     },
-    cancel (row) {
+    cancel(row) {
       row.editable = false
     },
 
-    onSelectChange (selectedRowKeys, selectedRows) {
+    onSelectChange(selectedRowKeys, selectedRows) {
       this.selectedRowKeys = selectedRowKeys
       this.selectedRows = selectedRows
     },
-    toggleAdvanced () {
+    toggleAdvanced() {
       this.advanced = !this.advanced
     }
   },

@@ -83,7 +83,7 @@ export default {
     STable,
     ActionModal
   },
-  data () {
+  data() {
     return {
       mdl: {},
       // 高级搜索 展开/关闭
@@ -170,24 +170,24 @@ export default {
     }
   },
   methods: {
-    onDatePickerChange (dates, dateStrings) {
+    onDatePickerChange(dates, dateStrings) {
       this.queryParam.createFrom = dateStrings[0]
       this.queryParam.createTo = dateStrings[1]
     },
-    handleDelete (record) {
+    handleDelete(record) {
       this.$log.debug('删除记录:', record)
     },
-    handleOk () {
+    handleOk() {
 
     },
-    onSelectChange (selectedRowKeys, selectedRows) {
+    onSelectChange(selectedRowKeys, selectedRows) {
       this.selectedRowKeys = selectedRowKeys
       this.selectedRows = selectedRows
     },
-    toggleAdvanced () {
+    toggleAdvanced() {
       this.advanced = !this.advanced
     },
-    resetSearchForm () {
+    resetSearchForm() {
       this.queryParam = {
         createFrom: null,
         createTo: null

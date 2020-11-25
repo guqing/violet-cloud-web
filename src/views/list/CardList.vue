@@ -55,7 +55,7 @@ for (let i = 0; i < 11; i++) {
 
 export default {
   name: 'CardList',
-  data () {
+  data() {
     this.tabList = [
       { key: 'tab1', tab: '快速开始' },
       { key: 'tab2', tab: '产品简介' },
@@ -69,7 +69,7 @@ export default {
     }
   },
   methods: {
-    testFun () {
+    testFun() {
       this.$message.info('快速开始被点击！')
     }
   }

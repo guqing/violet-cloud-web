@@ -124,7 +124,7 @@ export default {
   components: {
     STable
   },
-  data () {
+  data() {
     return {
       mdl: {},
       // 高级搜索 展开/关闭
@@ -191,12 +191,12 @@ export default {
       optionAlertShow: false
     }
   },
-  created () {
+  created() {
     this.tableOption()
     getRoleList({ t: new Date() })
   },
   methods: {
-    tableOption () {
+    tableOption() {
       if (!this.optionAlertShow) {
         this.options = {
           alert: { show: true, clear: () => { this.selectedRowKeys = [] } },
@@ -215,22 +215,22 @@ export default {
       }
     },
 
-    handleEdit (record) {
+    handleEdit(record) {
       this.$emit('onEdit', record)
     },
-    handleOk () {
+    handleOk() {
 
     },
 
-    onSelectChange (selectedRowKeys, selectedRows) {
+    onSelectChange(selectedRowKeys, selectedRows) {
       this.selectedRowKeys = selectedRowKeys
       this.selectedRows = selectedRows
     },
-    toggleAdvanced () {
+    toggleAdvanced() {
       this.advanced = !this.advanced
     },
 
-    resetSearchForm () {
+    resetSearchForm() {
       this.queryParam = {
         date: moment(new Date())
       }
