@@ -1,12 +1,41 @@
 <template>
   <a-card :bordered="false">
+    <div class="table-page-search-wrapper">
+      <a-form layout="inline">
+        <a-row :gutter="15">
+          <a-col :md="4" :sm="24">
+            <a-form-item>
+              <a-input placeholder="名称" v-model="queryParam.title" />
+            </a-form-item>
+          </a-col>
+          <a-col :md="4" :sm="24">
+            <span class="table-page-search-submitButtons">
+              <a-button type="primary" @click="handleSearch">查询</a-button>
+              <a-button style="margin-left: 8px;" @click="handleSearchReset">
+                重置
+              </a-button>
+              <a-dropdown v-show="checkedGroupKeys.length > 0">
+                <a-menu slot="overlay">
+                  <a-menu-item key="1" v-action:delete @click="handleDeleteInBatch">
+                    <a-icon type="delete" />删除
+                  </a-menu-item>
+                </a-menu>
+                <a-button style="margin-left: 8px;"> 批量操作 <a-icon type="down" /> </a-button>
+              </a-dropdown>
+            </span>
+          </a-col>
+        </a-row>
+      </a-form>
+    </div>
+
     <a-row :gutter="8" type="flex" justify="center">
       <a-col :lg="12" :md="24" :order="isMobile ? 1 : 0">
-        <a-spin tip="Loading..." :spinning="treeDataLoading">
+        <a-spin tip="加载中..." :spinning="treeDataLoading">
           <a-tree
             v-model="checkedGroupKeys"
             checkable
             blockNode
+            checkStrictly
             :expanded-keys="expandedGroupKeys"
             :auto-expand-parent="autoExpandParent"
             :selected-keys="selectedKeys"
@@ -31,7 +60,7 @@
             >
             </a-tree-select>
           </a-form-item>
-          <a-form-item label="组名称">
+          <a-form-item label="组名称" required>
             <a-input v-model="userGroupForm.groupName" placeholder="例如：默认用户组" />
           </a-form-item>
           <a-form-item label="排序">
@@ -81,27 +110,33 @@ export default {
   created() {
     this.listUserGroupTree()
   },
-  computed: {
-  },
+  computed: {},
   methods: {
     listUserGroupTree() {
       this.treeDataLoading = true
-      groupApi.list().then(res => {
-        this.userGroupTreeData = res.data
-      }).catch(err => {
-        this.userGroupTreeData = []
-        this.$message.error(`查询出错:${err}`)
-      }).finally(() => { this.treeDataLoading = false })
+      groupApi
+        .list(this.queryParam)
+        .then(res => {
+          this.userGroupTreeData = res.data
+        })
+        .catch(err => {
+          this.userGroupTreeData = []
+          this.$message.error(`查询出错:${err}`)
+        })
+        .finally(() => {
+          this.treeDataLoading = false
+        })
     },
     onTreeGroupExpand(expandedKeys) {
-      console.log('onExpand', expandedKeys)
+      this.$log.debug('onExpand', expandedKeys)
       // if not set autoExpandParent to false, if children expanded, parent can not collapse.
       // or, you can remove all expanded children keys.
       this.expandedGroupKeys = expandedKeys
       this.autoExpandParent = false
     },
     onTreeGroupCheck(checkedGroupKeys) {
-      console.log('onCheck', checkedGroupKeys)
+      this.$log.debug('onCheck', checkedGroupKeys)
+      this.checkedGroupKeys = checkedGroupKeys.checked
     },
     onSelect(selectedKeys, event) {
       this.handleToggleTreeMenu(selectedKeys, event)
@@ -124,17 +159,50 @@ export default {
       }
     },
     handleSaveOrUpdate() {
-      if (this.userGroupForm) {
+      if (!this.userGroupForm.groupName) {
         this.$message.warning('必填参数为空')
         return
       }
       groupApi.createOrUpdate(this.userGroupForm).then(res => {
         this.$message.success('保存成功')
         this.listUserGroupTree()
+        this.handleResetGroupForm()
       })
     },
     handleResetGroupForm() {
       this.userGroupForm = {}
+    },
+    handleSearch() {
+      this.listUserGroupTree()
+    },
+    handleSearchReset() {
+      this.queryParam = {}
+      this.listUserGroupTree()
+    },
+    handleClearSelect() {
+      this.checkedGroupKeys = []
+      this.selectedKeys = []
+    },
+    handleDeleteInBatch() {
+      const that = this
+      this.$confirm({
+        title: '警告',
+        content: `确定要删除所选中的组吗?`,
+        okText: '删除',
+        okType: 'danger',
+        cancelText: '取消',
+        onOk() {
+          that.$log.debug('批量删除用户组', that.checkedGroupKeys)
+          groupApi.deleteByIds(that.checkedGroupKeys).then(res => {
+            that.$message.success('删除成功')
+            that.handleClearSelect()
+            that.listUserGroupTree()
+          })
+        },
+        onCancel() {
+          that.$log.info('Cancel')
+        }
+      })
     }
   }
 }
