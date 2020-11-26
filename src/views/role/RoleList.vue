@@ -89,7 +89,7 @@
                   <a href="javascript:;">详情</a>
                 </a-menu-item>
                 <a-menu-item>
-                  <a href="javascript:;">删除</a>
+                  <a href="javascript:;" @click="handleDeleteById(record)">删除</a>
                 </a-menu-item>
               </a-menu>
             </a-dropdown>
@@ -325,6 +325,25 @@ export default {
       setTimeout(() => {
         this.loadingState.reset = false
       }, 1500)
+    },
+    handleDeleteById(record) {
+      const id = record.id
+      const that = this
+      this.$confirm({
+        title: '警告',
+        content: `确定要删除该角色吗?`,
+        okText: '删除',
+        okType: 'danger',
+        cancelText: '取消',
+        onOk() {
+          that.$log.debug('删除角色', id)
+          roleApi.deleteByIds([id]).then(res => {
+            that.$message.success('删除成功')
+            this.$refs.table.refresh()
+          })
+        },
+        onCancel() {}
+      })
     },
     handleBatchDeleteRole() {
       const that = this
