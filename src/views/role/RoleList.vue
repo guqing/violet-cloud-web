@@ -38,26 +38,18 @@
       <a-col :lg="16" :md="24">
         <div class="table-operator">
           <a-form layout="inline">
-            <a-row :gutter="15">
-              <a-col :md="8" :sm="24">
-                <a-form-item label="角色名称">
-                  <a-input placeholder="角色名称" v-model="queryParam.roleName" />
-                </a-form-item>
-              </a-col>
-              <a-col :md="8" :sm="24">
-                <a-form-item label="角色描述">
-                  <a-input placeholder="角色描述" v-model="queryParam.remark" />
-                </a-form-item>
-              </a-col>
-              <a-col :md="8" :sm="24">
-                <span class="table-page-search-submitButtons">
-                  <a-button type="primary" @click="handleSearch" :loading="loadingState.query">查询</a-button>
-                  <a-button style="margin-left: 8px" @click="handleResetSearchForm" :loading="loadingState.reset">
-                    重置
-                  </a-button>
-                </span>
-              </a-col>
-            </a-row>
+            <a-form-item label="角色名称">
+              <a-input placeholder="角色名称" v-model="queryParam.roleName" />
+            </a-form-item>
+            <a-form-item label="角色描述">
+              <a-input placeholder="角色描述" v-model="queryParam.remark" />
+            </a-form-item>
+            <a-form-item>
+              <a-button type="primary" @click="handleSearch" :loading="loadingState.query">查询</a-button>
+              <a-button style="margin-left: 8px" @click="handleResetSearchForm" :loading="loadingState.reset">
+                重置
+              </a-button>
+            </a-form-item>
           </a-form>
           <a-dropdown v-if="selectedRoleKeys.length > 0" style="margin-top: 15px;">
             <a-menu slot="overlay">
@@ -82,17 +74,7 @@
               <a @click="handleRoleEdit(record)">编辑</a>
               <a-divider type="vertical" />
             </template>
-            <a-dropdown>
-              <a class="ant-dropdown-link"> 更多 <a-icon type="down" /> </a>
-              <a-menu slot="overlay">
-                <a-menu-item>
-                  <a href="javascript:;">详情</a>
-                </a-menu-item>
-                <a-menu-item>
-                  <a href="javascript:;" @click="handleDeleteById(record)">删除</a>
-                </a-menu-item>
-              </a-menu>
-            </a-dropdown>
+            <a href="javascript:;" @click="handleDeleteById(record)">删除</a>
           </span>
         </s-table>
       </a-col>
@@ -326,6 +308,10 @@ export default {
         this.loadingState.reset = false
       }, 1500)
     },
+    handleClearSelect() {
+      this.selectedRoleKeys = []
+      this.selectedRoles = []
+    },
     handleDeleteById(record) {
       const id = record.id
       const that = this
@@ -339,7 +325,8 @@ export default {
           that.$log.debug('删除角色', id)
           roleApi.deleteByIds([id]).then(res => {
             that.$message.success('删除成功')
-            this.$refs.table.refresh()
+            that.$refs.table.refresh()
+            that.handleClearSelect()
           })
         },
         onCancel() {}
@@ -357,7 +344,8 @@ export default {
           that.$log.debug('批量删除角色', that.selectedRoleKeys)
           roleApi.deleteByIds(that.selectedRoleKeys).then(res => {
             that.$message.success('删除成功')
-            this.$refs.table.refresh()
+            that.$refs.table.refresh()
+            that.handleClearSelect()
           })
         },
         onCancel() {
