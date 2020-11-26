@@ -75,8 +75,12 @@
             </a-tooltip>
           </a-form-item>
           <a-form-item :wrapper-col="groupFormButtonWrapperCol">
-            <a-button type="primary" v-limitclick="handleSaveOrUpdate" v-action:save> 保存 </a-button>
-            <a-button :style="{ marginLeft: '8px' }" @click="handleResetGroupForm"> 重置 </a-button>
+            <a-button type="primary" v-limitclick="handleSaveOrUpdate" v-action:save :loading="loading.save">
+              保存
+            </a-button>
+            <a-button :style="{ marginLeft: '8px' }" @click="handleResetGroupForm" :loading="loading.reset">
+              重置
+            </a-button>
           </a-form-item>
         </a-form>
       </a-col>
@@ -89,7 +93,7 @@ import groupApi from '@/api/group'
 import { baseMixin } from '@/store/app-mixin'
 
 export default {
-  name: 'TreeList',
+  name: 'UserGroupList',
   mixins: [baseMixin],
   data() {
     return {
@@ -104,7 +108,11 @@ export default {
       autoExpandParent: false,
       checkedGroupKeys: [],
       selectedKeys: [],
-      userGroupTreeData: []
+      userGroupTreeData: [],
+      loading: {
+        save: false,
+        reset: false
+      }
     }
   },
   created() {
@@ -163,14 +171,26 @@ export default {
         this.$message.warning('必填参数为空')
         return
       }
-      groupApi.createOrUpdate(this.userGroupForm).then(res => {
-        this.$message.success('保存成功')
-        this.listUserGroupTree()
-        this.handleResetGroupForm()
-      })
+      this.loading.save = true
+      groupApi
+        .createOrUpdate(this.userGroupForm)
+        .then(res => {
+          this.$message.success('保存成功')
+          this.listUserGroupTree()
+          this.handleResetGroupForm()
+        })
+        .finally(() => {
+          setTimeout(() => {
+            this.loading.save = false
+          }, 1000)
+        })
     },
     handleResetGroupForm() {
+      this.loading.reset = true
       this.userGroupForm = {}
+      setTimeout(() => {
+        this.loading.reset = false
+      }, 1000)
     },
     handleSearch() {
       this.listUserGroupTree()
