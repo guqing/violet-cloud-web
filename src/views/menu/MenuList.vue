@@ -30,7 +30,7 @@
 
     <a-row :gutter="8" type="flex" justify="center">
       <a-col :lg="12" :md="24" :order="isMobile ? 1 : 0">
-        <a-spin tip="Loading..." :spinning="treeDataLoading">
+        <a-spin tip="加载中..." :spinning="treeDataLoading">
           <a-tree
             v-model="checkedMenuKeys"
             checkable
@@ -88,7 +88,7 @@
           </a-form-model-item>
           <a-form-model-item label="图标">
             <a-input v-model="menuForm.icon" @click="handleSelectIcon" placeholder="选择一个图标可以展示在菜单标题左侧">
-              <a-icon slot="suffix" :type="menuForm.icon" />
+              <a-icon slot="suffix" :type="menuForm.icon" v-if="menuForm.icon" />
             </a-input>
           </a-form-model-item>
           <a-col :style="{ display: moreFormItem ? 'block' : 'none' }">

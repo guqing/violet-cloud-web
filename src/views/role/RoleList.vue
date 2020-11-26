@@ -134,6 +134,8 @@ export default {
         const requestParameters = Object.assign({}, this.queryParam)
         requestParameters.current = parameter.pageNo
         requestParameters.pageSize = parameter.pageSize
+        requestParameters.field = parameter.sortField
+        requestParameters.order = parameter.sortOrder
         return roleApi
           .listRole(requestParameters)
           .then(res => {
