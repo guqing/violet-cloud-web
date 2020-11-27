@@ -1,5 +1,12 @@
 <template>
-  <a-modal title="日志详情" :visible="visible" :confirmLoading="confirmLoading" @ok="handleOk" @cancel="handleCancel">
+  <a-modal
+    title="日志详情"
+    :visible="visible"
+    :confirmLoading="confirmLoading"
+    :footer="null"
+    destroyOnClose
+    @cancel="handleCancel"
+  >
     <a-spin :spinning="confirmLoading">
       <a-descriptions :column="1">
         <a-descriptions-item label="操作人">
@@ -49,10 +56,6 @@ export default {
     detail(record) {
       this.visible = true
       this.actionLog = Object.assign({}, record)
-    },
-    handleOk() {
-      this.actionLog = {}
-      this.close()
     },
     handleCancel() {
       this.actionLog = {}
