@@ -1,5 +1,6 @@
 import { axios } from '@/utils/request'
 
+const clientIdAndSecretKey = 'Basic dmlvbGV0OnZpb2xldC1zZWNyZXQtMTIzNDU2'
 /**
  * login func
  * parameter: {
@@ -17,7 +18,41 @@ export function login(parameter) {
     method: 'post',
     params: parameter,
     headers: {
-      Authorization: 'Basic dmlvbGV0OnZpb2xldC1zZWNyZXQtMTIzNDU2'
+      Authorization: clientIdAndSecretKey
+    }
+  })
+}
+
+/**
+ * 刷新token
+ * @param {String} parameter refresh token value
+ */
+export function refreshToken(parameter) {
+  return axios({
+    url: '/auth/oauth/token?grant_type=refresh_token',
+    method: 'post',
+    params: {
+      refresh_token: parameter
+    },
+    headers: {
+      Authorization: clientIdAndSecretKey
+    }
+  })
+}
+
+/**
+ * 检查token是否有效
+ * @param {String} parameter token value
+ */
+export function checkToken(parameter) {
+  return axios({
+    url: '/auth/oauth/check_token',
+    method: 'get',
+    params: {
+      token: parameter
+    },
+    headers: {
+      Authorization: clientIdAndSecretKey
     }
   })
 }
