@@ -50,7 +50,7 @@
         </span>
       </a-table>
     </a-card>
-    <user-modal ref="userModal"></user-modal>
+    <user-modal ref="userModal" @ok="handleUserModalOk"></user-modal>
   </div>
 </template>
 <script>
@@ -153,18 +153,24 @@ export default {
         cancelText: '取消',
         onOk() {
           that.loadingState.delete = true
-          gatewayApi.deleteUser(userIds).then(res => {
-            this.$message.success('删除成功')
-          }).finally(() => {
-            setTimeout(() => {
-              this.loadingState.delete = false
-            }, 1500)
-          })
+          gatewayApi
+            .deleteUser(userIds)
+            .then(res => {
+              this.$message.success('删除成功')
+            })
+            .finally(() => {
+              setTimeout(() => {
+                this.loadingState.delete = false
+              }, 1500)
+            })
         },
         onCancel() {
           that.$log.info('Cancel')
         }
       })
+    },
+    handleUserModalOk() {
+      this.handleListUser()
     },
     onSelectChange(selectedRowKeys, selectedRows) {
       this.selectedRowKeys = selectedRowKeys

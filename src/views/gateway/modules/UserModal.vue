@@ -111,27 +111,34 @@ export default {
         this.loading = true
         if (this.isCreate) {
           // 创建
-          gatewayApi.createUser(this.userParam).then(res => {
-            this.$message.success('创建成功')
-          }).finally(() => {
-            this.handleResetForm()
-            this.visible = false
-            setTimeout(() => {
-              this.loading = false
-            }, 1500)
-          })
+          gatewayApi
+            .createUser(values)
+            .then(res => {
+              this.$message.success('创建成功')
+            })
+            .finally(() => {
+              this.handleResetForm()
+              this.visible = false
+              setTimeout(() => {
+                this.loading = false
+              }, 1500)
+            })
         } else {
           // 更新
-          gatewayApi.updateUser(this.userParam).then(res => {
-            this.$message.success('更新成功')
-          }).finally(() => {
-            this.visible = false
-            this.handleResetForm()
-            setTimeout(() => {
-              this.loading = false
-            }, 1500)
-          })
+          gatewayApi
+            .updateUser(values)
+            .then(res => {
+              this.$message.success('更新成功')
+            })
+            .finally(() => {
+              this.visible = false
+              this.handleResetForm()
+              setTimeout(() => {
+                this.loading = false
+              }, 1500)
+            })
         }
+        this.$emit('ok', values)
       })
     },
     handleCancel() {

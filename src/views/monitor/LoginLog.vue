@@ -49,13 +49,6 @@
         onChange: this.onSelectChange
       }"
     >
-      <span slot="action" slot-scope="text, record">
-        <template>
-          <a href="javascript:;" @click="$refs.modal.detail(record)">详情</a>
-          <a-divider type="vertical" v-action:delete />
-          <a @click="handleDelete(record)" v-action:delete>删除</a>
-        </template>
-      </span>
     </s-table>
   </a-card>
 </template>
@@ -98,12 +91,6 @@ export default {
           title: '登录时间',
           dataIndex: 'loginTime',
           ellipsis: true
-        },
-        {
-          title: '操作',
-          dataIndex: 'action',
-          width: '150px',
-          scopedSlots: { customRender: 'action' }
         }
       ],
       // 加载数据方法 必须为 Promise 对象
@@ -113,24 +100,27 @@ export default {
         queryRequest.pageSize = parameter.pageSize
         Object.assign(queryRequest, this.queryParam)
         this.$log.debug('loadData.parameter', queryRequest)
-        return loginLogApi.list(queryRequest).then(res => {
-          return {
-            pageSize: res.data.pageSize,
-            pageNo: res.data.current,
-            totalCount: res.data.total,
-            totalPage: res.data.pages,
-            data: res.data.list
-          }
-        }).catch(err => {
-          this.$message.error(`查询出错:${err}`)
-          return {
-            pageSize: 0,
-            pageNo: 1,
-            totalCount: 0,
-            totalPage: 0,
-            data: []
-          }
-        })
+        return loginLogApi
+          .list(queryRequest)
+          .then(res => {
+            return {
+              pageSize: res.data.pageSize,
+              pageNo: res.data.current,
+              totalCount: res.data.total,
+              totalPage: res.data.pages,
+              data: res.data.list
+            }
+          })
+          .catch(err => {
+            this.$message.error(`查询出错:${err}`)
+            return {
+              pageSize: 0,
+              pageNo: 1,
+              totalCount: 0,
+              totalPage: 0,
+              data: []
+            }
+          })
       },
       selectedRowKeys: [],
       selectedRows: []
