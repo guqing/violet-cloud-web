@@ -115,6 +115,7 @@ export default {
             .createUser(values)
             .then(res => {
               this.$message.success('创建成功')
+              this.$emit('ok', values)
             })
             .finally(() => {
               this.handleResetForm()
@@ -129,6 +130,7 @@ export default {
             .updateUser(values)
             .then(res => {
               this.$message.success('更新成功')
+              this.$emit('ok', values)
             })
             .finally(() => {
               this.visible = false
@@ -138,8 +140,6 @@ export default {
               }, 1500)
             })
         }
-        console.log('执行')
-        this.$emit('ok', values)
       })
     },
     handleCancel() {
