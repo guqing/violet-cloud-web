@@ -156,16 +156,17 @@ export default {
           gatewayApi
             .deleteUser(userIds)
             .then(res => {
-              this.$message.success('删除成功')
+              that.$message.success('删除成功')
+              that.handleListUser()
             })
             .finally(() => {
               setTimeout(() => {
-                this.loadingState.delete = false
+                that.loadingState.delete = false
               }, 1500)
             })
         },
         onCancel() {
-          that.$log.info('Cancel')
+          that.$log.debug('Cancel')
         }
       })
     },

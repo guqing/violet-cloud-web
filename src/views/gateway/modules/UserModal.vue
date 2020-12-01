@@ -138,6 +138,7 @@ export default {
               }, 1500)
             })
         }
+        console.log('执行')
         this.$emit('ok', values)
       })
     },
