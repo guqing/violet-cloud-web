@@ -16,48 +16,54 @@ const request = axios.create({
 const GATEWAY_PATH = '/route/auth'
 
 // 异常拦截处理器
-const errorHandler = (error) => {
+const errorHandler = error => {
   console.log('请求异常:', error.response)
   const res = error.response
-  if (res) {
-    const data = res.data
-    // 从 localstorage 获取 token
-    const token = storage.get(ACCESS_TOKEN)
-    if (data.dcode === 'A0320') {
-      notification.error({
-        message: 'Forbidden',
-        description: data.message
+  if (!res) {
+    return Promise.reject(error)
+  }
+  const data = res.data
+  // 从 localstorage 获取 token
+  const token = storage.get(ACCESS_TOKEN)
+  if (token.expireTime < Date.now()) {
+    // token 过期换取token
+    return store
+      .dispatch('RefreshToken', token.refresh_token)
+      .then(() => {
+        console.log('token过期, 自动刷新token')
+        // 重新请求
+        return request(res.config)
       })
-    } else if (data.code === 'A0300') {
-      notification.error({
-        message: 'Unauthorized',
-        description: '授权失败，请重新登录'
-      })
-      if (token) {
+      .catch(() => {
+        notification.error({
+          message: 'Unauthorized',
+          description: '登录已过期,请重新登录'
+        })
         store.dispatch('Logout').then(() => {
           setTimeout(() => {
             window.location.reload()
           }, 1500)
         })
-      }
-    } if (res.status === 401 && isGateWayRequest(res.config.url)) {
-      notification.error({
-        message: 'Unauthorized',
-        description: '认证已失效，请重新认证'
       })
-    } if (res.status === 403 && isGateWayRequest(res.config.url)) {
-      notification.error({
-        message: 'Forbidden',
-        description: '抱歉，你无此操作权限，禁止访问'
-      })
-    } else {
-      notification.error({
-        message: '请求失败',
-        description: data.message
-      })
-    }
   }
-  return Promise.reject(error)
+  // 从 localstorage 获取 token
+  if (res.status === 401 && isGateWayRequest(res.config.url)) {
+    notification.error({
+      message: 'Unauthorized',
+      description: '认证已失效，请重新认证'
+    })
+  }
+  if (res.status === 403 && isGateWayRequest(res.config.url)) {
+    notification.error({
+      message: 'Forbidden',
+      description: '抱歉，你无此操作权限，禁止访问'
+    })
+  } else {
+    notification.error({
+      message: '请求失败',
+      description: data.message
+    })
+  }
 }
 
 // request interceptor
@@ -68,7 +74,9 @@ request.interceptors.request.use(config => {
     config.headers['Authorization'] = 'bearer ' + gatewayToken
   } else {
     const token = storage.get(ACCESS_TOKEN)
-    if (token) {
+    // 防止已经携带Authorization header被覆盖
+    const authorizationHeader = config.headers['Authorization']
+    if (token && !authorizationHeader) {
       // 其他请求带认证服务器的token
       config.headers['Authorization'] = 'bearer ' + token.access_token
     }
@@ -78,7 +86,7 @@ request.interceptors.request.use(config => {
 }, errorHandler)
 
 // response interceptor
-request.interceptors.response.use((response) => {
+request.interceptors.response.use(response => {
   return response.data
 }, errorHandler)
 
@@ -95,7 +103,4 @@ function isGateWayRequest(url) {
 
 export default request
 
-export {
-  installer as VueAxios,
-  request as axios
-}
+export { installer as VueAxios, request as axios }

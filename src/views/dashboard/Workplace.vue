@@ -131,7 +131,6 @@ export default {
     }
   },
   created() {
-    console.log(this.$router)
     this.user = this.userInfo
     this.avatar = this.userInfo.avatar
     this.handleListActivity()
