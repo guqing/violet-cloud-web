@@ -11,13 +11,16 @@
               <a-input placeholder="目标路径" v-model="queryParam.targetUri" />
             </a-form-item>
             <a-form-item label="请求方式">
-              <a-input v-model="queryParam.requestMethod" />
+              <a-select v-model="queryParam.requestMethod" style="width: 200px">
+                <a-select-option :value="item" v-for="item in requestMethods" :key="item">
+                  {{ item }}
+                </a-select-option>
+              </a-select>
             </a-form-item>
             <a-form-item>
-              <a-button type="primary">查询</a-button>
-              <a-button style="margin-left: 8px"> 重置 </a-button>
+              <a-button type="primary" @click="handleSearch" :loading="loading.search">查询</a-button>
+              <a-button style="margin-left: 8px" @click="handleResetSearch"> 重置 </a-button>
             </a-form-item>
-
             <a-form-item>
               <a-dropdown v-if="selectedRowKeys.length > 0">
                 <a-menu slot="overlay">
@@ -43,7 +46,7 @@
         :columns="columns"
         :data-source="activities"
         :pagination="pagination"
-        :loading="loading"
+        :loading="loading.onload"
         @change="handleTableChange"
         :row-selection="{ selectedRowKeys: selectedRowKeys, onChange: onSelectChange }"
       >
@@ -63,8 +66,12 @@ export default {
   name: 'RouteLog',
   data() {
     return {
+      requestMethods: ['GET', 'POST', 'PUT', 'DELETE'],
       activities: [],
-      loading: false,
+      loading: {
+        search: false,
+        onload: false
+      },
       pagination: {
         current: 1,
         pageSize: 10,
@@ -125,21 +132,37 @@ export default {
       this.pagination = pager
       this.handleListActivites()
     },
+    handleSearch() {
+      this.loading.search = true
+      this.handleListActivites()
+      setTimeout(() => {
+        this.loading.search = false
+      }, 500)
+    },
+    handleResetSearch() {
+      this.queryParam = {}
+      this.handleListActivites()
+    },
     handleListActivites() {
-      this.loading = true
+      this.loading.onload = true
       const queryParam = Object.assign({}, this.queryParam)
       queryParam.current = this.pagination.current
       queryParam.pageSize = this.pagination.pageSize
       this.$log.debug(queryParam)
       // 获取数据总条数
-      gatewayApi.countRouteLog(queryParam).then(res => {
-        this.pagination.total = res
-      })
+      const countPromise = gatewayApi.countRouteLog(queryParam)
       // 获取数据
-      gatewayApi.listRouteLog(queryParam).then(res => {
-        this.activities = res
-        this.loading = false
-      })
+      const dataPromise = gatewayApi.listRouteLog(queryParam)
+      Promise.all([countPromise, dataPromise])
+        .then(values => {
+          this.pagination.total = values[0]
+          this.activities = values[1]
+        })
+        .finally(() => {
+          setTimeout(() => {
+            this.loading.onload = false
+          }, 200)
+        })
     },
     onSelectChange(selectedRowKeys, selectedRows) {
       this.selectedRowKeys = selectedRowKeys
