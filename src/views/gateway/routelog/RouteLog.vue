@@ -180,6 +180,7 @@ export default {
           gatewayApi.deleteRouteLogByIds(that.selectedRowKeys).then(res => {
             that.$message.success('删除成功')
             that.handleListActivites()
+            that.onSelectChange([], [])
           })
         },
         onCancel() {}
