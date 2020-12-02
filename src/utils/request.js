@@ -25,7 +25,7 @@ const errorHandler = error => {
   const data = res.data
   // 从 localstorage 获取 token
   const token = storage.get(ACCESS_TOKEN)
-  if (token.expireTime < Date.now()) {
+  if (token && token.expireTime < Date.now()) {
     // token 过期换取token
     return store
       .dispatch('RefreshToken', token.refresh_token)

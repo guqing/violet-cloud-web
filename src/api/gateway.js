@@ -74,6 +74,14 @@ gatewayApi.listRouteLog = function(parameter) {
   })
 }
 
+gatewayApi.deleteRouteLogByIds = function(parameter) {
+  return axios({
+    url: '/route/auth/log',
+    method: 'delete',
+    data: parameter
+  })
+}
+
 gatewayApi.listRateLimitRule = function(parameter) {
   return axios({
     url: '/route/auth/rateLimitRule/data',

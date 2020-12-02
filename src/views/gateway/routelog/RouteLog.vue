@@ -4,8 +4,14 @@
       <div class="table-operator">
         <a-form layout="inline">
           <a-row :gutter="15">
-            <a-form-item label="用户名">
-              <a-input placeholder="角色名称" v-model="queryParam.username" />
+            <a-form-item label="IP">
+              <a-input placeholder="访问ip" v-model="queryParam.ip" />
+            </a-form-item>
+            <a-form-item label="目标路径">
+              <a-input placeholder="目标路径" v-model="queryParam.targetUri" />
+            </a-form-item>
+            <a-form-item label="请求方式">
+              <a-input v-model="queryParam.requestMethod" />
             </a-form-item>
             <a-form-item>
               <a-button type="primary">查询</a-button>
@@ -124,7 +130,7 @@ export default {
       const queryParam = Object.assign({}, this.queryParam)
       queryParam.current = this.pagination.current
       queryParam.pageSize = this.pagination.pageSize
-      console.log(queryParam)
+      this.$log.debug(queryParam)
       // 获取数据总条数
       gatewayApi.countRouteLog(queryParam).then(res => {
         this.pagination.total = res
@@ -138,6 +144,23 @@ export default {
     onSelectChange(selectedRowKeys, selectedRows) {
       this.selectedRowKeys = selectedRowKeys
       this.selectedRows = selectedRows
+    },
+    handleDeleteById(record) {
+      const that = this
+      this.$confirm({
+        title: '警告',
+        content: `确定要删除该条日志吗?`,
+        okText: '确定',
+        okType: 'danger',
+        cancelText: '取消',
+        onOk() {
+          gatewayApi.deleteRouteLogByIds([record.id]).then(res => {
+            that.$message.success('删除成功')
+            that.handleListActivites()
+          })
+        },
+        onCancel() {}
+      })
     },
     clearSelect(e) {
       e.preventDefault()
