@@ -24,7 +24,7 @@
             <a-form-item>
               <a-dropdown v-if="selectedRowKeys.length > 0">
                 <a-menu slot="overlay">
-                  <a-menu-item key="1"><a-icon type="delete" />删除</a-menu-item>
+                  <a-menu-item key="1" @click="handleDeleteInBatch"><a-icon type="delete" />删除</a-menu-item>
                 </a-menu>
                 <a-button> 批量操作 <a-icon type="down" /> </a-button>
               </a-dropdown>
@@ -167,6 +167,23 @@ export default {
     onSelectChange(selectedRowKeys, selectedRows) {
       this.selectedRowKeys = selectedRowKeys
       this.selectedRows = selectedRows
+    },
+    handleDeleteInBatch() {
+      const that = this
+      this.$confirm({
+        title: '警告',
+        content: `确定要删除所选日志吗?`,
+        okText: '确定',
+        okType: 'danger',
+        cancelText: '取消',
+        onOk() {
+          gatewayApi.deleteRouteLogByIds(that.selectedRowKeys).then(res => {
+            that.$message.success('删除成功')
+            that.handleListActivites()
+          })
+        },
+        onCancel() {}
+      })
     },
     handleDeleteById(record) {
       const that = this
