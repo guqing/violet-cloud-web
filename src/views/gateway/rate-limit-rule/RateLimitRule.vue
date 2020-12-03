@@ -48,7 +48,7 @@
         </template>
       </span>
     </a-table>
-    <RateLimitRuleModal ref="modal" />
+    <RateLimitRuleModal ref="modal" @ok="handleModalOk" />
   </a-card>
 </template>
 <script>
@@ -162,6 +162,9 @@ export default {
     clearSelect(e) {
       e.preventDefault()
       this.onSelectChange([], [])
+    },
+    handleModalOk() {
+      this.handleListRateLimitRule()
     }
   }
 }

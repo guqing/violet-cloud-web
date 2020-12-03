@@ -69,6 +69,7 @@
   </a-modal>
 </template>
 <script>
+import gatewayApi from '@/api/gateway'
 export default {
   name: 'RateLimitRuleModal',
   data() {
@@ -101,13 +102,26 @@ export default {
           return
         }
         const limitRangeTimeValue = fieldsValue['limitRange']
-        delete fieldsValue.limitRange
-        const values = {
-          ...fieldsValue,
-          limitFrom: limitRangeTimeValue[0].format('YYYY-MM-DD'),
-          limitTo: limitRangeTimeValue[1].format('YYYY-MM-DD')
+        if (limitRangeTimeValue) {
+          delete fieldsValue.limitRange
+          const values = {
+            ...fieldsValue,
+            limitFrom: limitRangeTimeValue[0].format('YYYY-MM-DD'),
+            limitTo: limitRangeTimeValue[1].format('YYYY-MM-DD')
+          }
+          this.$log.debug('form values:', values)
+          this.handleCreate(values)
+        } else {
+          this.$log.debug('form values:', fieldsValue)
+          this.handleCreate(fieldsValue)
         }
-        this.$log.debug('form values:', values)
+      })
+    },
+    handleCreate(param) {
+      gatewayApi.createRateLimitRule(param).then(res => {
+        this.$emit('ok', res)
+        this.$message.success('添加成功')
+        this.visible = false
       })
     }
   }
