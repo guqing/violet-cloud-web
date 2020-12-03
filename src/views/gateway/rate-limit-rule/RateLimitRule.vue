@@ -13,7 +13,7 @@
         </a-row>
       </a-form>
       <div style="margin-top: 15px">
-        <a-button type="primary"><a-icon type="plus" />新增</a-button>
+        <a-button type="primary" @click="$refs.modal.add()"><a-icon type="plus" />新增</a-button>
         <a-dropdown v-if="selectedRowKeys.length > 0">
           <a-menu slot="overlay">
             <a-menu-item key="1"><a-icon type="delete" />删除</a-menu-item>
@@ -48,15 +48,21 @@
         </template>
       </span>
     </a-table>
+    <RateLimitRuleModal ref="modal" />
   </a-card>
 </template>
 <script>
 import gatewayApi from '@/api/gateway'
+import RateLimitRuleModal from '../modules/RateLimitRuleModal'
 
 export default {
   name: 'RateLimitRule',
+  components: {
+    RateLimitRuleModal
+  },
   data() {
     return {
+      modalVisible: false,
       limitRules: [],
       loading: false,
       pagination: {
@@ -90,14 +96,14 @@ export default {
         {
           title: '请求间隔',
           dataIndex: 'intervalSec',
-          customRender: (text) => {
+          customRender: text => {
             return text + ' 秒'
           }
         },
         {
           title: '状态',
           dataIndex: 'status',
-          customRender: (text) => {
+          customRender: text => {
             if (text === '1') {
               return <a-tag color="green">正常</a-tag>
             }
@@ -128,9 +134,14 @@ export default {
       gatewayApi.countRateLimitRule(this.queryParam).then(res => {
         this.pagination.total = res
       })
-      gatewayApi.listRateLimitRule(this.queryParam).then(res => {
-        this.limitRules = res
-      }).finally(() => { this.loading = false })
+      gatewayApi
+        .listRateLimitRule(this.queryParam)
+        .then(res => {
+          this.limitRules = res
+        })
+        .finally(() => {
+          this.loading = false
+        })
     },
     handleSearch() {
       this.handleListRateLimitRule()
