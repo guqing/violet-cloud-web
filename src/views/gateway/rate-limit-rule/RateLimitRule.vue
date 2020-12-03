@@ -83,11 +83,17 @@ export default {
         },
         {
           title: '限制开始时间',
-          dataIndex: 'limitFrom'
+          dataIndex: 'limitFrom',
+          customRender: text => {
+            return text ? text : '所有时间'
+          }
         },
         {
           title: '限制结束时间',
-          dataIndex: 'limitTo'
+          dataIndex: 'limitTo',
+          customRender: text => {
+            return text ? text : '所有时间'
+          }
         },
         {
           title: '请求次数',
