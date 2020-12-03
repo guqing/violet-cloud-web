@@ -110,7 +110,7 @@ export default {
           title: '状态',
           dataIndex: 'status',
           customRender: text => {
-            if (text === '1') {
+            if (text === 'true') {
               return <a-tag color="green">正常</a-tag>
             }
             return <a-tag color="orange">禁用</a-tag>
