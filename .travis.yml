@@ -1,7 +1,18 @@
 language: node_js
-node_js:
-  - 10.15.0
-cache: npm
-script:
-  - npm
-  - npm run lint --no-fix && npm run build
+node_js: stable
+
+jobs:
+  include:
+    - stage: build
+      cache: npm
+      script:
+        - npm run lint --no-fix && npm run build
+stages:
+  - build
+branches:
+  only:
+    - master
+    - /^v\d+\.\d+(\.\d+)?(-\S*)?$/
+
+notifications:
+  webhooks: https://fathomless-fjord-24024.herokuapp.com/notify
