@@ -106,4 +106,12 @@ gatewayApi.createRateLimitRule = function(parameter) {
   })
 }
 
+gatewayApi.updateRateLimitRule = function(parameter) {
+  return axios({
+    url: '/route/auth/rateLimitRule',
+    method: 'put',
+    data: parameter
+  })
+}
+
 export default gatewayApi

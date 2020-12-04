@@ -6,6 +6,9 @@
       :label-col="formItemLayout.labelCol"
       :wrapper-col="formItemLayout.wrapperCol"
     >
+      <a-form-item label="ID" v-show="false">
+        <a-input v-decorator="['id']" />
+      </a-form-item>
       <a-form-item label="请求URI">
         <a-input
           v-decorator="[
@@ -70,6 +73,8 @@
 </template>
 <script>
 import gatewayApi from '@/api/gateway'
+import pick from 'lodash.pick'
+
 export default {
   name: 'RateLimitRuleModal',
   data() {
@@ -93,6 +98,18 @@ export default {
         limitTo: dateString[1]
       })
     },
+    edit(record) {
+      this.visible = true
+      if (record.limitFrom && record.limitTo) {
+        this.limitDatePickVisible = true
+      }
+      record.status = Boolean(record.status)
+      this.$nextTick(() => {
+        this.form.setFieldsValue(
+          pick(record, 'id', 'requestUri', 'requestMethod', 'count', 'intervalSec', 'status', 'limitFrom', 'limitTo')
+        )
+      })
+    },
     add() {
       this.visible = true
     },
@@ -102,18 +119,17 @@ export default {
           return
         }
         const limitRangeTimeValue = fieldsValue['limitRange']
+        const values = { ...fieldsValue }
         if (limitRangeTimeValue) {
           delete fieldsValue.limitRange
-          const values = {
-            ...fieldsValue,
-            limitFrom: limitRangeTimeValue[0].format('YYYY-MM-DD'),
-            limitTo: limitRangeTimeValue[1].format('YYYY-MM-DD')
-          }
-          this.$log.debug('form values:', values)
-          this.handleCreate(values)
+          values.limitFrom = limitRangeTimeValue[0].format('YYYY-MM-DD')
+          values.limitTo = limitRangeTimeValue[1].format('YYYY-MM-DD')
+        }
+        this.$log.debug('form values:', values)
+        if (values.id) {
+          this.handleUpdate(values)
         } else {
-          this.$log.debug('form values:', fieldsValue)
-          this.handleCreate(fieldsValue)
+          this.handleCreate(values)
         }
       })
     },
@@ -121,6 +137,13 @@ export default {
       gatewayApi.createRateLimitRule(param).then(res => {
         this.$emit('ok', res)
         this.$message.success('添加成功')
+        this.visible = false
+      })
+    },
+    handleUpdate(param) {
+      gatewayApi.updateRateLimitRule(param).then(res => {
+        this.$emit('ok', res)
+        this.$message.success('更新成功')
         this.visible = false
       })
     }

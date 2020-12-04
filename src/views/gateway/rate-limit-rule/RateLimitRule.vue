@@ -40,9 +40,9 @@
       @change="handleTableChange"
       :row-selection="{ selectedRowKeys: selectedRowKeys, onChange: onSelectChange }"
     >
-      <span slot="action">
+      <span slot="action" slot-scope="text, record">
         <template>
-          <a>编辑</a>
+          <a href="#" @click="$refs.modal.edit(record)">编辑</a>
           <a-divider type="vertical" />
           <a>删除</a>
         </template>
@@ -85,14 +85,14 @@ export default {
           title: '限制开始时间',
           dataIndex: 'limitFrom',
           customRender: text => {
-            return text ? text : '所有时间'
+            return text || '所有时间'
           }
         },
         {
           title: '限制结束时间',
           dataIndex: 'limitTo',
           customRender: text => {
-            return text ? text : '所有时间'
+            return text || '所有时间'
           }
         },
         {
