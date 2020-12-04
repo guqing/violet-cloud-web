@@ -52,6 +52,7 @@ const errorHandler = error => {
       message: 'Unauthorized',
       description: '认证已失效，请重新认证'
     })
+    sessionStorage.removeItem('GateWay_Token')
   }
   if (res.status === 403 && isGateWayRequest(res.config.url)) {
     notification.error({

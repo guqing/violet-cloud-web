@@ -110,7 +110,7 @@ export default {
           title: '状态',
           dataIndex: 'status',
           customRender: text => {
-            if (text === 'true') {
+            if (text) {
               return <a-tag color="green">正常</a-tag>
             }
             return <a-tag color="orange">禁用</a-tag>
@@ -169,7 +169,8 @@ export default {
       e.preventDefault()
       this.onSelectChange([], [])
     },
-    handleModalOk() {
+    handleModalOk(res) {
+      this.$log.debug('保存限流日志成功', res)
       this.handleListRateLimitRule()
     }
   }
