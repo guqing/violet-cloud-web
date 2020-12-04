@@ -1,5 +1,5 @@
 <template>
-  <a-modal v-model="visible" title="新增限流规则" @ok="handleOk">
+  <a-modal v-model="visible" title="新增限流规则" @ok="handleOk" @cancle="handleCancel" destroyOnClose>
     <a-form
       :form="form"
       layout="horizontal"
@@ -127,25 +127,33 @@ export default {
         }
         this.$log.debug('form values:', values)
         if (values.id) {
-          this.handleUpdate(values)
+          this.handleUpdate(values.id, values)
         } else {
           this.handleCreate(values)
         }
       })
     },
+    handleCancel() {
+      this.handleReset()
+    },
     handleCreate(param) {
       gatewayApi.createRateLimitRule(param).then(res => {
         this.$emit('ok', res)
         this.$message.success('添加成功')
-        this.visible = false
+        this.handleReset()
       })
     },
-    handleUpdate(param) {
-      gatewayApi.updateRateLimitRule(param).then(res => {
+    handleUpdate(id, values) {
+      gatewayApi.updateRateLimitRule(id, values).then(res => {
         this.$emit('ok', res)
+        this.handleReset()
         this.$message.success('更新成功')
-        this.visible = false
       })
+    },
+    handleReset() {
+      this.form.resetFields()
+      this.visible = false
+      this.limitDatePickVisible = false
     }
   }
 }

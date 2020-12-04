@@ -106,10 +106,18 @@ gatewayApi.createRateLimitRule = function(parameter) {
   })
 }
 
-gatewayApi.updateRateLimitRule = function(parameter) {
+gatewayApi.updateRateLimitRule = function(id, parameter) {
+  return axios({
+    url: `/route/auth/rateLimitRule/${id}`,
+    method: 'put',
+    data: parameter
+  })
+}
+
+gatewayApi.deleteRateLimitRuleByIds = function(parameter) {
   return axios({
     url: '/route/auth/rateLimitRule',
-    method: 'put',
+    method: 'delete',
     data: parameter
   })
 }

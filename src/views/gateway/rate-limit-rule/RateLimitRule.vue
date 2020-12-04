@@ -44,7 +44,7 @@
         <template>
           <a href="#" @click="$refs.modal.edit(record)">编辑</a>
           <a-divider type="vertical" />
-          <a>删除</a>
+          <a href="#" @click="handleDeleteById(record)">删除</a>
         </template>
       </span>
     </a-table>
@@ -82,14 +82,14 @@ export default {
           dataIndex: 'requestMethod'
         },
         {
-          title: '限制开始时间',
+          title: '限流开始时间',
           dataIndex: 'limitFrom',
           customRender: text => {
             return text || '所有时间'
           }
         },
         {
-          title: '限制结束时间',
+          title: '限流结束时间',
           dataIndex: 'limitTo',
           customRender: text => {
             return text || '所有时间'
@@ -172,6 +172,24 @@ export default {
     handleModalOk(res) {
       this.$log.debug('保存限流日志成功', res)
       this.handleListRateLimitRule()
+    },
+    handleDeleteById(record) {
+      const that = this
+      this.$confirm({
+        title: '警告',
+        content: `确定要删除该条限流规则吗?`,
+        okText: '确定',
+        okType: 'danger',
+        cancelText: '取消',
+        onOk() {
+          that.$log.debug('删除限流规则', record)
+          gatewayApi.deleteRateLimitRuleByIds([record.id]).then(res => {
+            that.$message.success('删除成功')
+            that.handleListRateLimitRule()
+          })
+        },
+        onCancel() {}
+      })
     }
   }
 }
