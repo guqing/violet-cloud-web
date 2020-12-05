@@ -5,16 +5,17 @@ import {
   APP_LANGUAGE,
   TOGGLE_CONTENT_WIDTH,
   TOGGLE_FIXED_HEADER,
-  TOGGLE_FIXED_SIDEBAR, TOGGLE_HIDE_HEADER,
-  TOGGLE_LAYOUT, TOGGLE_NAV_THEME, TOGGLE_WEAK,
-  TOGGLE_COLOR, TOGGLE_MULTI_TAB
+  TOGGLE_FIXED_SIDEBAR,
+  TOGGLE_HIDE_HEADER,
+  TOGGLE_LAYOUT,
+  TOGGLE_NAV_THEME,
+  TOGGLE_WEAK,
+  TOGGLE_COLOR,
+  TOGGLE_MULTI_TAB
 } from '@/store/mutation-types'
-import { printANSI } from '@/utils/screenLog'
 import defaultSettings from '@/config/defaultSettings'
 
 export default function Initializer() {
-  printANSI() // 请自行一处改行.  please remove this line
-
   store.commit(TOGGLE_LAYOUT, storage.get(TOGGLE_LAYOUT, defaultSettings.layout))
   store.commit(TOGGLE_FIXED_HEADER, storage.get(TOGGLE_FIXED_HEADER, defaultSettings.fixedHeader))
   store.commit(TOGGLE_FIXED_SIDEBAR, storage.get(TOGGLE_FIXED_SIDEBAR, defaultSettings.fixSiderbar))
