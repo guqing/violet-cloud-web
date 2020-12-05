@@ -32,6 +32,11 @@ import RightContent from '@/components/GlobalHeader/RightContent'
 import GlobalFooter from '@/components/GlobalFooter'
 import LogoSvg from '../assets/logo.svg?inline'
 
+const ContentWidthEnum = {
+  Fluid: 'Fluid',
+  Fixed: 'Fixed'
+}
+
 export default {
   name: 'BasicLayout',
   components: {
@@ -48,8 +53,8 @@ export default {
       settings: {
         // 布局类型
         layout: 'sidemenu', // 'sidemenu', 'topmenu'
-        // 定宽: true / 流式: false
-        contentWidth: false,
+        // 定宽: Fixed / 流式: Fluid
+        contentWidth: ContentWidthEnum.Fluid,
         // 主题 'dark' | 'light'
         theme: 'light',
         // 主色调
@@ -107,7 +112,7 @@ export default {
       if (!this.isMobile && val['screen-xs']) {
         this.isMobile = true
         this.collapsed = false
-        this.settings.contentWidth = false
+        this.settings.contentWidth = ContentWidthEnum.Fluid
         // this.settings.fixSiderbar = false
       }
     },
@@ -119,14 +124,14 @@ export default {
       type && (this.settings[type] = value)
       switch (type) {
         case 'contentWidth':
-          this.settings[type] = value === 'Fixed'
+          this.settings[type] = value === ContentWidthEnum.Fixed
           break
         case 'layout':
           if (value === 'sidemenu') {
-            this.settings.contentWidth = false
+            this.settings.contentWidth = ContentWidthEnum.Fluid
           } else {
             this.settings.fixSiderbar = false
-            this.settings.contentWidth = true
+            this.settings.contentWidth = ContentWidthEnum.Fluid
           }
           break
       }
