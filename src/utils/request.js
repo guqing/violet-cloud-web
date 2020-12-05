@@ -14,6 +14,7 @@ const request = axios.create({
 
 // 网关路径前缀
 const GATEWAY_PATH = '/route/auth'
+let retryCount = 0
 
 // 异常拦截处理器
 const errorHandler = error => {
@@ -26,6 +27,15 @@ const errorHandler = error => {
   // 从 localstorage 获取 token
   const token = storage.get(ACCESS_TOKEN)
   if (token && token.expireTime < Date.now()) {
+    if (retryCount > 3) {
+      store.dispatch('Logout').then(() => {
+        setTimeout(() => {
+          window.location.reload()
+        }, 1500)
+      })
+    }
+    // retry count auto increase
+    retryCount++
     // token 过期换取token
     return store
       .dispatch('RefreshToken', token.refresh_token)
