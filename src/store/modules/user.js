@@ -11,8 +11,7 @@ const user = {
     welcome: '',
     avatar: '',
     roles: [],
-    info: {},
-    routerMap: []
+    info: {}
   },
 
   mutations: {
@@ -35,9 +34,6 @@ const user = {
     },
     SET_INFO: (state, info) => {
       state.info = info
-    },
-    SET_ROUTERMAP: (state, routerMap) => {
-      state.routerMap = routerMap
     }
   },
 

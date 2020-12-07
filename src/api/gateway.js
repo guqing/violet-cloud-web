@@ -26,6 +26,14 @@ gatewayApi.listRateLimitLog = function(parameter) {
   })
 }
 
+gatewayApi.countRateLimitLog = function(parameter) {
+  return axios({
+    url: `${api.rateLimitLog}/count`,
+    method: 'get',
+    params: parameter
+  })
+}
+
 gatewayApi.listUser = function(parameter) {
   return axios({
     url: `${api.user}/data`,

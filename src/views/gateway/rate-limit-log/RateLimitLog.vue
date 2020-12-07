@@ -19,16 +19,16 @@
             <a-button type="primary">查询</a-button>
             <a-button style="margin-left: 8px"> 重置 </a-button>
           </a-form-item>
+          <a-form-item>
+            <a-dropdown v-if="selectedRowKeys.length > 0">
+              <a-menu slot="overlay">
+                <a-menu-item key="1"><a-icon type="delete" />删除</a-menu-item>
+              </a-menu>
+              <a-button> 批量操作 <a-icon type="down" /> </a-button>
+            </a-dropdown>
+          </a-form-item>
         </a-row>
       </a-form>
-      <div style="margin-top: 15px">
-        <a-dropdown v-if="selectedRowKeys.length > 0">
-          <a-menu slot="overlay">
-            <a-menu-item key="1"><a-icon type="delete" />删除</a-menu-item>
-          </a-menu>
-          <a-button style="margin-left: 8px"> 批量操作 <a-icon type="down" /> </a-button>
-        </a-dropdown>
-      </div>
     </div>
 
     <a-alert type="info" show-icon>
@@ -59,6 +59,8 @@
   </a-card>
 </template>
 <script>
+import gatewayApi from '@/api/gateway'
+
 export default {
   name: 'RateLimitLog',
   data() {
@@ -104,11 +106,28 @@ export default {
       selectedRows: []
     }
   },
+  mounted() {
+    this.handleListRateLimitLog()
+  },
   methods: {
+    handleListRateLimitLog() {
+      const queryParam = {
+        ...this.queryParam,
+        current: this.pagination.current,
+        pageSize: this.pagination.pageSize
+      }
+      const countPromise = gatewayApi.countRateLimitLog(queryParam)
+      const dataPromise = gatewayApi.listRateLimitLog(queryParam)
+      Promise.all([countPromise, dataPromise]).then(values => {
+        this.pagination.total = values[0]
+        this.limitRules = values[1]
+      })
+    },
     handleTableChange(pagination, filters, sorter) {
       const pager = { ...this.pagination }
       pager.current = pagination.current
       this.pagination = pager
+      this.handleListRateLimitLog()
     },
     onSelectChange(selectedRowKeys, selectedRows) {
       this.selectedRowKeys = selectedRowKeys

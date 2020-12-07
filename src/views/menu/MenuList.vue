@@ -140,9 +140,7 @@
 <script>
 import menuApi from '@/api/menu'
 import { baseMixin } from '@/store/app-mixin'
-import { ROUTER_MAP } from '@/store/mutation-types'
 import IconSelector from '@/components/IconSelector'
-import storage from 'store'
 
 const validatePath = (rule, value, callback) => {
   if (value !== '') {
@@ -310,8 +308,7 @@ export default {
             .then(res => {
               this.$message.success('保存成功')
               this.listTreeMenu()
-              storage.remove(ROUTER_MAP)
-              this.handleResetMenuForm()
+              this.handleReset()
             })
             .finally(() => {
               setTimeout(() => {
@@ -325,12 +322,15 @@ export default {
         }
       })
     },
-    handleResetMenuForm() {
-      this.loadingState.reset = true
-      this.$log.debug('清除表单执行')
+    handleReset() {
       this.menuForm = {}
       this.checkedMenuKeys = []
       this.expandedMenuKeys = []
+    },
+    handleResetMenuForm() {
+      this.$log.debug('清除表单执行')
+      this.loadingState.reset = true
+      this.handleReset()
       setTimeout(() => {
         this.loadingState.reset = false
       }, 1500)
