@@ -4,20 +4,20 @@
       <a-form layout="inline">
         <a-row :gutter="15">
           <a-form-item label="请求URI">
-            <a-input placeholder="角色名称" v-model="queryParam.username" />
+            <a-input placeholder="/admin/menu" v-model="queryParam.requestUri" />
           </a-form-item>
 
           <a-form-item label="请求IP">
-            <a-input placeholder="请求IP" v-model="queryParam.username" />
+            <a-input placeholder="127.0.0.1" v-model="queryParam.ip" />
           </a-form-item>
 
           <a-form-item label="请求时间">
-            <a-input placeholder="请求时间" />
+            <a-range-picker v-model="dateRange" @change="onQueryPickChange" style="width:240px" />
           </a-form-item>
 
           <a-form-item>
-            <a-button type="primary">查询</a-button>
-            <a-button style="margin-left: 8px"> 重置 </a-button>
+            <a-button type="primary" @click="handleSearch" :loading="loading.search">查询</a-button>
+            <a-button style="margin-left: 8px" @click="handleResetSearch" :loading="loading.reset"> 重置 </a-button>
           </a-form-item>
         </a-row>
       </a-form>
@@ -36,7 +36,7 @@
       :columns="columns"
       :data-source="limitRules"
       :pagination="pagination"
-      :loading="loading"
+      :loading="loading.table"
       @change="handleTableChange"
       :row-selection="{ selectedRowKeys: selectedRowKeys, onChange: onSelectChange }"
     >
@@ -51,7 +51,12 @@ export default {
   data() {
     return {
       limitRules: [],
-      loading: false,
+      loading: {
+        table: false,
+        search: false,
+        reset: false
+      },
+      dateRange: [],
       pagination: {
         current: 1,
         pageSize: 10,
@@ -95,12 +100,20 @@ export default {
         current: this.pagination.current,
         pageSize: this.pagination.pageSize
       }
+      this.loading.table = true
       const countPromise = gatewayApi.countRateLimitLog(queryParam)
       const dataPromise = gatewayApi.listRateLimitLog(queryParam)
-      Promise.all([countPromise, dataPromise]).then(values => {
-        this.pagination.total = values[0]
-        this.limitRules = values[1]
-      })
+      Promise.all([countPromise, dataPromise])
+        .then(values => {
+          this.pagination.total = values[0]
+          this.limitRules = values[1]
+          this.loading.table = false
+        })
+        .catch(() => {
+          setTimeout(() => {
+            this.loading.table = false
+          }, 500)
+        })
     },
     handleTableChange(pagination, filters, sorter) {
       const pager = { ...this.pagination }
@@ -115,6 +128,26 @@ export default {
     clearSelect(e) {
       e.preventDefault()
       this.onSelectChange([], [])
+    },
+    onQueryPickChange(date, dateString) {
+      this.queryParam.createTimeFrom = dateString[0]
+      this.queryParam.createTimeTo = dateString[1]
+    },
+    handleSearch() {
+      this.loading.search = true
+      this.handleListRateLimitLog()
+      setTimeout(() => {
+        this.loading.search = false
+      }, 500)
+    },
+    handleResetSearch() {
+      this.loading.reset = true
+      this.queryParam = {}
+      this.dateRange = []
+      this.handleListRateLimitLog()
+      setTimeout(() => {
+        this.loading.reset = false
+      }, 500)
     }
   }
 }
