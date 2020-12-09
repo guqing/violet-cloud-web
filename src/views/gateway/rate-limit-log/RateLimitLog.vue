@@ -19,14 +19,6 @@
             <a-button type="primary">查询</a-button>
             <a-button style="margin-left: 8px"> 重置 </a-button>
           </a-form-item>
-          <a-form-item>
-            <a-dropdown v-if="selectedRowKeys.length > 0">
-              <a-menu slot="overlay">
-                <a-menu-item key="1"><a-icon type="delete" />删除</a-menu-item>
-              </a-menu>
-              <a-button> 批量操作 <a-icon type="down" /> </a-button>
-            </a-dropdown>
-          </a-form-item>
         </a-row>
       </a-form>
     </div>
@@ -48,13 +40,6 @@
       @change="handleTableChange"
       :row-selection="{ selectedRowKeys: selectedRowKeys, onChange: onSelectChange }"
     >
-      <span slot="action">
-        <template>
-          <a>编辑</a>
-          <a-divider type="vertical" />
-          <a>删除</a>
-        </template>
-      </span>
     </a-table>
   </a-card>
 </template>
@@ -94,12 +79,6 @@ export default {
         {
           title: '请求时间',
           dataIndex: 'createTime'
-        },
-        {
-          title: '操作',
-          dataIndex: 'action',
-          width: '150px',
-          scopedSlots: { customRender: 'action' }
         }
       ],
       selectedRowKeys: [],
