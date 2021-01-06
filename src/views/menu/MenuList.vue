@@ -112,9 +112,15 @@
             </a-form-model-item>
           </a-col>
           <a-form-model-item :wrapper-col="menuFormButtonWrapperCol">
-            <a-button type="primary" @click="handleSaveOrUpdateMenu" :loading="loadingState.save" v-action:save>
-              保存
-            </a-button>
+            <ReactiveButton
+              v-action:save
+              type="primary"
+              @click="handleSaveOrUpdateMenu"
+              @callback="handleSaveOrUpdateMenuCallback"
+              text="保存"
+              :loading="loadingState.save"
+              :errored="saveErrored"
+            />
             <a-button :style="{ marginLeft: '8px' }" @click="handleResetMenuForm" :loading="loadingState.reset">
               重置
             </a-button>
@@ -141,6 +147,7 @@
 import menuApi from '@/api/menu'
 import { baseMixin } from '@/store/app-mixin'
 import IconSelector from '@/components/IconSelector'
+import ReactiveButton from '@/components/ReactiveButton'
 
 const validatePath = (rule, value, callback) => {
   if (value !== '') {
@@ -169,10 +176,12 @@ export default {
   name: 'TreeList',
   mixins: [baseMixin],
   components: {
-    IconSelector
+    IconSelector,
+    ReactiveButton
   },
   data() {
     return {
+      saveErrored: true,
       iconSelect: {
         visible: false,
         selected: ''
@@ -299,28 +308,27 @@ export default {
       }
     },
     handleSaveOrUpdateMenu() {
-      this.loadingState.save = true
       this.$refs['menuForm'].validate(valid => {
         if (valid) {
+          this.loadingState.save = true
           this.menuForm.type = '0'
           menuApi
             .saveOrUpdate(this.menuForm)
             .then(res => {
-              this.$message.success('保存成功')
-              this.listTreeMenu()
-              this.handleReset()
+              this.saveErrored = false
+              this.loadingState.save = false
             })
             .finally(() => {
               setTimeout(() => {
                 this.loadingState.save = false
               }, 1000)
             })
-        } else {
-          setTimeout(() => {
-            this.loadingState.save = false
-          }, 1500)
         }
       })
+    },
+    handleSaveOrUpdateMenuCallback() {
+      this.listTreeMenu()
+      this.handleReset()
     },
     handleReset() {
       this.menuForm = {}
@@ -333,7 +341,7 @@ export default {
       this.handleReset()
       setTimeout(() => {
         this.loadingState.reset = false
-      }, 1500)
+      }, 1000)
     },
     handleSearch() {
       this.listTreeMenu()

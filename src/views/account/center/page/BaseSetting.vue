@@ -25,10 +25,10 @@
                   rules: [
                     { type: 'email', message: '邮箱地址格式不正确!' },
                     {
-                      validator: validateDuplicateEmail,
-                    },
-                  ],
-                },
+                      validator: validateDuplicateEmail
+                    }
+                  ]
+                }
               ]"
               placeholder="exp@admin.com"
             />
@@ -39,7 +39,13 @@
           </a-form-item>
 
           <a-form-item>
-            <a-button type="primary" @click="handleUpdateUserInfo"> 保存 </a-button>
+            <ReactiveButton
+              type="primary"
+              @click="handleUpdateUserInfo"
+              text="保存"
+              :loading="loading"
+              :errored="saveErrored"
+            />
           </a-form-item>
         </a-form>
       </a-col>
@@ -52,9 +58,19 @@ import userApi from '@/api/user'
 import { mapGetters } from 'vuex'
 import pick from 'lodash.pick'
 import antiShake from '@/utils/antiShake'
+import ReactiveButton from '@/components/ReactiveButton'
 
 export default {
   name: 'BaseSetting',
+  components: {
+    ReactiveButton
+  },
+  data() {
+    return {
+      saveErrored: true,
+      loading: false
+    }
+  },
   beforeCreate() {
     this.form = this.$form.createForm(this, { name: 'user_profile' })
   },
@@ -86,17 +102,23 @@ export default {
         })
       }, 500)
     },
-    handleUpdateUserInfo(e) {
-      e.preventDefault()
+    handleUpdateUserInfo() {
       this.form.validateFields((err, values) => {
         if (!err) {
-          userApi.updateProfile(values).then(res => {
-            this.$message.success('保存成功')
-            // 更新vuex状态
-            this.$store.dispatch('GetInfo')
-          }).catch(err => {
-            this.$message.error(`更新用户信息出错,error: ${err.message}`)
-          })
+          this.loading = true
+          userApi
+            .updateProfile(values)
+            .then(res => {
+              console.log('执行')
+              this.saveErrored = false
+              this.loading = false
+              // 更新vuex状态
+              this.$store.dispatch('GetInfo')
+            })
+            .catch(err => {
+              this.$log.debug('保存用户信息失败:', err)
+              this.loading = false
+            })
         }
       })
     }

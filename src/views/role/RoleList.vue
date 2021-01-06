@@ -29,7 +29,14 @@
             />
           </a-form-model-item>
           <a-form-model-item :wrapper-col="roleFormButtonWrapperCol">
-            <a-button type="primary" @click="handleSaveOrUpdateRole" :loading="loadingState.save">保存</a-button>
+            <ReactiveButton
+              type="primary"
+              @click="handleSaveOrUpdateRole"
+              @callback="handleSaveOrUpdateRoleCallback"
+              text="保存"
+              :loading="loadingState.save"
+              :errored="saveErrored"
+            />
             <a-button :style="{ marginLeft: '15px' }" @click="handleResetRoleForm">重置</a-button>
           </a-form-model-item>
         </a-form-model>
@@ -84,6 +91,7 @@
 
 <script>
 import { STable } from '@/components'
+import ReactiveButton from '@/components/ReactiveButton'
 import menuApi from '@/api/menu'
 import roleApi from '@/api/role'
 import { baseMixin } from '@/store/app-mixin'
@@ -92,7 +100,8 @@ export default {
   name: 'TreeList',
   mixins: [baseMixin],
   components: {
-    STable
+    STable,
+    ReactiveButton
   },
   data() {
     return {
@@ -101,6 +110,7 @@ export default {
         query: false,
         reset: false
       },
+      saveErrored: true,
       labelCol: { span: 4 },
       wrapperCol: { span: 18 },
       roleForm: {},
@@ -208,7 +218,7 @@ export default {
       this.autoExpandParent = false
     },
     onTreeMenuCheck(checkedMenuKeys) {
-      console.log('onCheck', checkedMenuKeys)
+      this.$log.debug('onCheck', checkedMenuKeys)
     },
     onMenuSelect(selectedMenuKeys, info) {
       this.$log.debug('onMenuSelect', info.node.dataRef.key)
@@ -234,13 +244,18 @@ export default {
       roleApi
         .createOrUpdate(this.roleForm)
         .then(res => {
-          this.$message.success('保存成功')
-          this.handleResetRoleForm()
-          this.$refs.table.refresh()
+          this.loadingState.save = false
+          // this.saveErrored = false
         })
         .finally(() => {
-          this.loadingState.save = false
+          setTimeout(() => {
+            this.loadingState.save = false
+          }, 1500)
         })
+    },
+    handleSaveOrUpdateRoleCallback() {
+      this.handleResetRoleForm()
+      this.$refs.table.refresh()
     },
     handleRelatedParentRoleMenuKeys() {
       var menuIds = []

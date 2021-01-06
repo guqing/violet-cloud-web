@@ -90,6 +90,7 @@ import roleApi from '@/api/role'
 import userApi from '@/api/user'
 import pick from 'lodash.pick'
 import ReactiveButton from '@/components/ReactiveButton'
+
 const validateRoles = (rule, value, callback) => {
   if (value.length < 1) {
     callback(new Error('请选择角色'))
