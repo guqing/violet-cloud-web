@@ -1,5 +1,5 @@
 <template>
-  <a-modal title="操作" :visible="visible" :confirmLoading="confirmLoading" @ok="handleOk" @cancel="handleCancel">
+  <a-modal title="操作" :visible="visible" @cancel="handleCancel">
     <a-spin :spinning="confirmLoading">
       <a-form :form="form" :label-col="labelCol" :wrapper-col="wrapperCol">
         <a-form-item label="ID" v-show="false">
@@ -14,14 +14,14 @@
                   {
                     required: true,
                     message: '请输入用户名',
-                    trigger: 'blur',
+                    trigger: 'blur'
                   },
                   {
                     validator: validateUsername,
-                    trigger: 'blur',
-                  },
-                ],
-              },
+                    trigger: 'blur'
+                  }
+                ]
+              }
             ]"
           />
         </a-form-item>
@@ -32,9 +32,9 @@
               {
                 rules: [
                   { required: rules.passwordRequired, message: '请输入密码', whitespace: true },
-                  { min: 3, message: '字符长度必须大于3' },
-                ],
-              },
+                  { min: 3, message: '字符长度必须大于3' }
+                ]
+              }
             ]"
           />
         </a-form-item>
@@ -46,14 +46,14 @@
                 rules: [
                   {
                     type: 'email',
-                    message: '邮箱地址格式不正确',
+                    message: '邮箱地址格式不正确'
                   },
                   {
                     validator: validateEmail,
-                    trigger: 'blur',
-                  },
-                ],
-              },
+                    trigger: 'blur'
+                  }
+                ]
+              }
             ]"
           />
         </a-form-item>
@@ -72,6 +72,16 @@
         </a-form-item>
       </a-form>
     </a-spin>
+    <template slot="footer">
+      <a-button @click="handleCancel">取消</a-button>
+      <ReactiveButton
+        type="primary"
+        @click="handleOk"
+        @callback="handleOkCallback"
+        :loading="confirmLoading"
+        :errored="saveErrored"
+      />
+    </template>
   </a-modal>
 </template>
 
@@ -79,7 +89,7 @@
 import roleApi from '@/api/role'
 import userApi from '@/api/user'
 import pick from 'lodash.pick'
-
+import ReactiveButton from '@/components/ReactiveButton'
 const validateRoles = (rule, value, callback) => {
   if (value.length < 1) {
     callback(new Error('请选择角色'))
@@ -90,6 +100,9 @@ const validateRoles = (rule, value, callback) => {
 
 export default {
   name: 'UserModal',
+  components: {
+    ReactiveButton
+  },
   data() {
     return {
       rules: {
@@ -107,6 +120,7 @@ export default {
       },
       visible: false,
       editParam: {},
+      saveErrored: true,
       confirmLoading: false
     }
   },
@@ -133,7 +147,7 @@ export default {
       this.editParam = Object.assign({}, record)
       this.$nextTick(() => {
         this.form.setFieldsValue(pick(this.editParam, 'id', 'username', 'password', 'email'))
-        this.form.setFieldsValue({ 'roleIds': this.editParam.roleIds.map(Number) || [] })
+        this.form.setFieldsValue({ roleIds: this.editParam.roleIds.map(Number) || [] })
       })
     },
     close() {
@@ -158,27 +172,36 @@ export default {
         }
       })
     },
+    handleOkCallback() {
+      this.$emit('ok')
+      this.confirmLoading = false
+      this.close()
+    },
     handleUpdateUser(values) {
-      userApi.update(values).then(res => {
-        this.$message.success('更新成功')
-        this.$emit('ok')
-      }).finally(() => {
-        setTimeout(() => {
+      userApi
+        .update(values)
+        .then(res => {
+          this.saveErrored = false
           this.confirmLoading = false
-        }, 1500)
-        this.close()
-      })
+        })
+        .finally(() => {
+          setTimeout(() => {
+            this.confirmLoading = false
+          }, 1500)
+        })
     },
     handleCreateUser(values) {
-      userApi.create(values).then(res => {
-        this.$message.success('保存成功')
-        this.$emit('ok')
-      }).finally(() => {
-        setTimeout(() => {
+      userApi
+        .create(values)
+        .then(res => {
+          this.saveErrored = false
           this.confirmLoading = false
-        }, 1500)
-        this.close()
-      })
+        })
+        .finally(() => {
+          setTimeout(() => {
+            this.confirmLoading = false
+          }, 1500)
+        })
     },
     handleCancel() {
       this.close()

@@ -37,15 +37,15 @@ export default {
     },
     text: {
       type: String,
-      default: ''
+      default: '确定'
     },
     loadedText: {
       type: String,
-      default: ''
+      default: '保存成功'
     },
     erroredText: {
       type: String,
-      default: ''
+      default: '保存失败'
     }
   },
   data() {
