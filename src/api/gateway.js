@@ -7,7 +7,9 @@ const api = {
   rateLimitLog: '/route/auth/logs',
   rateLimitRule: '/route/auth/rate/limit/rules',
   user: '/route/auth/users',
-  routeLog: '/route/auth/logs'
+  routeLog: '/route/auth/logs',
+  black: '/route/auth/blacklist',
+  blockLog: '/route/auth/block/logs'
 }
 
 gatewayApi.login = function(parameter) {
@@ -138,4 +140,35 @@ gatewayApi.deleteRateLimitRuleByIds = function(parameter) {
   })
 }
 
+gatewayApi.listBlackList = parameter => {
+  return axios({
+    url: `${api.black}/data`,
+    method: 'get',
+    params: parameter
+  })
+}
+
+gatewayApi.countBlackList = parameter => {
+  return axios({
+    url: `${api.black}/count`,
+    method: 'get',
+    params: parameter
+  })
+}
+
+gatewayApi.listBlockLog = parameter => {
+  return axios({
+    url: `${api.blockLog}/data`,
+    method: 'get',
+    params: parameter
+  })
+}
+
+gatewayApi.countBlockLog = parameter => {
+  return axios({
+    url: `${api.blockLog}/count`,
+    method: 'get',
+    params: parameter
+  })
+}
 export default gatewayApi

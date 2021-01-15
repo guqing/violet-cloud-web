@@ -57,6 +57,8 @@
   </a-card>
 </template>
 <script>
+import gatewayApi from '@/api/gateway'
+
 export default {
   name: 'Black',
   data() {
@@ -97,7 +99,13 @@ export default {
         },
         {
           title: '状态',
-          dataIndex: 'status'
+          dataIndex: 'status',
+          customRender: text => {
+            if (text === '1') {
+              return '启用'
+            }
+            return '禁用'
+          }
         },
         {
           title: '创建时间',
@@ -114,7 +122,17 @@ export default {
       selectedRows: []
     }
   },
+  created() {
+    this.loadData()
+  },
   methods: {
+    loadData() {
+      const promises = [gatewayApi.listBlackList(), gatewayApi.countBlackList()]
+      Promise.all(promises).then(values => {
+        this.limitRules = values[0]
+        this.pagination.total = values[1]
+      })
+    },
     handleTableChange(pagination, filters, sorter) {
       const pager = { ...this.pagination }
       pager.current = pagination.current

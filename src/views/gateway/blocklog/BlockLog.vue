@@ -56,6 +56,8 @@
   </a-card>
 </template>
 <script>
+import gatewayApi from '@/api/gateway'
+
 export default {
   name: 'BlackLog',
   data() {
@@ -101,7 +103,17 @@ export default {
       selectedRows: []
     }
   },
+  created() {
+    this.loadData()
+  },
   methods: {
+    loadData() {
+      const promises = [gatewayApi.listBlockLog(), gatewayApi.countBlockLog()]
+      Promise.all(promises).then(values => {
+        this.list = values[0]
+        this.pagination.total = values[1]
+      })
+    },
     handleTableChange(pagination, filters, sorter) {
       const pager = { ...this.pagination }
       pager.current = pagination.current
