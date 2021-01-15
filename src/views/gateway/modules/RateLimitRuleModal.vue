@@ -63,16 +63,18 @@
         />
       </a-form-item>
       <a-form-item label="时段限制">
-        <a-switch checked-children="开启" un-checked-children="关闭" v-model="limitDatePickVisible" />
+        <a-switch checked-children="开启" un-checked-children="关闭" v-model="limitTimePickVisible" />
       </a-form-item>
-      <a-form-item label="时段" v-show="limitDatePickVisible">
-        <a-range-picker v-decorator="['limitRange']" />
+      <a-form-item label="时段" v-show="limitTimePickVisible">
+        <a-time-picker v-model="limitTimeRange.limitFrom" @change="onLimitTimeFromChange" style="margin-right:8px" />
+        <a-time-picker v-model="limitTimeRange.limitTo" @change="onLimitTimeToChange" />
       </a-form-item>
     </a-form>
   </a-modal>
 </template>
 <script>
 import gatewayApi from '@/api/gateway'
+import moment from 'moment'
 import pick from 'lodash.pick'
 
 export default {
@@ -83,7 +85,9 @@ export default {
         labelCol: { span: 4 },
         wrapperCol: { span: 16 }
       },
-      limitDatePickVisible: false,
+      limitTimeFomartRange: {},
+      limitTimeRange: {},
+      limitTimePickVisible: false,
       visible: false,
       requestMethods: ['GET', 'POST', 'PUT', 'DELETE', 'ALL']
     }
@@ -92,39 +96,45 @@ export default {
     this.form = this.$form.createForm(this, { name: 'rate_limit_rule_modal' })
   },
   methods: {
-    onLimitDateChange(date, dateString) {
-      this.$form.setFieldsValue({
-        limitFrom: dateString[0],
-        limitTo: dateString[1]
-      })
+    onLimitTimeFromChange(time, timeString) {
+      this.limitTimeFomartRange.limitFrom = timeString
+    },
+    onLimitTimeToChange(time, timeString) {
+      this.limitTimeFomartRange.limitTo = timeString
     },
     edit(record) {
       this.visible = true
+      this.handleResetTimePicker()
       if (record.limitFrom && record.limitTo) {
-        this.limitDatePickVisible = true
+        this.limitTimePickVisible = true
       }
       record.status = Boolean(record.status)
       this.$nextTick(() => {
-        this.form.setFieldsValue(
-          pick(record, 'id', 'requestUri', 'requestMethod', 'count', 'intervalSec', 'status', 'limitFrom', 'limitTo')
-        )
+        const fieldsValue = pick(record, 'id', 'requestUri', 'requestMethod', 'count', 'intervalSec', 'status')
+        if (record.limitFrom && record.limitTo) {
+          this.limitTimeRange = {
+            limitFrom: moment(record.limitFrom, 'HH:mm:ss'),
+            limitTo: moment(record.limitTo, 'HH:mm:ss')
+          }
+        }
+        this.form.setFieldsValue(fieldsValue)
       })
     },
     add() {
       this.visible = true
+      this.handleResetTimePicker()
+    },
+    handleResetTimePicker() {
+      this.limitTimePickVisible = false
+      this.limitTimeRange = {}
+      this.limitTimeFomartRange = {}
     },
     handleOk() {
-      this.form.validateFields((err, fieldsValue) => {
+      this.form.validateFields((err, values) => {
         if (err) {
           return
         }
-        const limitRangeTimeValue = fieldsValue['limitRange']
-        const values = { ...fieldsValue }
-        if (limitRangeTimeValue) {
-          delete fieldsValue.limitRange
-          values.limitFrom = limitRangeTimeValue[0].format('YYYY-MM-DD')
-          values.limitTo = limitRangeTimeValue[1].format('YYYY-MM-DD')
-        }
+        Object.assign(values, this.limitTimeFomartRange)
         this.$log.debug('form values:', values)
         if (values.id) {
           this.handleUpdate(values.id, values)
@@ -153,7 +163,7 @@ export default {
     handleReset() {
       this.form.resetFields()
       this.visible = false
-      this.limitDatePickVisible = false
+      this.limitTimePickVisible = false
     }
   }
 }
