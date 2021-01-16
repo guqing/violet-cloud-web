@@ -9,8 +9,7 @@
               {
                 rules: [
                   {
-                    required: true,
-                    message: '请输入用户名',
+                    validator: clientIdValidator,
                     trigger: 'blur'
                   }
                 ]
@@ -112,6 +111,16 @@
 import ReactiveButton from '@/components/ReactiveButton'
 import oauthClientApi from '@/api/oauthClient'
 
+const clientIdValidator = (rule, value, callback) => {
+  if (!value) {
+    callback(new Error('客户端ID不能为空'))
+  }
+  if (!/^[a-zA-Z0-9_-]{3,16}$/.test(value)) {
+    callback(new Error('客户端ID不合法'))
+  }
+  callback()
+}
+
 export default {
   name: 'ClientModal',
   components: {
@@ -119,6 +128,7 @@ export default {
   },
   data() {
     return {
+      clientIdValidator: clientIdValidator,
       visible: false,
       formReadyLoading: false,
       confirmLoading: false,
