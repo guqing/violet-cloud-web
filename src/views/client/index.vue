@@ -21,7 +21,7 @@
     </div>
 
     <div class="table-operator">
-      <a-button type="primary">
+      <a-button type="primary" @click="$refs.clientModal.add()">
         新增
       </a-button>
     </div>
@@ -35,12 +35,18 @@
       showPagination="auto"
     >
     </a-table>
+    <ClientModal ref="clientModal" />
   </a-card>
 </template>
 <script>
 import oauthClientApi from '@/api/oauthClient'
+import ClientModal from './modules/ClientModal'
+
 export default {
   name: 'ClientManager',
+  components: {
+    ClientModal
+  },
   data() {
     return {
       loading: {

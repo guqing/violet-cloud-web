@@ -10,4 +10,12 @@ oauthClientApi.list = parameter => {
   })
 }
 
+oauthClientApi.create = parameter => {
+  return axios({
+    url: '/admin/oauth/clients',
+    method: 'post',
+    data: parameter
+  })
+}
+
 export default oauthClientApi
