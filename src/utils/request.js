@@ -20,9 +20,7 @@ let retryCount = 0
 const errorHandler = error => {
   console.log('请求异常:', error.response)
   const res = error.response
-  if (!res) {
-    return Promise.reject(error)
-  }
+
   const data = res.data
   // 从 localstorage 获取 token
   const token = storage.get(ACCESS_TOKEN)
@@ -75,6 +73,8 @@ const errorHandler = error => {
       description: data.message
     })
   }
+
+  return Promise.reject(res)
 }
 
 // request interceptor
