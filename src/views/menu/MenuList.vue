@@ -68,15 +68,18 @@
               <a-radio-button value="1"> 按钮 </a-radio-button>
             </a-radio-group>
           </a-form-model-item>
-          <a-form-model-item label="访问路径" v-show="showMenuFormItem" prop="path">
-            <a-input v-model="menuForm.path" placeholder="以 / 开头，例如：/user/list" />
-          </a-form-model-item>
-          <a-form-model-item label="路由名称" v-show="showMenuFormItem" prop="name">
-            <a-input v-model="menuForm.name" placeholder="只能是英文，例如：UserList" />
-          </a-form-model-item>
-          <a-form-model-item label="组件路径" v-show="showMenuFormItem" prop="component">
-            <a-input v-model="menuForm.component" placeholder="相对于views下的组件，例如:user/UserList" />
-          </a-form-model-item>
+          <div v-if="showMenuFormItem">
+            <a-form-model-item label="访问路径" prop="path">
+              <a-input v-model="menuForm.path" placeholder="以 / 开头，例如：/user/list" />
+            </a-form-model-item>
+            <a-form-model-item label="路由名称" prop="name">
+              <a-input v-model="menuForm.name" placeholder="只能是英文，例如：UserList" />
+            </a-form-model-item>
+            <a-form-model-item label="组件路径" prop="component">
+              <a-input v-model="menuForm.component" placeholder="相对于views下的组件，例如:user/UserList" />
+            </a-form-model-item>
+          </div>
+
           <a-form-model-item>
             <span slot="label">
               权限标识&nbsp;
@@ -91,32 +94,34 @@
               <a-icon slot="suffix" :type="menuForm.icon" v-if="menuForm.icon" />
             </a-input>
           </a-form-model-item>
+
           <a-col :style="{ display: moreFormItem ? 'block' : 'none' }">
-            <a-form-model-item label="重定向地址" v-show="showMenuFormItem">
-              <a-input v-model="menuForm.redirect" placeholder="如果填写，点击时会重定向到该地址" />
-            </a-form-model-item>
-            <a-form-model-item label="是否缓存组件" v-show="showMenuFormItem">
-              <a-switch v-model="menuForm.keepAlive" checked-children="是" un-checked-children="否" default-checked />
-            </a-form-model-item>
-            <a-form-model-item v-show="showMenuFormItem">
-              <span slot="label">
-                是否隐藏菜单栏&nbsp;
-                <a-tooltip title="当菜单类型为菜单时如果开启了隐藏则始终不会显示">
-                  <a-icon type="question-circle-o" />
-                </a-tooltip>
-              </span>
-              <a-switch v-model="menuForm.hidden" checked-children="隐藏" un-checked-children="显示" />
-            </a-form-model-item>
+            <div v-if="showMenuFormItem">
+              <a-form-model-item label="重定向地址">
+                <a-input v-model="menuForm.redirect" placeholder="如果填写，点击时会重定向到该地址" />
+              </a-form-model-item>
+              <a-form-model-item label="是否缓存组件">
+                <a-switch v-model="menuForm.keepAlive" checked-children="是" un-checked-children="否" default-checked />
+              </a-form-model-item>
+              <a-form-model-item>
+                <span slot="label">
+                  是否隐藏菜单栏&nbsp;
+                  <a-tooltip title="当菜单类型为菜单时如果开启了隐藏则始终不会显示">
+                    <a-icon type="question-circle-o" />
+                  </a-tooltip>
+                </span>
+                <a-switch v-model="menuForm.hidden" checked-children="隐藏" un-checked-children="显示" />
+              </a-form-model-item>
+            </div>
+
             <a-form-model-item label="排序">
               <a-input v-model="menuForm.sortIndex" placeholder="菜单显示排序" />
             </a-form-model-item>
           </a-col>
           <a-form-model-item :wrapper-col="menuFormButtonWrapperCol">
             <ReactiveButton
-              v-action:save
               type="primary"
               @click="handleSaveOrUpdateMenu"
-              @callback="handleSaveOrUpdateMenuCallback"
               text="保存"
               :loading="loadingState.save"
               :errored="saveErrored"
@@ -150,25 +155,24 @@ import IconSelector from '@/components/IconSelector'
 import ReactiveButton from '@/components/ReactiveButton'
 
 const validatePath = (rule, value, callback) => {
-  if (value !== '') {
-    var result = /^[A-Za-z0-9/]+([\w.,@?^=%&:/~+#-]*[\w@?^=%&/~+#-])?$/.test(value)
-    if (result) {
-      callback()
-    } else {
-      callback(new Error('请输入合法的访问url'))
-    }
+  if (!value) {
+    callback(new Error('访问路径不能为空'))
+  }
+
+  var isValid = /^\/[A-Za-z0-9/]+([\w.,@?^=%&:/~+#-]*[\w@?^=%&/~+#-])?$/.test(value)
+  if (!isValid) {
+    callback(new Error('请输入合法的访问url,以/开头'))
   }
   callback()
 }
 
 const validateComponentPath = (rule, value, callback) => {
-  if (value !== '') {
-    var result = /^[A-Za-z0-9/]+([\w.,@?^=%&:/~+#-]*[\w@?^=%&/~+#-])?$/.test(value)
-    if (result) {
-      callback()
-    } else {
-      callback(new Error('请输入合法的组件路径'))
-    }
+  if (!value) {
+    callback(new Error('组件路径不能为空'))
+  }
+  var isValid = /^[A-Za-z0-9/]+([\w.,@?^=%&:/~+#-]*[\w@?^=%&/~+#-])?$/.test(value)
+  if (!isValid) {
+    allback(new Error('请输入合法的组件路径'))
   }
   callback()
 }
@@ -198,28 +202,23 @@ export default {
           { required: true, message: '请输入菜单或按钮的名称', trigger: 'blur' },
           { max: 150, message: '长度不能超过150字符', trigger: 'blur' }
         ],
-        path: [{ validator: validatePath, trigger: 'change' }],
+        path: [{ required: true, validator: validatePath, trigger: 'change' }],
         name: [
           {
+            required: true,
             validator: (rule, value, callback) => {
-              if (!this.menuForm.type || this.menuForm.type === '0') {
-                if (!value) {
-                  callback(new Error('资源类型为菜单时不能为空'))
-                } else if (value !== '') {
-                  if (/^[A-Za-z0-9]+$/.test(value)) {
-                    callback()
-                  } else {
-                    callback(new Error('只能输入字母或数字'))
-                  }
-                } else {
-                  callback()
-                }
+              if (!value) {
+                callback(new Error('路由名称不能为空'))
+              } else if (!/^[A-Za-z0-9]+$/.test(value)) {
+                callback(new Error('只能输入字母或数字'))
+              } else {
+                callback()
               }
             },
             trigger: 'blur'
           }
         ],
-        component: [{ validator: validateComponentPath, trigger: 'change' }]
+        component: [{ required: true, validator: validateComponentPath, trigger: 'change' }]
       },
       moreFormItem: false,
       menuFormButtonWrapperCol: { span: 14, offset: 4 },
@@ -311,24 +310,22 @@ export default {
       this.$refs['menuForm'].validate(valid => {
         if (valid) {
           this.loadingState.save = true
-          this.menuForm.type = '0'
+          const parameter = Object.assign({}, this.menuForm)
+          // parameter.type = '0'
           menuApi
-            .saveOrUpdate(this.menuForm)
+            .saveOrUpdate(parameter)
             .then(res => {
               this.saveErrored = false
               this.loadingState.save = false
+              this.handleReset()
+              this.listTreeMenu()
             })
-            .finally(() => {
-              setTimeout(() => {
-                this.loadingState.save = false
-              }, 1000)
+            .catch(err => {
+              this.saveErrored = true
+              this.loadingState.save = false
             })
         }
       })
-    },
-    handleSaveOrUpdateMenuCallback() {
-      this.listTreeMenu()
-      this.handleReset()
     },
     handleReset() {
       this.menuForm = {}
