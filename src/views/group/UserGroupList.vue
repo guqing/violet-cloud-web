@@ -129,7 +129,7 @@ export default {
         })
         .catch(err => {
           this.userGroupTreeData = []
-          this.$message.error(`查询出错:${err}`)
+          this.$message.error(`查询出错:${err.message}`)
         })
         .finally(() => {
           this.treeDataLoading = false

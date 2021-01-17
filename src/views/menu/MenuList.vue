@@ -172,7 +172,7 @@ const validateComponentPath = (rule, value, callback) => {
   }
   var isValid = /^[A-Za-z0-9/]+([\w.,@?^=%&:/~+#-]*[\w@?^=%&/~+#-])?$/.test(value)
   if (!isValid) {
-    allback(new Error('请输入合法的组件路径'))
+    callback(new Error('请输入合法的组件路径'))
   }
   callback()
 }
@@ -270,7 +270,7 @@ export default {
         })
         .catch(err => {
           this.menuTreeData = []
-          this.$message.error(`查询出错:${err}`)
+          this.$message.error(`查询出错:${err.message}`)
         })
         .finally(() => {
           this.treeDataLoading = false
@@ -321,6 +321,8 @@ export default {
               this.listTreeMenu()
             })
             .catch(err => {
+              this.$log.debug('保存菜单失败', err)
+              this.$message.error(err.message)
               this.saveErrored = true
               this.loadingState.save = false
             })

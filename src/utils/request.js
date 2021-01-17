@@ -18,9 +18,12 @@ let retryCount = 0
 
 // 异常拦截处理器
 const errorHandler = error => {
-  console.log('请求异常:', error.response)
-  const res = error.response
+  console.log('请求异常:', error)
+  if (error.message === 'Network Error') {
+    return Promise.reject(new Error('网络连接失败，请稍后重试'))
+  }
 
+  const res = error.response
   const data = res.data
   // 从 localstorage 获取 token
   const token = storage.get(ACCESS_TOKEN)
@@ -74,7 +77,7 @@ const errorHandler = error => {
     })
   }
 
-  return Promise.reject(res)
+  return Promise.reject(res.data)
 }
 
 // request interceptor
