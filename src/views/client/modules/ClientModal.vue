@@ -2,13 +2,14 @@
   <a-modal title="操作" :visible="visible" @cancel="handleCancel" :width="600">
     <a-spin :spinning="formReadyLoading">
       <a-form :form="form" :label-col="labelCol" :wrapper-col="wrapperCol">
-        <a-form-item label="客户端ID">
+        <a-form-item label="客户端ID" has-feedback>
           <a-input
             v-decorator="[
               'clientId',
               {
                 rules: [
                   {
+                    required: true,
                     validator: clientIdValidator,
                     trigger: 'blur'
                   }
@@ -118,7 +119,14 @@ const clientIdValidator = (rule, value, callback) => {
   if (!/^[a-zA-Z0-9_-]{3,16}$/.test(value)) {
     callback(new Error('客户端ID不合法'))
   }
-  callback()
+
+  oauthClientApi.existByClientId(value).then(res => {
+    if (res.data) {
+      callback(new Error('客户端ID已经存在'))
+    } else {
+      callback()
+    }
+  })
 }
 
 export default {
@@ -167,6 +175,7 @@ export default {
           .create(values)
           .then(res => {
             this.confirmLoading = false
+            this.saveErrored = false
           })
           .catch(err => {
             this.$log.debug('请求失败', err)
@@ -178,7 +187,11 @@ export default {
     handleCancel() {
       this.visible = false
     },
-    handleOkCallback() {}
+    handleOkCallback() {
+      this.form.resetFields()
+      this.visible = false
+      this.$emit('ok')
+    }
   }
 }
 </script>

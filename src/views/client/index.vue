@@ -21,7 +21,7 @@
     </div>
 
     <div class="table-operator">
-      <a-button type="primary" @click="$refs.clientModal.add()">
+      <a-button type="primary" @click="$refs.clientModal.add()" v-action:add>
         新增
       </a-button>
     </div>
@@ -35,7 +35,7 @@
       showPagination="auto"
     >
     </a-table>
-    <ClientModal ref="clientModal" />
+    <ClientModal ref="clientModal" @ok="handleModalOk" />
   </a-card>
 </template>
 <script>
@@ -112,6 +112,9 @@ export default {
     },
     handleSearchReset() {
       this.queryParam = {}
+    },
+    handleModalOk() {
+      this.loadData()
     }
   }
 }

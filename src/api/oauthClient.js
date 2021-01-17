@@ -18,4 +18,11 @@ oauthClientApi.create = parameter => {
   })
 }
 
+oauthClientApi.existByClientId = parameter => {
+  return axios({
+    url: `/admin/oauth/clients/check/${parameter}`,
+    method: 'get'
+  })
+}
+
 export default oauthClientApi
