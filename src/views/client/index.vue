@@ -34,6 +34,9 @@
       :data-source="clients"
       showPagination="auto"
     >
+      <template slot="action" slot-scope="text, record">
+        <a-button type="link" @click="$refs.clientModal.edit(record)">编辑</a-button>
+      </template>
     </a-table>
     <ClientModal ref="clientModal" @ok="handleModalOk" />
   </a-card>
@@ -84,11 +87,16 @@ export default {
           title: '自动授权',
           dataIndex: 'autoapprove',
           customRender: text => {
-            if (text === 'true') {
+            if (text) {
               return <a-tag color="green">是</a-tag>
             }
             return <a-tag color="orange">否</a-tag>
           }
+        },
+        {
+          title: '操作',
+          dataIndex: 'action',
+          scopedSlots: { customRender: 'action' }
         }
       ],
       clients: []
