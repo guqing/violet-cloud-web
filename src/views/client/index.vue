@@ -59,7 +59,10 @@ export default {
         },
         {
           title: '认证模式',
-          dataIndex: 'authorizedGrantTypes'
+          dataIndex: 'authorizedGrantTypes',
+          customRender: text => {
+            return text.join(', ')
+          }
         },
         {
           title: '重定向URI',
