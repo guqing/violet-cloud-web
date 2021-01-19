@@ -10,7 +10,7 @@
           </a-col>
           <a-col :md="4" :sm="24">
             <span class="table-page-search-submitButtons">
-              <a-button type="primary" @click="handleSearch" :loading="loading.search">查询</a-button>
+              <a-button type="primary" @click="handleSearch" :loading="searchLoading">查询</a-button>
               <a-button style="margin-left: 8px;" @click="handleSearchReset">
                 重置
               </a-button>
@@ -25,36 +25,28 @@
         新增
       </a-button>
     </div>
-
-    <a-table
-      ref="table"
-      size="default"
-      rowKey="clientId"
-      :columns="columns"
-      :data-source="clients"
-      showPagination="auto"
-    >
+    <s-table ref="table" size="default" rowKey="clientId" :columns="columns" :data="loadData">
       <template slot="action" slot-scope="text, record">
         <a-button type="link" @click="$refs.clientModal.edit(record)">编辑</a-button>
       </template>
-    </a-table>
+    </s-table>
     <ClientModal ref="clientModal" @ok="handleModalOk" />
   </a-card>
 </template>
 <script>
+import { STable } from '@/components'
 import oauthClientApi from '@/api/oauthClient'
 import ClientModal from './modules/ClientModal'
 
 export default {
   name: 'ClientManager',
   components: {
-    ClientModal
+    ClientModal,
+    STable
   },
   data() {
     return {
-      loading: {
-        search: false
-      },
+      searchLoading: false,
       queryParam: {},
       columns: [
         {
@@ -99,30 +91,49 @@ export default {
           scopedSlots: { customRender: 'action' }
         }
       ],
-      clients: []
+      clients: [],
+      loadData: parameter => {
+        const queryRequest = {}
+        queryRequest.current = parameter.pageNo
+        queryRequest.pageSize = parameter.pageSize
+        Object.assign(queryRequest, this.queryParam)
+        return oauthClientApi
+          .list(queryRequest)
+          .then(res => {
+            return {
+              pageSize: res.data.pageSize,
+              pageNo: res.data.current,
+              totalCount: res.data.total,
+              totalPage: res.data.pages,
+              data: res.data.list
+            }
+          })
+          .catch(err => {
+            this.$message.error(`加载失败:${err.message}`)
+            return {
+              pageSize: 0,
+              pageNo: 1,
+              totalCount: 0,
+              totalPage: 0,
+              data: []
+            }
+          })
+      }
     }
   },
-  created() {
-    this.loadData()
-  },
   methods: {
-    loadData() {
-      oauthClientApi.list(this.queryParam).then(res => {
-        this.clients = res.data.list
-      })
-    },
     handleSearch() {
-      this.loading.search = true
-      this.loadData()
+      this.searchLoading = true
+      this.$refs.table.refresh()
       setTimeout(() => {
-        this.loading.search = false
+        this.searchLoading = false
       }, 500)
     },
     handleSearchReset() {
       this.queryParam = {}
     },
     handleModalOk() {
-      this.loadData()
+      this.$table.refresh()
     }
   }
 }
